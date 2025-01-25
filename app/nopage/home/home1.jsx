@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import Landing from "../../../public/Hero1.png";
+import Landing from "../../../public/Hero.png";
 import Landing2 from "../../../public/Hero1.png";
 import Link from 'next/link';
 
