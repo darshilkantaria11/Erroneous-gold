@@ -13,12 +13,12 @@ export default function Navbar() {
 
     return (
         <nav className="bg-c1 shadow-md text-c4  rounded-xl my-2 ">
-            <div className=" px-4 py-4 flex justify-between items-center ">
+            <div className=" px-2 md:px-4 py-2 md:py-4 flex justify-between items-center ">
                 {/* Logo */}
                
 
                 {/* Desktop Links */}
-                <div className="hidden md:flex items-center space-x-6 ">
+                <div className="hidden md:flex items-center space-x-8">
                     <Link href="#" className="hover:text-c3">
                         Home
                     </Link>
@@ -55,7 +55,9 @@ export default function Navbar() {
                             1
                         </div>
                     </div>
-                    <FiUser className="w-6 h-6 text-c4" />
+                    <div>
+                        <FiUser className="w-6 h-6 text-c4" />
+                    </div>
                 </div>
 
                 {/* Hamburger Menu (Mobile) */}
