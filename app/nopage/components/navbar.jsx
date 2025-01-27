@@ -19,7 +19,7 @@ export default function Navbar() {
 
                 {/* Desktop Links */}
                 <div className="hidden md:flex items-center space-x-8">
-                    <Link href="#" className="hover:scale-110 transform transition">
+                    <Link href="/" className="hover:scale-110 transform transition">
                         Home
                     </Link>
                     <Link href="#" className="hover:scale-110 transform transition">
