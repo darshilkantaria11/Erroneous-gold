@@ -16,6 +16,7 @@ export default function ProductDetail() {
   const [mainImage, setMainImage] = useState(productDetails.image); // State for the main image
   const [activeImageIndex, setActiveImageIndex] = useState(0); // State for the active thumbnail index
   const [activeTab, setActiveTab] = useState("description"); // Dropdown state
+  const [name, setName] = useState(""); // State for the name input field
 
   const dropdownContent = {
     description: productDetails.description,
@@ -24,7 +25,7 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="bg-c1 rounded-xl py-10 fo">
+    <div className="bg-c1 rounded-xl py-10">
       <div className="container mx-auto px-4 lg:px-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* Product Images */}
         <motion.div
@@ -78,8 +79,7 @@ export default function ProductDetail() {
 
           {/* Dropdown Section */}
           <div className="mt-6">
-            {/* <h3 className="text-lg font-semibold text-gray-800 mb-2">Details</h3> */}
-            <div className="border  rounded-lg">
+            <div className="border rounded-lg">
               <div className="flex">
                 {Object.keys(dropdownContent).map((tab) => (
                   <button
@@ -116,14 +116,14 @@ export default function ProductDetail() {
           {/* Buttons */}
           <div className="mt-8 flex gap-4">
             <motion.button
-              className="flex-1 bg-c2 text-white py-3 rounded-lg font-medium  transition-all"
+              className="flex-1 bg-c2 text-white py-3 rounded-lg font-medium transition-all"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               Add to Cart
             </motion.button>
             <motion.button
-              className="flex-1 bg-c4 text-white py-3 rounded-lg font-medium  transition-all"
+              className="flex-1 bg-c4 text-white py-3 rounded-lg font-medium transition-all"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
