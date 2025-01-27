@@ -60,8 +60,8 @@ export default function Footer() {
               className="flex-1 px-4 py-2 text-gray-800 rounded-l-lg focus:outline-none"
             />
             <motion.button
-              className="px-6 py-2 bg-c4 text-white rounded-r-lg font-medium hover:bg-white hover:text-c4 transition-all"
-              whileHover={{ scale: 1.05 }}
+              className="px-6 py-2 bg-c4 text-white rounded-r-lg font-medium   transition-all"
+              
               whileTap={{ scale: 0.95 }}
             >
               Subscribe
@@ -85,7 +85,7 @@ export default function Footer() {
       {/* Divider */}
       <div className="border-t pb-8 bg-c2 rounded-b-xl border-gray-300 mt-10 pt-6 text-center">
         <p>
-          "Wear your story, close to your heart."
+          &quot;Wear your story, close to your heart.&quot;
         </p>
       </div>
     </footer>
