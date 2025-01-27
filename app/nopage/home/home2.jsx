@@ -3,12 +3,12 @@ import { motion } from "framer-motion";
 
 export default function Products() {
   const products = [
-    { id: 1, name: "Golden Elegance", price: "$49.99", image: "/product1.jpeg" },
-    { id: 2, name: "Timeless Silver", price: "$69.99", image: "/product2.jpeg" },
-    { id: 3, name: "Classic Rose Gold", price: "$89.99", image: "/product3.jpeg" },
-    { id: 4, name: "Vintage Charm", price: "$39.99", image: "/product1.jpeg" },
-    { id: 5, name: "Minimalist Pendant", price: "$29.99", image: "/product2.jpeg" },
-    { id: 6, name: "Modern Statement", price: "$59.99", image: "/product3.jpeg" },
+    { id: 1, name: "Golden Elegance", price: "$49.99", image: "/product1.jpeg", hoverImage: "/product7.jpeg" },
+    { id: 2, name: "Timeless Silver", price: "$69.99", image: "/product2.jpeg", hoverImage: "/product8.jpeg" },
+    { id: 3, name: "Classic Rose Gold", price: "$89.99", image: "/product3.jpeg", hoverImage: "/product9.jpeg" },
+    { id: 4, name: "Vintage Charm", price: "$39.99", image: "/product4.jpeg", hoverImage: "/product10.jpeg" },
+    { id: 5, name: "Minimalist Pendant", price: "$29.99", image: "/product5.jpeg", hoverImage: "/product11.jpeg" },
+    { id: 6, name: "Modern Statement", price: "$59.99", image: "/product6.jpeg", hoverImage: "/product12.jpeg" },
   ];
 
   return (
@@ -38,16 +38,29 @@ export default function Products() {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              {/* Product Image */}
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-56 object-cover transition-opacity duration-300"
-              />
+              {/* Product Images */}
+              <div className="relative w-full h-56 overflow-hidden">
+                {/* Main Image */}
+                <motion.img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-500"
+                  initial={{ opacity: 1 }}
+                  whileHover={{ opacity: 0 }}
+                />
+                {/* Hover Image */}
+                <motion.img
+                  src={product.hoverImage}
+                  alt={`${product.name} Hover`}
+                  className="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-500"
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                />
+              </div>
               
               {/* Product Details */}
               <div className="p-6">
-                <h2 className="text-2xl font-semibold text-c4  transition duration-300">
+                <h2 className="text-2xl font-semibold text-c4 transition duration-300">
                   {product.name}
                 </h2>
                 <p className="text-lg text-gray-500 mt-2">{product.price}</p>
@@ -57,7 +70,7 @@ export default function Products() {
               </div>
               
               {/* Glow Effect */}
-              <div className="absolute inset-0 z-[-1] bg-c4 opacity-0  transition-opacity duration-500 rounded-2xl"></div>
+              <div className="absolute inset-0 z-[-1] bg-c4 opacity-0 transition-opacity duration-500 rounded-2xl"></div>
             </motion.div>
           ))}
         </motion.div>
