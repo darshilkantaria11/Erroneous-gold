@@ -12,7 +12,7 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="bg-c1 shadow-md text-c4  rounded-xl my-2 ">
+        <nav className="bg-c1 shadow-md text-c4  ">
             <div className=" px-2 md:px-4 py-2 md:py-4 flex justify-between items-center ">
                 {/* Logo */}
 

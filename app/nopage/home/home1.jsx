@@ -16,7 +16,7 @@ export default function LandingPage() {
                     height={60}          // Adjust the height percentage to match the aspect ratio of your image
                     objectFit="contain"  // Ensures the full image is visible without cropping
                     priority
-                    className='rounded-xl'
+                    className=''
                 />
             </div>
             <div className="md:hidden  w-full h-auto">
@@ -28,7 +28,7 @@ export default function LandingPage() {
                     height={60}          // Adjust the height percentage to match the aspect ratio of your image
                     objectFit="contain"  // Ensures the full image is visible without cropping
                     priority
-                    className='rounded-xl'
+                    className=''
                 />
             </div>
 
