@@ -4,7 +4,7 @@ import { FaFacebookF, FaTwitter, FaInstagram, FaPinterest } from "react-icons/fa
 
 export default function Footer() {
     return (
-        <footer className="bg-c3 text-black pt-16 ">
+        <footer className="bg-c3/2 text-black pt-16 border-t-2">
             <div className="container mx-auto px-6 lg:px-12 grid grid-cols-1 md:grid-cols-3 gap-10">
                 {/* About Section */}
                 <motion.div
@@ -17,7 +17,7 @@ export default function Footer() {
                     <p className="text-gray-800">
                         At Erroneous gold, we turn your stories into timeless pieces. Every necklace is uniquely crafted to celebrate love, memories, and individuality.
                     </p>
-                    <p className="text-sm text-gray-600">© 2025 Name Charm. All rights reserved.</p>
+                    <p className="text-sm text-gray-600">© 2025 Erroneouss Gold. All rights reserved.</p>
                 </motion.div>
 
                 {/* Navigation Links */}
@@ -57,7 +57,7 @@ export default function Footer() {
                         <input
                             type="email"
                             placeholder="Enter your email"
-                            className="flex-1 px-4 py-3 text-gray-800 rounded-t-lg sm:rounded-l-lg sm:rounded-t-none focus:outline-none text-sm sm:text-base"
+                            className="flex-1 px-4 py-3 text-gray-800 bg-c1 rounded-t-lg sm:rounded-l-lg  focus:outline-none text-sm sm:text-base"
                         />
                         <motion.button
                             className="w-full sm:w-auto px-6 py-3 bg-c4 text-white rounded-b-lg sm:rounded-r-lg sm:rounded-b-none font-medium transition-all text-sm sm:text-base"
@@ -72,7 +72,7 @@ export default function Footer() {
                             <motion.a
                                 key={index}
                                 href="#"
-                                className="text-white p-3 rounded-full bg-c4 hover:bg-white hover:text-c4 transition-all"
+                                className="text-white p-3 rounded-full bg-c4 hover:bg-c1 hover:text-c4 transition-all"
                                 whileHover={{ scale: 1.1 }}
                             >
                                 <Icon />

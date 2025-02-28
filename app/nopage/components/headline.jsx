@@ -7,7 +7,7 @@ export default function ScrollingOffer() {
 
     const offers = [
         "🔥 Limited Time Offer: Get 50% Off on All Products! 🔥",
-        "🚀 Free Shipping on Orders Over $100! 🚀",
+        "🚀 Free Shipping on Orders Over Rs.400! 🚀",
         "🎁 Buy 1 Get 1 Free – This Week Only! 🎁",
        
     ];

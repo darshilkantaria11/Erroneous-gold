@@ -4,19 +4,19 @@ import { motion } from "framer-motion";
 
 export default function Products() {
     const products = [
-        { id: 1, name: "Golden Elegance", price: "$49.99", priceo: "$149.99", image: "/product1.jpeg", hoverImage: "/product7.jpeg", slug: "golden-elegance" },
-        { id: 2, name: "Timeless Silver", price: "$69.99", priceo: "$199.99", image: "/product12.jpeg", hoverImage: "/product8.jpeg", slug: "timeless-silver" },
-        { id: 3, name: "Classic Rose Gold", price: "$89.99", priceo: "$189.99", image: "/product3.jpeg", hoverImage: "/product9.jpeg", slug: "classic-rose-gold" },
-        { id: 4, name: "Vintage Charm", price: "$39.99", priceo: "$139.99", image: "/product4.jpeg", hoverImage: "/product10.jpeg", slug: "vintage-charm" },
-        { id: 5, name: "Minimalist Pendant", price: "$29.99", priceo: "$129.99", image: "/product5.jpeg", hoverImage: "/product11.jpeg", slug: "minimalist-pendant" },
-        { id: 6, name: "Modern Statement", price: "$59.99", priceo: "$159.99", image: "/product6.jpeg", hoverImage: "/product2.jpeg", slug: "modern-statement" },
+        { id: 1, name: "Golden Elegance", price: "Rs.49.99", priceo: "Rs.149.99", image: "/product1.jpeg", hoverImage: "/product7.jpeg", slug: "golden-elegance" },
+        { id: 2, name: "Timeless Silver", price: "Rs.69.99", priceo: "Rs.199.99", image: "/product12.jpeg", hoverImage: "/product8.jpeg", slug: "timeless-silver" },
+        { id: 3, name: "Classic Rose Gold", price: "Rs.89.99", priceo: "Rs.189.99", image: "/product3.jpeg", hoverImage: "/product9.jpeg", slug: "classic-rose-gold" },
+        { id: 4, name: "Vintage Charm", price: "Rs.39.99", priceo: "Rs.139.99", image: "/product4.jpeg", hoverImage: "/product10.jpeg", slug: "vintage-charm" },
+        { id: 5, name: "Minimalist Pendant", price: "Rs.29.99", priceo: "Rs.129.99", image: "/product5.jpeg", hoverImage: "/product11.jpeg", slug: "minimalist-pendant" },
+        { id: 6, name: "Modern Statement", price: "Rs.59.99", priceo: "Rs.159.99", image: "/product6.jpeg", hoverImage: "/product2.jpeg", slug: "modern-statement" },
     ];
 
     return (
         <div className="bg-c1 min-h-screen py-10">
             <div className="container mx-auto px-6">
                 <motion.h1
-                    className="text-3xl md:text-4xl font-bold text-center mb-14 text-c4 tracking-wide"
+                    className="text-2xl md:text-4xl font-bold text-center mb-14 text-c4 tracking-wide"
                     initial={{ opacity: 0, y: -50 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
@@ -37,7 +37,7 @@ export default function Products() {
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                         >
-                            <Link href={`/products/${product.slug}`}>
+                            <Link href={`/products/Rs.{product.slug}`}>
                                 <div>
                                     {/* Product Image */}
                                     <div className="relative w-full md:h-72 h-52 overflow-hidden">
@@ -52,7 +52,7 @@ export default function Products() {
                                         {/* Hover Image */}
                                         <motion.img
                                             src={product.hoverImage}
-                                            alt={`${product.name} Hover`}
+                                            alt={`Rs.{product.name} Hover`}
                                             className="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-500"
                                             initial={{ opacity: 0 }}
                                             whileHover={{ opacity: 1 }}
