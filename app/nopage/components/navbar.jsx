@@ -12,35 +12,23 @@ export default function Navbar() {
     };
 
     return (
-        <nav className="bg-c1 shadow-md text-c4  ">
-            <div className=" px-2 md:px-4 py-2 md:py-4 flex justify-between items-center ">
-                {/* Logo */}
-
-
+        <nav className="bg-c1 shadow-md text-c4 sticky top-10 z-50">
+            <div className="px-2 md:px-4 py-2 md:py-4 flex justify-between items-center">
                 {/* Desktop Links */}
                 <div className="hidden md:flex items-center space-x-8">
-                    <Link href="/" className="hover:scale-110 transform transition">
-                        Home
-                    </Link>
-                    <Link href="#" className="hover:scale-110 transform transition">
-                        Shop
-                    </Link>
-                    <Link href="#" className="hover:scale-110 transform transition">
-                        About Us
-                    </Link>
-                    <Link href="#" className="hover:scale-110 transform transition">
-                        Contact Us
-                    </Link>
-
+                    <Link href="/" className="hover:scale-110 transform transition">Home</Link>
+                    <Link href="#" className="hover:scale-110 transform transition">Shop</Link>
+                    <Link href="#" className="hover:scale-110 transform transition">About Us</Link>
+                    <Link href="#" className="hover:scale-110 transform transition">Contact Us</Link>
                 </div>
                 <div className="flex hover:scale-110 transform transition">
                     <Link href="/" className="text-lg font-bold">
-                        <span className="text-3xl text-c4 ">GOLD</span>
+                        <span className="text-3xl text-c4">GOLD</span>
                     </Link>
                 </div>
 
                 {/* Right Icons */}
-                <div className="flex items-center space-x-4 ">
+                <div className="flex items-center space-x-4">
                     <div className="relative flex items-center bg-white border border-c4 rounded-full px-4 py-2">
                         <input
                             type="text"
@@ -76,33 +64,12 @@ export default function Navbar() {
                 animate={{ height: isOpen ? "auto" : 0 }}
                 className={`md:hidden overflow-hidden bg-c2 rounded-b-xl`}
             >
-                <div className="flex flex-col items-start space-y-3 px-4 py-4 bg-c1  shadow-lg">
-                    <Link
-                        href="#"
-                        className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg  transition duration-200"
-                    >
-                        Home
-                    </Link>
-                    <Link
-                        href="#"
-                        className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg  transition duration-200"
-                    >
-                        Shop
-                    </Link>
-                    <Link
-                        href="#"
-                        className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg  transition duration-200"
-                    >
-                        About Us
-                    </Link>
-                    <Link
-                        href="#"
-                        className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg  transition duration-200"
-                    >
-                        Contact Us
-                    </Link>
+                <div className="flex flex-col items-start space-y-3 px-4 py-4 bg-c1 shadow-lg">
+                    <Link href="#" className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg transition duration-200">Home</Link>
+                    <Link href="#" className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg transition duration-200">Shop</Link>
+                    <Link href="#" className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg transition duration-200">About Us</Link>
+                    <Link href="#" className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg transition duration-200">Contact Us</Link>
                 </div>
-
             </motion.div>
         </nav>
     );
