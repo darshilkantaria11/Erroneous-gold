@@ -13,7 +13,7 @@ export default function Products() {
     ];
 
     return (
-        <div className="bg-c1 min-h-screen py-10">
+        <div className="bg-c1 min-h-screen py-4">
             <div className="container mx-auto px-6">
                 <motion.h1
                     className="text-2xl md:text-4xl font-bold text-center mb-14 text-c4 tracking-wide"

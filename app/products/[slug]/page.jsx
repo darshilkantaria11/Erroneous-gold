@@ -53,7 +53,7 @@ export default function ProductDetail() {
                 alt={`Additional View ${index + 1}`}
                 className={`w-[calc(25%-0.5rem)] h-24 object-cover rounded-lg cursor-pointer shadow-md transition-transform ${
                   activeImageIndex === index
-                    ? "ring-4 ring-c2 scale-105"
+                    ? "ring-4 ring-c4 scale-105"
                     : "hover:scale-105"
                 }`}
                 whileHover={{ scale: 1.05 }}
@@ -116,7 +116,7 @@ export default function ProductDetail() {
           {/* Buttons */}
           <div className="mt-8 flex gap-4">
             <motion.button
-              className="flex-1 bg-c2 text-white py-3 rounded-lg font-medium transition-all"
+              className="flex-1 bg-c2 text-black py-3 rounded-lg font-medium transition-all"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >

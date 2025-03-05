@@ -17,7 +17,7 @@ module.exports = {
         c2: "#F8F5E9",
         c3: "#F8F5E9",
         c4: "#1b4638",
-        back: "#FFFFFF",
+        back: "#F8F5E9",
       },
     },
   },

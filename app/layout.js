@@ -3,6 +3,7 @@ import './globals.css'
 import Navbar from "./nopage/components/navbar"
 import Footer from './nopage/components/footer'
 import Headline from "./nopage/components/headline"
+import Bottom from "./nopage/components/bottom"
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,6 +20,7 @@ export default function RootLayout({ children }) {
           <Headline/>
         <Navbar/>
         {children}
+        <Bottom/>
         <Footer/>
         </div>
         </body>

@@ -1,18 +1,28 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiSearch, FiShoppingCart, FiUser, FiMenu, FiX } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
 
-    const toggleMenu = () => {
-        setIsOpen(!isOpen);
-    };
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 1) { // Adjust this value based on when you want the navbar to move up
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     return (
-        <nav className="bg-c1 shadow-md text-c4 sticky top-10 z-50">
+        <nav className={`bg-c1 shadow-md text-c4 sticky z-50 transition-all duration-300 ${isScrolled ? "top-0" : "top-8 md:top-10"}`}>
             <div className="px-2 md:px-4 py-2 md:py-4 flex justify-between items-center">
                 {/* Desktop Links */}
                 <div className="hidden md:flex items-center space-x-8">
@@ -51,7 +61,7 @@ export default function Navbar() {
                 {/* Hamburger Menu (Mobile) */}
                 <button
                     className="md:hidden text-2xl"
-                    onClick={toggleMenu}
+                    onClick={() => setIsOpen(!isOpen)}
                     aria-label="Toggle Menu"
                 >
                     {isOpen ? <FiX /> : <FiMenu />}

@@ -1,4 +1,4 @@
-import Home1 from "./nopage/home/home1"
+import Home1 from "./nopage/home/home1a"
 import Home2 from "./nopage/home/home2"
 
 export default function Home() {
