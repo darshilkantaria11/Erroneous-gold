@@ -57,7 +57,7 @@ export default function Footer() {
                         <input
                             type="email"
                             placeholder="Enter your email"
-                            className="flex-1 px-4 py-3 text-gray-800 bg-c1 rounded-t-lg sm:rounded-l-lg  focus:outline-none text-sm sm:text-base"
+                            className="flex-1 px-4 py-3 text-gray-800 bg-c1/2 rounded-t-lg sm:rounded-l-lg  focus:outline-none text-sm sm:text-base"
                         />
                         <motion.button
                             className="w-full sm:w-auto px-6 py-3 bg-c4 text-white rounded-b-lg sm:rounded-r-lg sm:rounded-b-none font-medium transition-all text-sm sm:text-base"

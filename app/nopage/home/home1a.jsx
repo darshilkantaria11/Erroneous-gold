@@ -75,7 +75,7 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2, duration: 1 }}
-          className="text-lg md:text-xl text-gray-600 px-6"
+          className="text-sm md:text-xl text-gray-600 px-6"
         >
           <span className='text-c4 font-bold'>Erroneous Gold – Crafting Personalized Elegance </span>. Every piece tells a story, turning your name into a timeless treasure. Wear your identity with pride, designed with precision, passion, and a touch of luxury.
         </motion.p>
