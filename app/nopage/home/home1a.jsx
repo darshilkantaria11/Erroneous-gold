@@ -64,7 +64,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.5, duration: 1 }}
-            className="text-5xl md:text-8xl font-extrabold text-[#1B4638]"
+            className="text-5xl md:text-8xl font-extrabold text-red-800"
           >
             LOVE IT.
           </motion.h1>

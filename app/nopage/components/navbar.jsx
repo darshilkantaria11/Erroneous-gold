@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { FiSearch, FiShoppingCart, FiUser, FiMenu, FiX } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
+import Logo from "../../../public/logoc.svg"
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +35,7 @@ export default function Navbar() {
                 </div>
                 <div className="flex hover:scale-110 transform transition">
                     <Link href="/" className="text-lg font-bold">
-                        <span className="text-3xl text-c4">GOLD</span>
+                        <Image src={Logo} className=" h-12 w-12"></Image>
                     </Link>
                 </div>
 
