@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function HeroSection() {
   const [sparks, setSparks] = useState([]);
@@ -89,14 +90,15 @@ export default function HeroSection() {
         className="relative z-10 flex  md:mt-6  flex-row "
       >
         {/* Start Project Button */}
-        <motion.a
-          href="#"
+        <Link href="/shop">
+        <motion.div
           className="px-8 py-4 bg-c4 text-c1 text-lg font-bold rounded-full   transition duration-100 m-2"
           whileHover={{ scale: 1.1}}
           whileTap={{ scale: 0.95 }}
-        >
+          >
          Shop Now
-        </motion.a>
+        </motion.div>
+          </Link>
 
         {/* View Work Button */}
         <motion.a

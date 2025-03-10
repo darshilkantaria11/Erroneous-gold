@@ -35,7 +35,8 @@ export default function Navbar() {
                 </div>
                 <div className="flex hover:scale-110 transform transition">
                     <Link href="/" className="text-lg font-bold">
-                        <Image src={Logo} className=" h-12 w-12"></Image>
+                        {/* <Image src={Logo} className=" h-12 w-12"></Image> */}
+                    <h1 className="text-4xl font-bold">GOLD</h1>
                     </Link>
                 </div>
 
@@ -56,7 +57,9 @@ export default function Navbar() {
                         </div>
                     </div>
                     <div className="hover:scale-110 transform transition">
+                        <Link href="/user">
                         <FiUser className="w-6 h-6 text-c4" />
+                        </Link>
                     </div>
                 </div>
 

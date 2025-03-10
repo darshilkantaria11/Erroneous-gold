@@ -69,18 +69,7 @@ export default function Products() {
                     ))}
                 </motion.div>
 
-                {/* View More Button */}
-                <div className="flex justify-center mt-10">
-                    <Link href="/shop">
-                        <motion.button
-                            className="px-6 py-3 text-lg font-semibold text-white bg-c4 rounded-full hover:bg-c4/90 transition-all"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                        >
-                            View More
-                        </motion.button>
-                    </Link>
-                </div>
+            
             </div>
         </div>
     );
