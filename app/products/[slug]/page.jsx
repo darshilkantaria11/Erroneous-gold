@@ -1,26 +1,48 @@
 "use client";
 import { motion } from "framer-motion";
-import { useState } from "react";
-
-const productDetails = {
-  id: 1,
-  name: "Oval Gemstone Signet Ring",
-  price: "$40.99",
-  description: "This signet's about to be your new signature. It’s an approachable power move, handcrafted in sterling silver.",
-  reviews: "200k Reviews",
-  image: "/product1.jpeg", // Default main image
-  additionalImages: ["/product1.jpeg", "/product2.jpeg", "/product3.jpeg", "/product4.jpeg"],
-};
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 
 export default function ProductDetail() {
-  const [mainImage, setMainImage] = useState(productDetails.image); // State for the main image
-  const [activeImageIndex, setActiveImageIndex] = useState(0); // State for the active thumbnail index
-  const [activeTab, setActiveTab] = useState("description"); // Dropdown state
-  const [name, setName] = useState(""); // State for the name input field
+  const { slug } = useParams(); // Get product ID from URL
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [mainImage, setMainImage] = useState(""); // Main image state
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState("description");
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(`/api/products/fetch/${slug}`, {
+          headers: { "x-api-key": process.env.NEXT_PUBLIC_API_KEY },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch product");
+
+        const data = await res.json();
+        setProduct(data);
+        setMainImage(data.img1 || "/placeholder.jpg"); // Use main image or fallback
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) fetchProduct();
+  }, [slug]);
+
+  if (loading) return <p className="text-center text-lg">Loading...</p>;
+  if (error) return <p className="text-center text-lg text-red-500">{error}</p>;
+
+  const additionalImages = [product.img1, product.img2, product.img3, product.img4].filter(Boolean); // Remove empty values
 
   const dropdownContent = {
-    description: productDetails.description,
-    materials: "Sterling silver, oval-cut gemstone, eco-friendly packaging.",
+    description: product.description || "No description available.",
+    materials: product.material || "Materials information not provided.",
   };
 
   return (
@@ -36,7 +58,7 @@ export default function ProductDetail() {
           {/* Main Image */}
           <motion.img
             src={mainImage}
-            alt={productDetails.name}
+            alt={product.productName}
             className="w-full h-96 object-cover rounded-lg shadow-md"
             initial={{ scale: 0.95 }}
             animate={{ scale: 1 }}
@@ -44,25 +66,25 @@ export default function ProductDetail() {
           />
 
           {/* Additional Images */}
-          <div className="flex justify-between gap-2">
-            {productDetails.additionalImages.map((img, index) => (
-              <motion.img
-                key={index}
-                src={img}
-                alt={`Additional View ${index + 1}`}
-                className={`w-[calc(25%-0.5rem)] h-24 object-cover rounded-lg cursor-pointer shadow-md transition-transform ${
-                  activeImageIndex === index
-                    ? "ring-4 ring-c4 scale-105"
-                    : "hover:scale-105"
-                }`}
-                whileHover={{ scale: 1.05 }}
-                onClick={() => {
-                  setMainImage(img); // Set the clicked image as the main image
-                  setActiveImageIndex(index); // Highlight the clicked thumbnail
-                }}
-              />
-            ))}
-          </div>
+          {additionalImages.length > 1 && (
+            <div className="flex justify-between gap-2">
+              {additionalImages.map((img, index) => (
+                <motion.img
+                  key={index}
+                  src={img}
+                  alt={`View ${index + 1}`}
+                  className={`w-[calc(25%-0.5rem)] h-24 object-cover rounded-lg cursor-pointer shadow-md transition-transform ${
+                    activeImageIndex === index ? "ring-4 ring-c4 scale-105" : "hover:scale-105"
+                  }`}
+                  whileHover={{ scale: 1.05 }}
+                  onClick={() => {
+                    setMainImage(img);
+                    setActiveImageIndex(index);
+                  }}
+                />
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* Product Details */}
@@ -72,9 +94,11 @@ export default function ProductDetail() {
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="text-3xl font-bold text-gray-800">{productDetails.name}</h1>
-          {/* <p className="text-sm text-gray-500 mt-1">{productDetails.reviews}</p> */}
-          <p className="text-2xl font-semibold text-gray-700 mt-4">{productDetails.price}</p>
+          <h1 className="text-3xl font-bold text-gray-800">{product.productName}</h1>
+          <div className="flex flex-row mt-2">
+          <p className="text-sm text-gray-500 line-through mt-2 mr-2">Rs. {product.strikeoutPrice}</p>
+          <p className="text-2xl font-semibold text-gray-700 ">Rs. {product.originalPrice}</p>
+          </div>
 
           {/* Dropdown Section */}
           <div className="mt-6">

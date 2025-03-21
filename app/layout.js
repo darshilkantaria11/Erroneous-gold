@@ -16,7 +16,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className='bg-back'>
       <body className={inter.className}>
-        <div className=" fo">
+        <div className=" ">
           <Headline/>
         <Navbar/>
         {children}
