@@ -20,7 +20,6 @@ export default function ProductDetail() {
 
   const dropdownContent = {
     description: productDetails.description,
-    details: "Handcrafted with sterling silver and oval-cut gemstones. Durable and elegant.",
     materials: "Sterling silver, oval-cut gemstone, eco-friendly packaging.",
   };
 
@@ -74,7 +73,7 @@ export default function ProductDetail() {
           transition={{ duration: 0.8 }}
         >
           <h1 className="text-3xl font-bold text-gray-800">{productDetails.name}</h1>
-          <p className="text-sm text-gray-500 mt-1">{productDetails.reviews}</p>
+          {/* <p className="text-sm text-gray-500 mt-1">{productDetails.reviews}</p> */}
           <p className="text-2xl font-semibold text-gray-700 mt-4">{productDetails.price}</p>
 
           {/* Dropdown Section */}

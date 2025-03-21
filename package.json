@@ -14,9 +14,10 @@
     "firebase": "^11.4.0",
     "framer-motion": "^12.0.5",
     "google-it": "^1.6.4",
-    "next": "14.0.4",
-    "react": "^18",
-    "react-dom": "^18",
+    "mongodb": "^6.14.2",
+    "next": "^15.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-icons": "^5.4.0",
     "react-parallax-tilt": "^1.7.285",
     "serpapi": "^2.1.0"
@@ -24,7 +25,7 @@
   "devDependencies": {
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
-    "eslint-config-next": "14.0.4",
+    "eslint-config-next": "^15.2.3",
     "postcss": "^8",
     "tailwindcss": "^3.3.0"
   }

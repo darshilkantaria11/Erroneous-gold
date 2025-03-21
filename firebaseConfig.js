@@ -1,3 +1,4 @@
+
 import { initializeApp } from "firebase/app";
 import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
@@ -11,8 +12,11 @@ const firebaseConfig = {
     measurementId: "G-1RHJ7SKLMK"
   };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-auth.languageCode = "en"; // Set language for OTP
+auth.useDeviceLanguage(); // Automatically uses the device language
 
 export { auth, RecaptchaVerifier, signInWithPhoneNumber };
+
+

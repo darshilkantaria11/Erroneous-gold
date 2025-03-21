@@ -1,88 +1,108 @@
 "use client";
-import { useState } from "react";
-import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "../../firebaseConfig.js";
 
-export default function OTPLogin() {
+import { useState, useEffect } from "react";
+import { auth, RecaptchaVerifier, signInWithPhoneNumber } from "../../firebaseConfig.js";
+import { useRouter } from "next/navigation";
+
+export default function PhoneAuth() {
     const [phone, setPhone] = useState("");
     const [otp, setOtp] = useState("");
-    const [verificationId, setVerificationId] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
+    const [confirmationResult, setConfirmationResult] = useState(null);
+    const [message, setMessage] = useState("");
+    const router = useRouter();
 
-    const setupRecaptcha = () => {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
-            size: "invisible",
-            callback: (response) => console.log("Recaptcha verified"),
-        });
-    };
+    useEffect(() => {
+        // Ensure reCAPTCHA is created only once
+        if (!window.recaptchaVerifier) {
+            window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", {
+                size: "invisible",
+                callback: (response) => {
+                    console.log("reCAPTCHA Verified!");
+                },
+                'expired-callback': () => {
+                    setMessage("reCAPTCHA expired. Please try again.");
+                }
+            });
+        }
+    }, []);
 
     const sendOTP = async () => {
-        if (!phone) return alert("Enter a valid phone number");
-        setLoading(true);
-        setupRecaptcha();
+        if (phone.length !== 10) {
+            setMessage("Enter a valid 10-digit phone number");
+            return;
+        }
+
+        setMessage("Sending OTP...");
+        const fullPhone = `+91${phone}`;
 
         try {
-            const confirmation = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
-            setVerificationId(confirmation.verificationId);
-            alert("OTP sent to " + phone);
+            const appVerifier = window.recaptchaVerifier;
+            const result = await signInWithPhoneNumber(auth, fullPhone, appVerifier);
+            setConfirmationResult(result);
+            setMessage("OTP Sent! Please check your phone.");
         } catch (error) {
-            alert(error.message);
-        } finally {
-            setLoading(false);
+            setMessage(`Error: ${error.message}`);
         }
     };
 
     const verifyOTP = async () => {
-        if (!otp) return alert("Enter OTP");
+        if (!otp || !confirmationResult) {
+            setMessage("Please enter OTP");
+            return;
+        }
 
         try {
-            const credential = window.firebase.auth.PhoneAuthProvider.credential(verificationId, otp);
-            await auth.signInWithCredential(credential);
-            setSuccess(true);
-            alert("Phone number verified!");
+            const result = await confirmationResult.confirm(otp);
+            setMessage("Phone Number Verified Successfully!");
+            console.log("User Info:", result.user);
+            router.push("/dashboard"); // Redirect after successful login
         } catch (error) {
-            alert("Invalid OTP");
+            setMessage("Invalid OTP. Please try again.");
         }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-            <div className="bg-white p-8 shadow-lg rounded-lg w-full max-w-md">
-                <h2 className="text-xl font-semibold text-gray-700 mb-4">Phone Login</h2>
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                <h1 className="text-2xl font-bold text-center mb-4">Phone Authentication</h1>
 
-                <input
-                    type="text"
-                    className="w-full p-2 border border-gray-300 rounded mb-3"
-                    placeholder="+91XXXXXXXXXX"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                />
-                <button
-                    className="w-full bg-blue-500 text-white p-2 rounded"
-                    onClick={sendOTP}
-                    disabled={loading}
-                >
-                    {loading ? "Sending OTP..." : "Send OTP"}
-                </button>
+                <div id="recaptcha-container"></div> {/* Important */}
 
-                <div id="recaptcha-container"></div>
+                <div className="mb-4">
+                    <input
+                        type="text"
+                        placeholder="Enter Phone Number (10 digits)"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-md"
+                    />
+                    <button
+                        onClick={sendOTP}
+                        className="mt-3 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
+                    >
+                        Send OTP
+                    </button>
+                </div>
 
-                {verificationId && (
-                    <>
+                {confirmationResult && (
+                    <div className="mt-4">
                         <input
                             type="text"
-                            className="w-full p-2 border border-gray-300 rounded mt-4"
                             placeholder="Enter OTP"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
+                            className="w-full px-4 py-2 border rounded-md"
                         />
-                        <button className="w-full bg-green-500 text-white p-2 rounded mt-2" onClick={verifyOTP}>
+                        <button
+                            onClick={verifyOTP}
+                            className="mt-3 w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
+                        >
                             Verify OTP
                         </button>
-                    </>
+                    </div>
                 )}
 
-                {success && <p className="text-green-600 mt-4">✅ Verified Successfully!</p>}
+                {message && <p className="text-center mt-3 text-red-500">{message}</p>}
             </div>
         </div>
     );
