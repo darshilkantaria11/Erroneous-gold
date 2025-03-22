@@ -73,9 +73,8 @@ export default function ProductDetail() {
                   key={index}
                   src={img}
                   alt={`View ${index + 1}`}
-                  className={`w-[calc(25%-0.5rem)] h-24 object-cover rounded-lg cursor-pointer shadow-md transition-transform ${
-                    activeImageIndex === index ? "ring-4 ring-c4 scale-105" : "hover:scale-105"
-                  }`}
+                  className={`w-[calc(25%-0.5rem)] h-24 object-cover rounded-lg cursor-pointer shadow-md transition-transform ${activeImageIndex === index ? "ring-4 ring-c4 scale-105" : "hover:scale-105"
+                    }`}
                   whileHover={{ scale: 1.05 }}
                   onClick={() => {
                     setMainImage(img);
@@ -96,8 +95,8 @@ export default function ProductDetail() {
         >
           <h1 className="text-3xl font-bold text-gray-800">{product.productName}</h1>
           <div className="flex flex-row mt-2">
-          <p className="text-sm text-gray-500 line-through mt-2 mr-2">Rs. {product.strikeoutPrice}</p>
-          <p className="text-2xl font-semibold text-gray-700 ">Rs. {product.originalPrice}</p>
+            <p className="text-sm text-gray-500 line-through mt-2 mr-2">Rs. {product.strikeoutPrice}</p>
+            <p className="text-2xl font-semibold text-gray-700 ">Rs. {product.originalPrice}</p>
           </div>
 
           {/* Dropdown Section */}
@@ -108,9 +107,8 @@ export default function ProductDetail() {
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`flex-1 py-2 px-4 text-sm font-medium ${
-                      activeTab === tab ? "bg-c1 text-black" : "bg-white text-gray-700"
-                    } rounded-t-lg focus:outline-none`}
+                    className={`flex-1 py-2 px-4 text-sm font-medium ${activeTab === tab ? "bg-c1 text-black" : "bg-white text-gray-700"
+                      } rounded-t-lg focus:outline-none`}
                   >
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
                   </button>
@@ -123,18 +121,24 @@ export default function ProductDetail() {
           </div>
 
           {/* Name Field */}
-          <div className="mt-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">Enter Your Name</h3>
+          {/* Name Field */}
+          <div className={`mt-6`}>
+            <h3 className="text-lg font-semibold text-gray-800 ml-1">Enter Your Name</h3>
+            <p className="text-sm text-gray-500 ml-1 mb-1">Your name will be engraved on the product.</p>
+            
             <input
               type="text"
               maxLength={10}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Max 10 characters"
-              className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none"
-            />
-            <p className="text-sm text-gray-500 mt-1">Your name will be engraved on the product.</p>
+              
+              className={`w-full px-4 py-2 border  rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none  ${product.fontName || ""}`}
+              />
+             
+            <p className="text-sm text-gray-500 mt-1 ml-1">Max 10 characters</p> 
+            
           </div>
+
 
           {/* Buttons */}
           <div className="mt-8 flex gap-4">
