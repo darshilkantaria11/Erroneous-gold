@@ -2,9 +2,11 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useCart } from "../../nopage/context/CartContext";
 
 export default function ProductDetail() {
   const { slug } = useParams(); // Get product ID from URL
+  const { cart, addToCart, updateQuantity } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,7 +14,22 @@ export default function ProductDetail() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
   const [name, setName] = useState("");
+  const [quantity, setQuantity] = useState(0);
+  const [nameError, setNameError] = useState("");
 
+  // Load cart data from localStorage
+  useEffect(() => {
+    const cartItem = cart[slug];
+    if (cartItem) {
+      setQuantity(cartItem.quantity);
+      setName(cartItem.name || "");
+    } else {
+      setQuantity(0);
+      setName("");
+    }
+  }, [cart, slug]);
+
+  // Fetch product details
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -38,24 +55,44 @@ export default function ProductDetail() {
   if (loading) return <p className="text-center text-lg">Loading...</p>;
   if (error) return <p className="text-center text-lg text-red-500">{error}</p>;
 
-  const additionalImages = [product.img1, product.img2, product.img3, product.img4].filter(Boolean); // Remove empty values
+  const additionalImages = [product.img1, product.img2, product.img3, product.img4].filter(Boolean);
 
   const dropdownContent = {
     description: product.description || "No description available.",
     materials: product.material || "Materials information not provided.",
   };
 
+  // Handle Add to Cart
+  const handleAddToCart = () => {
+    if (!name.trim()) {
+      setNameError("Please enter a name before adding to cart.");
+      return;
+    }
+
+    addToCart(slug, {
+      id: slug,
+      name,
+      quantity: 1,
+      // Add other product details you need in the cart
+      price: product.originalPrice,
+      image: product.img1
+    });
+  };
+
+  // Increase quantity
+  const increaseQuantity = () => {
+    updateQuantity(slug, (cart[slug]?.quantity || 0) + 1);
+  };
+
+  const decreaseQuantity = () => {
+    updateQuantity(slug, (cart[slug]?.quantity || 0) - 1);
+  };
+
   return (
     <div className="bg-c1 rounded-xl py-10">
       <div className="container mx-auto px-4 lg:px-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* Product Images */}
-        <motion.div
-          className="space-y-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
-          {/* Main Image */}
+        <motion.div className="space-y-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>
           <motion.img
             src={mainImage}
             alt={product.productName}
@@ -65,7 +102,6 @@ export default function ProductDetail() {
             transition={{ duration: 0.8 }}
           />
 
-          {/* Additional Images */}
           {additionalImages.length > 1 && (
             <div className="flex justify-between gap-2">
               {additionalImages.map((img, index) => (
@@ -87,16 +123,11 @@ export default function ProductDetail() {
         </motion.div>
 
         {/* Product Details */}
-        <motion.div
-          className="bg-white rounded-lg p-6 shadow-lg"
-          initial={{ x: 100, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.8 }}
-        >
+        <motion.div className="bg-white rounded-lg p-6 shadow-lg" initial={{ x: 100, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.8 }}>
           <h1 className="text-3xl font-bold text-gray-800">{product.productName}</h1>
           <div className="flex flex-row mt-2">
             <p className="text-sm text-gray-500 line-through mt-2 mr-2">Rs. {product.strikeoutPrice}</p>
-            <p className="text-2xl font-semibold text-gray-700 ">Rs. {product.originalPrice}</p>
+            <p className="text-2xl font-semibold text-gray-700">Rs. {product.originalPrice}</p>
           </div>
 
           {/* Dropdown Section */}
@@ -104,61 +135,97 @@ export default function ProductDetail() {
             <div className="border rounded-lg">
               <div className="flex">
                 {Object.keys(dropdownContent).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`flex-1 py-2 px-4 text-sm font-medium ${activeTab === tab ? "bg-c1 text-black" : "bg-white text-gray-700"
-                      } rounded-t-lg focus:outline-none`}
-                  >
+                  <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 py-2 px-4 text-sm font-medium ${activeTab === tab ? "bg-c1 text-black" : "bg-white text-gray-700"} rounded-t-lg focus:outline-none`}>
                     {tab.charAt(0).toUpperCase() + tab.slice(1)}
                   </button>
                 ))}
               </div>
-              <div className="p-4 bg-c1 text-black rounded-b-lg">
-                {dropdownContent[activeTab]}
-              </div>
+              <div className="p-4 bg-c1 text-black rounded-b-lg">{dropdownContent[activeTab]}</div>
             </div>
           </div>
 
           {/* Name Field */}
-          {/* Name Field */}
-          <div className={`mt-6`}>
-            <h3 className="text-lg font-semibold text-gray-800 ml-1">Enter Your Name</h3>
-            <p className="text-sm text-gray-500 ml-1 mb-1">Your name will be engraved on the product.</p>
-            
+          <div className="mt-6">
+            <h3 className="text-lg font-semibold text-gray-800 ml-1">Enter Your Name <span className="font-normal text-xs">(Max 10 character)</span></h3>
             <input
               type="text"
               maxLength={10}
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              
-              className={`w-full px-4 py-2 border  rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none  ${product.fontName || ""}`}
-              />
-             
-            <p className="text-sm text-gray-500 mt-1 ml-1">Max 10 characters</p> 
-            
+              onChange={(e) => {
+                setName(e.target.value);
+                setNameError(""); // Clear error when typing
+              }}
+              className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none ${nameError ? "border-red-500" : ""
+                } ${product.fontName || ""}`}
+            />
+            {nameError && (
+              <p className="text-red-500 text-sm mt-1 ml-1">{nameError}</p>
+            )}
+            <p className="text-sm text-gray-500 ml-1 mb-1">
+              Your name will be engraved on the product.
+            </p>
           </div>
 
-
-          {/* Buttons */}
-          <div className="mt-8 flex gap-4">
-            <motion.button
-              className="flex-1 bg-c2 text-black py-3 rounded-lg font-medium transition-all"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Add to Cart
-            </motion.button>
-            <motion.button
-              className="flex-1 bg-c4 text-white py-3 rounded-lg font-medium transition-all"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Buy Now
-            </motion.button>
+          {/* Cart Buttons */}
+          <div className="mt-8 flex w-full flex-row gap-4">
+            <div className="w-1/2">
+              {quantity > 0 ? (
+                <div className="flex items-center bg-c2 w-full justify-around rounded-lg">
+                  <motion.button
+                    onClick={decreaseQuantity}
+                    className="px-4 py-3 bg-c2 text-black rounded-lg font-medium"
+                  >
+                    -
+                  </motion.button>
+                  <p className="font-semibold">{quantity}</p>
+                  <motion.button
+                    onClick={increaseQuantity}
+                    className="px-4 py-3 bg-c2 text-black rounded-lg font-medium"
+                  >
+                    +
+                  </motion.button>
+                </div>
+              ) : (
+                <motion.button
+                  onClick={handleAddToCart}
+                  className="w-full flex-1 bg-c2 text-black py-3 rounded-lg font-medium transition-all text-center"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Add to Cart
+                </motion.button>
+              )}
+            </div>
+            <div className="w-1/2">
+              <motion.button className="flex-1 w-full bg-c4 text-white py-3 rounded-lg font-medium transition-all text-center" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                Buy now
+              </motion.button>
+            </div>
           </div>
         </motion.div>
       </div>
+      {quantity > 0 && (
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="z-20 fixed bottom-0 left-0 right-0 h-[10vh] bg-c4 text-white flex items-center justify-between px-8"
+        >
+          <p className="text-lg">
+            {quantity} item{quantity !== 1 && 's'} added
+          </p>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-white text-c4 px-6 py-2 rounded-lg font-medium"
+            onClick={() => {
+              // Add your cart page navigation logic here
+              alert('Redirect to cart page');
+            }}
+          >
+            View Cart
+          </motion.button>
+        </motion.div>
+      )}
     </div>
   );
 }

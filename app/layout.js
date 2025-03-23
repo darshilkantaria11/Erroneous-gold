@@ -4,6 +4,8 @@ import Navbar from "./nopage/components/navbar"
 import Footer from './nopage/components/footer'
 import Headline from "./nopage/components/headline"
 import Bottom from "./nopage/components/bottom"
+import { CartProvider } from './nopage/context/CartContext';
+import CartNotification from './nopage/components/CartNotification'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,14 +18,17 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className='bg-back'>
       <body className={inter.className}>
-        <div className=" ">
-          <Headline/>
-        <Navbar/>
-        {children}
-        <Bottom/>
-        <Footer/>
-        </div>
-        </body>
+        <CartProvider>
+          <div className=" ">
+            <Headline />
+            <Navbar />
+            {children}
+            <Bottom />
+            <Footer />
+            <CartNotification />
+          </div>
+        </CartProvider>
+      </body>
     </html>
   )
 }
