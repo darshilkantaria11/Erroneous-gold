@@ -9,6 +9,7 @@ export default function ScrollingOffer() {
         "🚀 Free Shipping on Orders Over Rs.400! 🚀",
         "🎁 Buy 1 Get 1 Free – This Week Only! 🎁",
     ];
+    
 
     return (
         <div 
