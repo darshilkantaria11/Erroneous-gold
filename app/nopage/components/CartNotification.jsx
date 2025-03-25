@@ -1,14 +1,16 @@
 "use client";
 import { motion } from "framer-motion";
 import { useCart } from "../context/CartContext";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function CartNotification() {
   const { cart, getTotalItems } = useCart();
   const router = useRouter();
+  const pathname = usePathname(); // Get current route
   const totalItems = getTotalItems();
 
-  if (totalItems === 0) return null;
+  // Hide notification on /cart page
+  if (totalItems === 0 || pathname === "/cart") return null;
 
   return (
     <motion.div
