@@ -18,7 +18,7 @@ export default function CartNotification() {
       className="fixed bottom-0 left-0 right-0 h-[10vh] bg-c4 text-white flex items-center justify-between px-8 z-50"
     >
       <p className="text-lg">
-        {totalItems} item{totalItems !== 1 && 's'} in cart
+        {totalItems} item{totalItems !== 1 && 's'} added
       </p>
       <motion.button
         whileHover={{ scale: 1.05 }}
