@@ -1,0 +1,274 @@
+"use client";
+import { motion } from "framer-motion";
+import { useCart } from "../context/CartContext";
+import Link from "next/link";
+import { XMarkIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
+
+const Skeleton = ({ className }) => (
+    <div className={`animate-pulse bg-gray-200 rounded-lg relative overflow-hidden ${className}`}>
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+    </div>
+);
+
+export default function CartPage() {
+    const { cart, updateQuantity, getTotalItems } = useCart();
+    const cartItems = Object.values(cart);
+    const [products, setProducts] = useState({});
+    const [loading, setLoading] = useState(true);
+
+    // Fetch product details
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const productData = {};
+                for (const item of cartItems) {
+                    const res = await fetch(`/api/products/fetch/${item.id}`, {
+                        headers: { "x-api-key": process.env.NEXT_PUBLIC_API_KEY },
+                    });
+                    const data = await res.json();
+                    productData[item.id] = data;
+                }
+                setProducts(productData);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (cartItems.length > 0) fetchProducts();
+    }, [cart]);
+
+    // Calculate totals
+    const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const shipping = subtotal > 500 ? 0 : 150;
+    const total = subtotal + shipping;
+
+    if (cartItems.length === 0) {
+        return (
+            <div className="min-h-screen bg-c1 flex flex-col items-center justify-center p-4">
+                <motion.div
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="text-center"
+                >
+                    <h1 className="text-3xl font-bold text-gray-800 mb-4">Your Cart is Empty</h1>
+                    <Link href="/shop" className="inline-block bg-c4 text-white px-6 py-2 rounded-lg 
+                    hover:bg-c4/90 transition-all font-medium text-sm">
+                        Continue Shopping
+                    </Link>
+                </motion.div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-c1 py-8 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+                <motion.h1
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    className="text-3xl md:text-4xl font-bold text-gray-800 mb-6"
+                >
+                    Shopping Cart ({getTotalItems()})
+                </motion.h1>
+
+                <div className="grid lg:grid-cols-3 gap-6">
+                    {/* Cart Items */}
+                    <div className="lg:col-span-2 space-y-4">
+                        {cartItems.map((item) => (
+                            <div key={item.id} className="relative bg-white rounded-xl shadow-sm p-4">
+                                <button
+                                    onClick={() => updateQuantity(item.id, 0)}
+                                    className="absolute top-2 right-2 text-red-700 bg-white rounded-full p-1 hidden md:block"
+                                >
+                                    <XMarkIcon className="h-5 w-5" />
+                                </button>
+                                {/* Mobile Layout */}
+                                <div className="block sm:hidden">
+                                    <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
+                                        {products[item.id]?.img1 ? (
+                                            <img
+                                                src={products[item.id].img1}
+                                                alt={products[item.id]?.productName}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <Skeleton className="w-full h-full" />
+                                        )}
+                                        <button
+                                            onClick={() => updateQuantity(item.id, 0)}
+                                            className="absolute top-2 right-2 text-red-700 bg-white rounded-full p-1 md:hidden"
+                                        >
+                                            <XMarkIcon className="h-5 w-5" />
+                                        </button>
+                                    </div>
+
+                                    <div className="mt-4">
+                                        {products[item.id]?.productName ? (
+                                            <h3 className="text-lg font-semibold text-gray-800">
+                                                {products[item.id].productName}
+                                            </h3>
+                                        ) : (
+                                            <Skeleton className="h-6 w-3/4 mb-2" />
+                                        )}
+
+                                        {item.name ? (
+                                            <p className="text-gray-500 text-sm mt-1">
+                                                Engraved Name: {item.name}
+                                            </p>
+                                        ) : (
+                                            <Skeleton className="h-4 w-1/2 mt-1" />
+                                        )}
+
+                                        <div className="mt-4 flex justify-between items-center">
+                                            {item.price ? (
+                                                <p className="text-xl font-bold text-c4">Rs. {item.price * item.quantity }</p>
+                                            ) : (
+                                                <Skeleton className="h-6 w-20" />
+                                            )}
+                                            <div className="flex items-center gap-2 border-2 border-c4 rounded-lg px-2">
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                    className="p-1 text-c4"
+                                                >
+                                                    <MinusIcon className="h-4 w-4" />
+                                                </button>
+                                                <span className="text-lg font-medium w-6 text-center">
+                                                    {item.quantity}
+                                                </span>
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                    className="p-1 text-c4"
+                                                >
+                                                    <PlusIcon className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Desktop Layout */}
+                                <div className="hidden sm:flex gap-4">
+                                    <div className="relative flex-shrink-0 w-32 h-32 bg-gray-100 rounded-lg overflow-hidden">
+                                        {products[item.id]?.img1 ? (
+                                            <img
+                                                src={products[item.id].img1}
+                                                alt={products[item.id]?.productName}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <Skeleton className="w-full h-full" />
+                                        )}
+                                        {/* <button
+                                            onClick={() => updateQuantity(item.id, 0)}
+                                            className="absolute top-2 right-2 text-red-700 bg-white rounded-full p-1"
+                                        >
+                                            <XMarkIcon className="h-5 w-5" />
+                                        </button> */}
+                                    </div>
+
+                                    <div className="flex-1">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                {products[item.id]?.productName ? (
+                                                    <h3 className="text-lg font-semibold text-gray-800">
+                                                        {products[item.id].productName}
+                                                    </h3>
+                                                ) : (
+                                                    <Skeleton className="h-6 w-64 mb-2" />
+                                                )}
+
+                                                {item.name ? (
+                                                    <p className="text-gray-500 text-sm mt-1">
+                                                        Engraved Name: {item.name}
+                                                    </p>
+                                                ) : (
+                                                    <Skeleton className="h-4 w-32 mt-1" />
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-4 flex justify-between items-center">
+                                            {item.price ? (
+                                                <p className="text-xl font-bold text-c4">Rs. {item.price * item.quantity }</p>
+                                            ) : (
+                                                <Skeleton className="h-6 w-20" />
+                                            )}
+                                            <div className="flex items-center gap-3 border-2 border-c4 rounded-lg px-3">
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                    className="p-1 text-c4"
+                                                >
+                                                    <MinusIcon className="h-5 w-5" />
+                                                </button>
+                                                <span className="text-lg font-medium w-8 text-center">
+                                                    {item.quantity}
+                                                </span>
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                    className="p-1 text-c4"
+                                                >
+                                                    <PlusIcon className="h-5 w-5" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Order Summary */}
+                    <div className="bg-white rounded-xl shadow-sm p-4 lg:sticky lg:top-8">
+                        <h2 className="text-xl font-bold text-gray-800 mb-4">Order Summary</h2>
+
+                        <div className="space-y-3">
+                            <div className="flex justify-between text-sm">
+                                <span className="text-gray-600">Subtotal</span>
+                                <span className="font-medium">Rs. {subtotal}</span>
+                            </div>
+
+                            <div className="flex justify-between text-sm">
+                                <span className="text-gray-600">Shipping</span>
+                                <span className="font-medium">
+                                    {shipping === 0 ? 'Free' : `Rs. ${shipping}`}
+                                </span>
+                            </div>
+
+                            <div className="border-t pt-3 mt-3">
+                                <div className="flex justify-between text-lg font-bold text-gray-800">
+                                    <span>Total</span>
+                                    <span>Rs. {total}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full bg-c4 text-white py-3 rounded-lg font-bold mt-6
+                            hover:bg-c4/90 transition-colors"
+                        >
+                            Proceed to Checkout
+                        </motion.button>
+
+                        <p className="text-center text-xs text-gray-500 mt-3">
+                            Secure checkout process
+                            <br />
+                            <span className="text-[10px]">All taxes included</span>
+                        </p>
+                    </div>
+                </div>
+
+                {/* Continue Shopping */}
+                <div className="mt-6 text-center">
+                    <Link href="/shop" className="text-c4 hover:text-c4/80 font-medium text-sm">
+                        ← Continue Shopping
+                    </Link>
+                </div>
+            </div>
+        </div>
+    );
+}
