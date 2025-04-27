@@ -4,7 +4,7 @@ import { FiSearch, FiShoppingCart, FiUser, FiMenu, FiX } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import Logo from "../../../public/Logo.svg"
+import Logo from "../../../public/logo.svg"
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -39,6 +39,7 @@ export default function Navbar() {
                     {/* <h1 className="text-4xl font-bold">GOLD</h1> */}
                     </Link>
                 </div>
+
 
                 {/* Right Icons */}
                 <div className="flex items-center space-x-4">
