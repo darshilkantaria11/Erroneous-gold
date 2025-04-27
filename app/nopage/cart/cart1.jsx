@@ -245,6 +245,7 @@ export default function CartPage() {
                             </div>
                         </div>
 
+                        <Link href="/checkout">
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -253,7 +254,7 @@ export default function CartPage() {
                         >
                             Proceed to Checkout
                         </motion.button>
-
+                        </Link>
                         <p className="text-center text-xs text-gray-500 mt-3">
                             Secure checkout process
                             <br />

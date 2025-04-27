@@ -1,9 +1,9 @@
-import Cart1 from "../nopage/cart/cart1"
+import Checkout1 from "../nopage/checkout/checkout1"
 
 export default function Page(){
     return(
         <>
-        <Cart1/>
+        <Checkout1/>
         </>
     )
 }

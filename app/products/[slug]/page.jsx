@@ -67,18 +67,21 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     if (!name.trim()) {
-      setNameError("Please enter a name before adding to cart.");
-      return;
+        setNameError("Please enter a name before adding to cart.");
+        return;
     }
 
+    // Add the productName to the cart data
     addToCart(slug, {
-      id: slug,
-      name,
-      quantity: 1,
-      price: product.originalPrice,
-      image: product.img1
+        id: slug,
+        name,
+        productName: product.productName, // Add the productName here
+        quantity: 1,
+        price: product.originalPrice,
+        image: product.img1
     });
-  };
+};
+
 
   const increaseQuantity = () => updateQuantity(slug, (cart[slug]?.quantity || 0) + 1);
   const decreaseQuantity = () => updateQuantity(slug, (cart[slug]?.quantity || 0) - 1);

@@ -25,7 +25,7 @@ export default function Products() {
                 const data = await response.json();
                 setProducts(data);
             } catch (error) {
-                console.error(error);
+                console.log(error);
             } finally {
                 setLoading(false);
             }

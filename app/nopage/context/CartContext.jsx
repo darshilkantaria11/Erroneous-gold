@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { createContext, useContext, useEffect, useState } from "react";
 
 const CartContext = createContext();
@@ -62,8 +62,14 @@ export function CartProvider({ children }) {
     });
   };
 
+  // Clear cart
+  const clearCart = () => {
+    setCart({});
+    localStorage.removeItem("cart"); // Remove cart from localStorage
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateQuantity, getTotalItems, getTotalPrice }}>
+    <CartContext.Provider value={{ cart, addToCart, updateQuantity, clearCart, getTotalItems, getTotalPrice }}>
       {children}
     </CartContext.Provider>
   );
