@@ -17,7 +17,7 @@ export default function Footer() {
                     <p className="text-gray-800">
                         At Erroneous gold, we turn your stories into timeless pieces. Every necklace is uniquely crafted to celebrate love, memories, and individuality.
                     </p>
-                    <p className="text-sm text-gray-600">© 2025 Erroneouss Gold. All rights reserved.</p>
+                    <p className="text-sm text-gray-600">&quot;Wear your story, close to your heart.&quot;</p>
                 </motion.div>
 
                 {/* Navigation Links */}
@@ -85,7 +85,8 @@ export default function Footer() {
             {/* Divider */}
             <div className="border-t pb-8 bg-c2 rounded-b-xl border-gray-300 mt-10 pt-6 text-center">
                 <p>
-                    &quot;Wear your story, close to your heart.&quot;
+                    
+                    <p className="text-sm text-gray-600">© 2025 ERRONEOUS GOLD PRIVATE LIMITED. All rights reserved.</p>
                 </p>
             </div>
         </footer>
