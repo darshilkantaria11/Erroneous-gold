@@ -84,10 +84,10 @@ export default function Footer() {
 
             {/* Divider */}
             <div className="border-t pb-8 bg-c2 rounded-b-xl border-gray-300 mt-10 pt-6 text-center">
-                <p>
+                <div>
                     
                     <p className="text-sm text-gray-600">© 2025 ERRONEOUS GOLD PRIVATE LIMITED. All rights reserved.</p>
-                </p>
+                </div>
             </div>
         </footer>
     );

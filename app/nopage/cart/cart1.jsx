@@ -4,6 +4,8 @@ import { useCart } from "../context/CartContext";
 import Link from "next/link";
 import { XMarkIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
+import Image from "next/image";
+import Checkout from "../checkout/checkout"
 
 const Skeleton = ({ className }) => (
     <div className={`animate-pulse bg-gray-200 rounded-lg relative overflow-hidden ${className}`}>
@@ -16,6 +18,7 @@ export default function CartPage() {
     const cartItems = Object.values(cart);
     const [products, setProducts] = useState({});
     const [loading, setLoading] = useState(true);
+    const [showCheckoutPopup, setShowCheckoutPopup] = useState(false);
 
     // Fetch product details
     useEffect(() => {
@@ -41,9 +44,7 @@ export default function CartPage() {
     }, [cart]);
 
     // Calculate totals
-    const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const shipping = subtotal > 500 ? 0 : 70;
-    const total = subtotal + shipping;
+    const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     if (cartItems.length === 0) {
         return (
@@ -64,212 +65,235 @@ export default function CartPage() {
     }
 
     return (
-        <div className="min-h-screen bg-c1 py-8 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-7xl mx-auto">
-                <motion.h1
-                    initial={{ y: -20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    className="text-3xl md:text-4xl font-bold text-gray-800 mb-6"
-                >
-                    Shopping Cart ({getTotalItems()})
-                </motion.h1>
+        <>
+            <div className="min-h-screen bg-c1 py-8 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto">
+                    <motion.h1
+                        initial={{ y: -20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="text-3xl md:text-4xl font-bold text-gray-800 mb-6"
+                    >
+                        Shopping Cart ({getTotalItems()})
+                    </motion.h1>
 
-                <div className="grid lg:grid-cols-3 gap-6">
-                    {/* Cart Items */}
-                    <div className="lg:col-span-2 space-y-4">
-                        {cartItems.map((item) => (
-                            <div key={item.id} className="relative bg-white rounded-xl shadow-sm p-4">
-                                <button
-                                    onClick={() => updateQuantity(item.id, 0)}
-                                    className="absolute top-2 right-2 text-red-700 bg-white rounded-full p-1 hidden md:block"
-                                >
-                                    <XMarkIcon className="h-5 w-5" />
-                                </button>
-                                {/* Mobile Layout */}
-                                <div className="block sm:hidden">
-                                    <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
-                                        {products[item.id]?.img1 ? (
-                                            <img
-                                                src={products[item.id].img1}
-                                                alt={products[item.id]?.productName}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <Skeleton className="w-full h-full" />
-                                        )}
-                                        <button
-                                            onClick={() => updateQuantity(item.id, 0)}
-                                            className="absolute top-2 right-2 text-red-700 bg-white rounded-full p-1 md:hidden"
-                                        >
-                                            <XMarkIcon className="h-5 w-5" />
-                                        </button>
-                                    </div>
-
-                                    <div className="mt-4">
-                                        {products[item.id]?.productName ? (
-                                            <h3 className="text-lg font-semibold text-gray-800">
-                                                {products[item.id].productName}
-                                            </h3>
-                                        ) : (
-                                            <Skeleton className="h-6 w-3/4 mb-2" />
-                                        )}
-
-                                        {item.name ? (
-                                            <p className="text-gray-500 text-sm mt-1">
-                                                Engraved Name: {item.name}
-                                            </p>
-                                        ) : (
-                                            <Skeleton className="h-4 w-1/2 mt-1" />
-                                        )}
-
-                                        <div className="mt-4 flex justify-between items-center">
-                                            {item.price ? (
-                                                <p className="text-xl font-bold text-c4">Rs. {item.price * item.quantity }</p>
+                    <div className="grid lg:grid-cols-3 gap-6">
+                        {/* Cart Items */}
+                        <div className="lg:col-span-2 space-y-4">
+                            {cartItems.map((item) => (
+                                <div key={item.id} className="relative bg-white rounded-xl shadow-sm p-4">
+                                    <button
+                                        onClick={() => updateQuantity(item.id, 0)}
+                                        className="absolute top-2 right-2 text-red-700 bg-white rounded-full p-1 hidden md:block"
+                                    >
+                                        <XMarkIcon className="h-5 w-5" />
+                                    </button>
+                                    {/* Mobile Layout */}
+                                    <div className="block sm:hidden">
+                                        <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
+                                            {products[item.id]?.img1 ? (
+                                                <img
+                                                    src={products[item.id].img1}
+                                                    alt={products[item.id]?.productName}
+                                                    className="w-full h-full object-cover"
+                                                />
                                             ) : (
-                                                <Skeleton className="h-6 w-20" />
+                                                <Skeleton className="w-full h-full" />
                                             )}
-                                            <div className="flex items-center gap-2 border-2 border-c4 rounded-lg px-2">
-                                                <button
-                                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                    className="p-1 text-c4"
-                                                >
-                                                    <MinusIcon className="h-4 w-4" />
-                                                </button>
-                                                <span className="text-lg font-medium w-6 text-center">
-                                                    {item.quantity}
-                                                </span>
-                                                <button
-                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                    className="p-1 text-c4"
-                                                >
-                                                    <PlusIcon className="h-4 w-4" />
-                                                </button>
+                                            <button
+                                                onClick={() => updateQuantity(item.id, 0)}
+                                                className="absolute top-2 right-2 text-red-700 bg-white rounded-full p-1 md:hidden"
+                                            >
+                                                <XMarkIcon className="h-5 w-5" />
+                                            </button>
+                                        </div>
+
+                                        <div className="mt-4">
+                                            {products[item.id]?.productName ? (
+                                                <h3 className="text-lg font-semibold text-gray-800">
+                                                    {products[item.id].productName}
+                                                </h3>
+                                            ) : (
+                                                <Skeleton className="h-6 w-3/4 mb-2" />
+                                            )}
+
+                                            {item.name ? (
+                                                <p className="text-gray-500 text-sm mt-1">
+                                                    Engraved Name: {item.name}
+                                                </p>
+                                            ) : (
+                                                <Skeleton className="h-4 w-1/2 mt-1" />
+                                            )}
+
+                                            <div className="mt-4 flex justify-between items-center">
+                                                {item.price ? (
+                                                    <p className="text-xl font-bold text-c4">Rs. {item.price * item.quantity}</p>
+                                                ) : (
+                                                    <Skeleton className="h-6 w-20" />
+                                                )}
+                                                <div className="flex items-center gap-2 border-2 border-c4 rounded-lg px-2">
+                                                    <button
+                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                        className="p-1 text-c4"
+                                                    >
+                                                        <MinusIcon className="h-4 w-4" />
+                                                    </button>
+                                                    <span className="text-lg font-medium w-6 text-center">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                        className="p-1 text-c4"
+                                                    >
+                                                        <PlusIcon className="h-4 w-4" />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {/* Desktop Layout */}
-                                <div className="hidden sm:flex gap-4">
-                                    <div className="relative flex-shrink-0 w-32 h-32 bg-gray-100 rounded-lg overflow-hidden">
-                                        {products[item.id]?.img1 ? (
-                                            <img
-                                                src={products[item.id].img1}
-                                                alt={products[item.id]?.productName}
-                                                className="w-full h-full object-cover"
-                                            />
-                                        ) : (
-                                            <Skeleton className="w-full h-full" />
-                                        )}
-                                        {/* <button
+                                    {/* Desktop Layout */}
+                                    <div className="hidden sm:flex gap-4">
+                                        <div className="relative flex-shrink-0 w-32 h-32 bg-gray-100 rounded-lg overflow-hidden">
+                                            {products[item.id]?.img1 ? (
+                                                <img
+                                                    src={products[item.id].img1}
+                                                    alt={products[item.id]?.productName}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            ) : (
+                                                <Skeleton className="w-full h-full" />
+                                            )}
+                                            {/* <button
                                             onClick={() => updateQuantity(item.id, 0)}
                                             className="absolute top-2 right-2 text-red-700 bg-white rounded-full p-1"
                                         >
                                             <XMarkIcon className="h-5 w-5" />
                                         </button> */}
-                                    </div>
-
-                                    <div className="flex-1">
-                                        <div className="flex justify-between items-start">
-                                            <div>
-                                                {products[item.id]?.productName ? (
-                                                    <h3 className="text-lg font-semibold text-gray-800">
-                                                        {products[item.id].productName}
-                                                    </h3>
-                                                ) : (
-                                                    <Skeleton className="h-6 w-64 mb-2" />
-                                                )}
-
-                                                {item.name ? (
-                                                    <p className="text-gray-500 text-sm mt-1">
-                                                        Engraved Name: {item.name}
-                                                    </p>
-                                                ) : (
-                                                    <Skeleton className="h-4 w-32 mt-1" />
-                                                )}
-                                            </div>
                                         </div>
 
-                                        <div className="mt-4 flex justify-between items-center">
-                                            {item.price ? (
-                                                <p className="text-xl font-bold text-c4">Rs. {item.price * item.quantity }</p>
-                                            ) : (
-                                                <Skeleton className="h-6 w-20" />
-                                            )}
-                                            <div className="flex items-center gap-3 border-2 border-c4 rounded-lg px-3">
-                                                <button
-                                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                    className="p-1 text-c4"
-                                                >
-                                                    <MinusIcon className="h-5 w-5" />
-                                                </button>
-                                                <span className="text-lg font-medium w-8 text-center">
-                                                    {item.quantity}
-                                                </span>
-                                                <button
-                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                    className="p-1 text-c4"
-                                                >
-                                                    <PlusIcon className="h-5 w-5" />
-                                                </button>
+                                        <div className="flex-1">
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    {products[item.id]?.productName ? (
+                                                        <h3 className="text-lg font-semibold text-gray-800">
+                                                            {products[item.id].productName}
+                                                        </h3>
+                                                    ) : (
+                                                        <Skeleton className="h-6 w-64 mb-2" />
+                                                    )}
+
+                                                    {item.name ? (
+                                                        <p className="text-gray-500 text-sm mt-1">
+                                                            Engraved Name: {item.name}
+                                                        </p>
+                                                    ) : (
+                                                        <Skeleton className="h-4 w-32 mt-1" />
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="mt-4 flex justify-between items-center">
+                                                {item.price ? (
+                                                    <p className="text-xl font-bold text-c4">Rs. {item.price * item.quantity}</p>
+                                                ) : (
+                                                    <Skeleton className="h-6 w-20" />
+                                                )}
+                                                <div className="flex items-center gap-3 border-2 border-c4 rounded-lg px-3">
+                                                    <button
+                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                        className="p-1 text-c4"
+                                                    >
+                                                        <MinusIcon className="h-5 w-5" />
+                                                    </button>
+                                                    <span className="text-lg font-medium w-8 text-center">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                        className="p-1 text-c4"
+                                                    >
+                                                        <PlusIcon className="h-5 w-5" />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Order Summary */}
-                    <div className="bg-white rounded-xl shadow-sm p-4 lg:sticky lg:top-8">
-                        <h2 className="text-xl font-bold text-gray-800 mb-4">Order Summary</h2>
-
-                        <div className="space-y-3">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Subtotal</span>
-                                <span className="font-medium">Rs. {subtotal}</span>
-                            </div>
-
-                            <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Shipping</span>
-                                <span className="font-medium">
-                                    {shipping === 0 ? 'Free' : `Rs. ${shipping}`}
-                                </span>
-                            </div>
-
-                            <div className="border-t pt-3 mt-3">
-                                <div className="flex justify-between text-lg font-bold text-gray-800">
-                                    <span>Total</span>
-                                    <span>Rs. {total}</span>
-                                </div>
-                            </div>
+                            ))}
                         </div>
 
-                        <Link href="/checkout">
-                        <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="w-full bg-c4 text-white py-3 rounded-lg font-bold mt-6
-                            hover:bg-c4/90 transition-colors"
-                        >
-                            Proceed to Checkout
-                        </motion.button>
+                        {/* Order Summary */}
+                        <div className="bg-white rounded-xl shadow-sm p-4 lg:sticky lg:top-8">
+                            <h2 className="text-xl font-bold text-gray-800 mb-4">Order Summary</h2>
+                            <div className="space-y-3">
+                                <div className="border-t pt-3 mt-3">
+                                    <div className="flex justify-between text-lg font-bold text-gray-800">
+                                        <span>Estimated Total</span>
+                                        <span>Rs. {subtotal}</span>
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">
+                                        Taxes, discounts, and shipping calculated at checkout
+                                    </p>
+                                </div>
+                            </div>
+
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => setShowCheckoutPopup(true)}
+                                className="w-full bg-c4 text-white py-3 rounded-lg mt-6
+        hover:bg-c4 transition-colors flex items-center justify-center gap-3 font-semibold text-lg tracking-wide"
+                            >
+                                Checkout
+
+                                <div className="relative flex items-center ">
+                                    <img
+                                        src="/paytm.svg"
+                                        alt="Paytm"
+                                        className="w-6 h-6 bg-white rounded-full p-0 border shadow-sm z-30 relative"
+                                    />
+                                    <img
+                                        src="/phonepe.svg"
+                                        alt="PhonePe"
+                                        className="w-6 h-6 bg-white rounded-full p-0 border shadow-sm -ml-2 z-20 relative"
+                                    />
+                                    <img
+                                        src="/gpay.svg"
+                                        alt="Google Pay"
+                                        className="w-6 h-6 bg-white rounded-full p-0 border shadow-sm -ml-2 z-10 relative"
+                                    />
+                                </div>
+                            </motion.button>
+
+
+                            <p className="text-center text-xs text-gray-500 mt-3">Secure checkout process</p>
+                        </div>
+                    </div>
+
+                    {/* Continue Shopping */}
+                    <div className="mt-6 text-center">
+                        <Link href="/shop" className="text-c4 hover:text-c4/80 font-medium text-sm">
+                            ← Continue Shopping
                         </Link>
-                        <p className="text-center text-xs text-gray-500 mt-3">
-                            Secure checkout process
-                            <br />
-                            <span className="text-[10px]">All taxes included</span>
-                        </p>
                     </div>
                 </div>
-
-                {/* Continue Shopping */}
-                <div className="mt-6 text-center">
-                    <Link href="/shop" className="text-c4 hover:text-c4/80 font-medium text-sm">
-                        ← Continue Shopping
-                    </Link>
-                </div>
             </div>
-        </div>
+            {showCheckoutPopup && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-2">
+                    <div className="bg-white w-full max-w-xl md:rounded-2xl p-6 relative max-h-[90vh] overflow-y-auto md:w-[90%] sm:max-w-md sm:mx-auto sm:my-8 sm:p-6 sm:rounded-lg shadow-xl">
+                        <button
+                            onClick={() => setShowCheckoutPopup(false)}
+                            className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
+                        >
+                            <XMarkIcon className="h-6 w-6" />
+                        </button>
+                        <h2 className="text-xl font-bold ">Checkout</h2>
+                        {/* You can replace this with actual CheckoutForm component */}
+                        <Checkout/>
+                        {/* <p className="text-sm text-gray-600">Checkout form or payment options will go here...</p> */}
+                    </div>
+                </div>
+            )}
+        </>
     );
 }
