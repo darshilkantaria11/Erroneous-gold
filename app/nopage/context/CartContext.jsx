@@ -17,6 +17,15 @@ export function CartProvider({ children }) {
     localStorage.setItem("cart", JSON.stringify(cart));
   }, [cart]);
 
+  const getShippingParams = () => {
+    return {
+      weight: process.env.NEXT_PUBLIC_SHIPPING_WEIGHT || 1000,
+      length: process.env.NEXT_PUBLIC_SHIPPING_LENGTH || 30,
+      width: process.env.NEXT_PUBLIC_SHIPPING_WIDTH || 30,
+      height: process.env.NEXT_PUBLIC_SHIPPING_HEIGHT || 30
+    };
+  };
+
   // Get total items count
   const getTotalItems = () => {
     return Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
@@ -30,15 +39,19 @@ export function CartProvider({ children }) {
   // Add to cart
   const addToCart = (productId, productData) => {
     setCart((prev) => {
+      const existing = prev[productId] || { quantity: 0 };
+      
       const updatedCart = {
         ...prev,
         [productId]: {
           ...productData,
-          quantity: (prev[productId]?.quantity || 0) + 1,
-        },
+          quantity: existing.quantity + 1,
+          weight: productData.weight,
+          dimensions: productData.dimensions
+        }
       };
 
-      localStorage.setItem("cart", JSON.stringify(updatedCart)); // Ensure immediate sync
+      localStorage.setItem("cart", JSON.stringify(updatedCart));
       return updatedCart;
     });
   };
@@ -69,7 +82,7 @@ export function CartProvider({ children }) {
   };
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateQuantity, clearCart, getTotalItems, getTotalPrice }}>
+    <CartContext.Provider value={{ cart, addToCart, updateQuantity, clearCart, getTotalItems, getTotalPrice, getShippingParams }}>
       {children}
     </CartContext.Provider>
   );
