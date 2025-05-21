@@ -1,25 +1,54 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useRef } from "react";
 import { FiSearch, FiShoppingCart, FiUser, FiMenu, FiX } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
 import Logo from "../../../public/logo.svg";
-import UserPopup from "./userpopup"; // Single popup component
+import UserPopup from "./userpopup";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showUserPopup, setShowUserPopup] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Simulated auth
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState({ name: "", phone: "" });
+
+  const userRef = useRef(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 1);
-    };
+    // Load user from localStorage
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+      setIsLoggedIn(true);
+    }
+
+    const handleScroll = () => setIsScrolled(window.scrollY > 1);
     window.addEventListener("scroll", handleScroll);
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleUserClick = () => {
+    setShowUserPopup((prev) => !prev);
+  };
+
+  const handleLoginSuccess = ({ name, phone }) => {
+    const userData = { name, phone };
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
+    setIsLoggedIn(true);
+    setShowUserPopup(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    setUser({ name: "", phone: "" });
+    setShowUserPopup(false);
+  };
 
   return (
     <nav
@@ -30,10 +59,18 @@ export default function Navbar() {
       <div className="md:px-4 flex justify-between items-center">
         {/* Desktop Links */}
         <div className="hidden md:flex items-center space-x-8">
-          <Link href="/" className="hover:scale-110 transform transition">Home</Link>
-          <Link href="#" className="hover:scale-110 transform transition">Shop</Link>
-          <Link href="#" className="hover:scale-110 transform transition">About Us</Link>
-          <Link href="#" className="hover:scale-110 transform transition">Contact Us</Link>
+          <Link href="/" className="hover:scale-110 transform transition">
+            Home
+          </Link>
+          <Link href="#" className="hover:scale-110 transform transition">
+            Shop
+          </Link>
+          <Link href="#" className="hover:scale-110 transform transition">
+            About Us
+          </Link>
+          <Link href="#" className="hover:scale-110 transform transition">
+            Contact Us
+          </Link>
         </div>
 
         {/* Logo */}
@@ -63,37 +100,36 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* User Icon */}
+          {/* User Icon + Dropdown */}
           <div
-            onClick={() => setShowUserPopup(true)}
+            ref={userRef}
+            onClick={handleUserClick}
             className="hover:scale-110 transform transition cursor-pointer relative"
           >
             <FiUser className="w-6 h-6 text-c4" />
-
-            {/* User Dropdown (Logged In) */}
             <AnimatePresence>
               {isLoggedIn && showUserPopup && (
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="absolute right-0 top-8 z-50 bg-white shadow-lg rounded-md overflow-hidden"
+                  className="absolute right-0 top-10 z-50 w-48 bg-white shadow-xl rounded-md overflow-hidden border border-gray-200"
                 >
+                  <div className="px-4 py-3 text-sm font-semibold text-c4 border-b-2 border-c4">
+                    👋 Hi, {user.name}
+                  </div>
                   <Link
                     href="/orders"
-                    className="block px-4 py-2 text-sm text-c4 hover:bg-c2 transition"
+                    className="block px-4 py-3 text-sm text-c4 hover:bg-gray-100 transition"
                     onClick={() => setShowUserPopup(false)}
                   >
-                    My Orders
+                    🧾 My Orders
                   </Link>
                   <button
-                    onClick={() => {
-                      setIsLoggedIn(false);
-                      setShowUserPopup(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm text-c4 hover:bg-c2 transition"
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-gray-100 transition"
                   >
-                    Logout
+                    🚪 Logout
                   </button>
                 </motion.div>
               )}
@@ -115,25 +151,27 @@ export default function Navbar() {
       <motion.div
         initial={{ height: 0 }}
         animate={{ height: isOpen ? "auto" : 0 }}
-        className={`md:hidden overflow-hidden bg-c2 rounded-b-xl`}
+        className="md:hidden overflow-hidden bg-c2 rounded-b-xl"
       >
         <div className="flex flex-col items-start space-y-3 px-4 py-4 bg-c1 shadow-lg">
-          <Link href="#" className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg transition duration-200">Home</Link>
-          <Link href="#" className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg transition duration-200">Shop</Link>
-          <Link href="#" className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg transition duration-200">About Us</Link>
-          <Link href="#" className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg transition duration-200">Contact Us</Link>
+          {["Home", "Shop", "About Us", "Contact Us"].map((label) => (
+            <Link
+              key={label}
+              href="#"
+              className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg transition duration-200"
+            >
+              {label}
+            </Link>
+          ))}
         </div>
       </motion.div>
 
-      {/* UserPopup (for login or dropdown) */}
+      {/* Login Popup */}
       {!isLoggedIn && showUserPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <UserPopup
             onClose={() => setShowUserPopup(false)}
-            onSuccess={() => {
-              setIsLoggedIn(true);
-              setShowUserPopup(false);
-            }}
+            onSuccess={handleLoginSuccess}
           />
         </div>
       )}

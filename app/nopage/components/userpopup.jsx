@@ -53,7 +53,7 @@ export default function LoginPopup({ onClose, onSuccess }) {
     if (!val && i > 0) inputsRef.current[i - 1]?.focus();
   };
 
-  const verifyOtp = () => {
+  const verifyOtp = async () => {
     const fullOtp = otp.join("");
     if (fullOtp !== otpRef) {
       setError("Incorrect OTP");
@@ -62,14 +62,29 @@ export default function LoginPopup({ onClose, onSuccess }) {
       return;
     }
   
+    try {
+      await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY, // ✅ Add API key
+        },
+        body: JSON.stringify({ name, number: phone }),
+      });
+    } catch (err) {
+      console.error("Login DB error:", err);
+    }
+  
     setSuccessMessage(true);
     setError("");
   
     setTimeout(() => {
       onSuccess({ name, phone });
       onClose();
-    }, 5000); // now waits 5 seconds before closing
+    }, 5000);
   };
+  
+  
   
 
   useEffect(() => {
@@ -106,7 +121,7 @@ export default function LoginPopup({ onClose, onSuccess }) {
         ref={popupRef}
         className="bg-white rounded-2xl p-6 sm:p-8 w-full max-w-sm shadow-2xl animate-fade-in"
       >
-        <div className="flex flex-col items-center space-y-3 mb-6">
+        <div className="flex flex-col items-center space-y-2 mb-6">
           <Image src={Logo} alt="Company Logo" width={120} height={40} />
           <h2 className="text-2xl font-bold text-center text-c4">
             Welcome to <br /> ERRONEOUS GOLD
