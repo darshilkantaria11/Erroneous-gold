@@ -119,7 +119,7 @@ export default function LoginStep({ onNext }) {
       <div>
         <h2 className="text-xl font-bold text-gray-800">Verify with WhatsApp</h2>
         <p className="text-sm text-gray-600 mt-1">
-          Enter your phone number. We'll send a secure 6-digit OTP via WhatsApp to verify.
+          Enter your phone number. We&apos;ll send a secure 6-digit OTP via WhatsApp to verify.
         </p>
       </div>
 
