@@ -3,9 +3,9 @@
 import { useState, useEffect, useRef } from "react";
 import { generateOTP } from "../../lib/otp";
 
-export default function LoginStep({ onNext }) {
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" }) {
+  const [name, setName] = useState(defaultName);
+  const [phone, setPhone] = useState(defaultPhone);
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [timer, setTimer] = useState(30);
@@ -16,18 +16,9 @@ export default function LoginStep({ onNext }) {
 
   const inputsRef = useRef([]);
   const phoneInputRef = useRef(null);
-  const otpRef = useRef(""); // temporary OTP in memory
+  const otpRef = useRef("");
 
-  // 🔁 Check localStorage on mount
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parsed = JSON.parse(storedUser);
-      if (parsed?.name && parsed?.phone) {
-        onNext(1, parsed); // auto-skip if already logged in
-      }
-    }
-  }, []);
+
 
   const handlePhoneChange = (e) => {
     const value = e.target.value.replace(/\D/g, "");
@@ -96,7 +87,6 @@ export default function LoginStep({ onNext }) {
         body: JSON.stringify({ name, number: phone }),
       });
 
-      // Save to localStorage
       localStorage.setItem("user", JSON.stringify({ name, phone }));
     } catch (err) {
       console.error("Login DB error:", err);

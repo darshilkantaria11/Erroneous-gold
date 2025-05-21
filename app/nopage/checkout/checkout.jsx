@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { XMarkIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import LoginStep from "./loginstep";
 import AddressStep from "./addressstep";
 import PaymentStep from "./paymentstep";
@@ -14,6 +14,7 @@ export default function CheckoutPopup({ onClose }) {
         3: false,
     });
     const [userData, setUserData] = useState({
+        name: "",
         phone: "",
         address: {},
     });
@@ -41,33 +42,35 @@ export default function CheckoutPopup({ onClose }) {
             >
                 {/* Stepper */}
                 <div className="py-5">
-
                     <div className="flex justify-between items-center mb-3">
                         {["Login", "Address", "Payment"].map((label, idx) => {
                             const currentStep = idx + 1;
                             const isComplete = isStepCompleted[currentStep];
-                            const isClickable = currentStep <= step || isStepCompleted[currentStep];
+                            const isClickable = currentStep <= step || isComplete;
 
                             return (
                                 <button
                                     key={label}
                                     className="flex items-center gap-2 focus:outline-none"
-                                    onClick={() => isClickable && setStep(currentStep)}
-                                    disabled={!isClickable}
+                                    onClick={() => {
+                                        if (isClickable) setStep(currentStep);
+                                    }}
                                 >
                                     <div
                                         className={`w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold transition-all
-            ${isComplete ? "bg-green-600 text-white" :
-                                                step === currentStep ? "bg-blue-600 text-white" :
-                                                    "bg-gray-300 text-gray-700"}
-          `}
+                                            ${isComplete
+                                                ? "bg-green-600 text-white"
+                                                : step === currentStep
+                                                    ? "bg-blue-600 text-white"
+                                                    : "bg-gray-300 text-gray-700"
+                                            }`}
                                     >
                                         {isComplete ? <CheckCircleIcon className="h-4 w-4" /> : currentStep}
                                     </div>
                                     <span
                                         className={`text-sm font-medium transition-colors
-            ${step === currentStep ? "text-blue-600" : "text-gray-600"}
-          `}
+                                            ${step === currentStep ? "text-blue-600" : "text-gray-600"}
+                                        `}
                                     >
                                         {label}
                                     </span>
@@ -76,8 +79,7 @@ export default function CheckoutPopup({ onClose }) {
                         })}
                     </div>
 
-
-                    {/* Animated Progress Bar */}
+                    {/* Progress Bar */}
                     <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
                         <motion.div
                             initial={{ width: 0 }}
@@ -89,9 +91,7 @@ export default function CheckoutPopup({ onClose }) {
                 </div>
 
                 {/* Step Content */}
-                <div className="flex-1  overflow-y-auto">
-
-
+                <div className="flex-1 overflow-y-auto px-4">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={step}
@@ -100,14 +100,20 @@ export default function CheckoutPopup({ onClose }) {
                             exit={{ opacity: 0, x: -30 }}
                             transition={{ duration: 0.3 }}
                         >
-                            {step === 1 && <LoginStep onNext={completeStep} />}
+                            {step === 1 && (
+                                <LoginStep
+                                    onNext={completeStep}
+                                    defaultName={userData.name}
+                                    defaultPhone={userData.phone}
+                                />
+                            )}
                             {step === 2 && <AddressStep onNext={completeStep} />}
                             {step === 3 && <PaymentStep userData={userData} />}
                         </motion.div>
                     </AnimatePresence>
                 </div>
 
-                {/* TRUST Footer */}
+                {/* Footer */}
                 <div className="px-5 pt-4 border-t mt-auto">
                     <p className="text-xs text-center text-gray-500 mb-2">
                         Payments are 100% secure and encrypted. Powered by leading gateways.
@@ -120,9 +126,6 @@ export default function CheckoutPopup({ onClose }) {
                         <img src="/mastercard.svg" alt="Mastercard" className="w-10 h-8" />
                     </div>
                 </div>
-
-                {/* Close Button (Optional) */}
-
             </motion.div>
         </div>
     );
