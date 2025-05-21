@@ -17,6 +17,14 @@ export default function LoginPopup({ onClose, onSuccess }) {
   const [successMessage, setSuccessMessage] = useState(false);
   const inputsRef = useRef([]);
   const popupRef = useRef(null);
+  const phoneInputRef = useRef(null);
+
+
+  // Phone input change: allow only digits, max 10 chars
+  const handlePhoneChange = (e) => {
+    const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+    setPhone(val);
+  };
 
   const handleSendOtp = async () => {
     if (!name.trim()) return setError("Name is required");
@@ -44,6 +52,7 @@ export default function LoginPopup({ onClose, onSuccess }) {
     inputsRef.current[0]?.focus();
   };
 
+  // OTP input handlers:
   const handleOtpChange = (i, val) => {
     if (!/^\d?$/.test(val)) return;
     const updated = [...otp];
@@ -51,6 +60,46 @@ export default function LoginPopup({ onClose, onSuccess }) {
     setOtp(updated);
     if (val && i < 5) inputsRef.current[i + 1]?.focus();
     if (!val && i > 0) inputsRef.current[i - 1]?.focus();
+  };
+
+  const handleOtpKeyDown = (e, i) => {
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      const newOtp = [...otp];
+      if (newOtp[i]) {
+        newOtp[i] = "";
+        setOtp(newOtp);
+        inputsRef.current[i]?.focus();
+      } else if (i > 0) {
+        inputsRef.current[i - 1]?.focus();
+        const prevOtp = [...otp];
+        prevOtp[i - 1] = "";
+        setOtp(prevOtp);
+      }
+    } else if (e.key === "ArrowLeft" && i > 0) {
+      e.preventDefault();
+      inputsRef.current[i - 1]?.focus();
+    } else if (e.key === "ArrowRight" && i < 5) {
+      e.preventDefault();
+      inputsRef.current[i + 1]?.focus();
+    } else if (e.key.match(/^[0-9]$/)) {
+      e.preventDefault();
+      const newOtp = [...otp];
+      newOtp[i] = e.key;
+      setOtp(newOtp);
+      if (i < 5) inputsRef.current[i + 1]?.focus();
+    } else if (e.key !== "Tab") {
+      e.preventDefault();
+    }
+  };
+
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData("text").trim();
+    if (!/^\d{6}$/.test(pasteData)) return;
+    const pasteOtp = pasteData.split("");
+    setOtp(pasteOtp);
+    inputsRef.current[5]?.focus();
   };
 
   const verifyOtp = async () => {
@@ -61,31 +110,28 @@ export default function LoginPopup({ onClose, onSuccess }) {
       inputsRef.current[0]?.focus();
       return;
     }
-  
+
     try {
       await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": process.env.NEXT_PUBLIC_API_KEY, // ✅ Add API key
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
         },
         body: JSON.stringify({ name, number: phone }),
       });
     } catch (err) {
       console.error("Login DB error:", err);
     }
-  
+
     setSuccessMessage(true);
     setError("");
-  
+
     setTimeout(() => {
       onSuccess({ name, phone });
       onClose();
     }, 5000);
   };
-  
-  
-  
 
   useEffect(() => {
     if (otpSent && timer > 0) {
@@ -152,10 +198,13 @@ export default function LoginPopup({ onClose, onSuccess }) {
                 <input
                   key={i}
                   ref={(el) => (inputsRef.current[i] = el)}
-                  className="w-10 h-12 border text-xl text-center rounded-md"
+                  className={`w-10 h-12 border text-xl text-center rounded-md
+                    ${error ? "border-red-500 shake" : "border-gray-300"}`}
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleOtpChange(i, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(e, i)}
+                  onPaste={handlePaste}
                 />
               ))}
             </div>
@@ -164,9 +213,8 @@ export default function LoginPopup({ onClose, onSuccess }) {
               <button
                 disabled={timer > 0}
                 onClick={handleSendOtp}
-                className={`text-c4 font-medium ${
-                  timer > 0 ? "opacity-50" : "hover:underline"
-                }`}
+                className={`text-c4 font-medium ${timer > 0 ? "opacity-50" : "hover:underline"
+                  }`}
               >
                 Resend OTP
               </button>
@@ -187,19 +235,27 @@ export default function LoginPopup({ onClose, onSuccess }) {
               autoComplete="name"
               onChange={(e) => setName(e.target.value)}
             />
-            <div className="flex border border-gray-300 rounded-lg p-3 items-center mb-4">
-              <span className="text-gray-500 mr-2">+91</span>
-              <input
-                className="w-full outline-none text-sm"
-                placeholder="Phone number"
-                value={phone}
-                autoComplete="tel"
-                inputMode="numeric"
-                onChange={(e) =>
-                  setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))
-                }
-              />
+            {/* Example location: before the Send OTP button */}
+            {/* Add this block in place of your old phone input */}
+
+            <div>
+              <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 mb-2 bg-white focus-within:ring-2 focus-within:ring-blue-500">
+                <span className="text-gray-700 pr-2 mr-2 border-r border-black">+91</span>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  placeholder="Enter 10 digit mobile number"
+                  className="w-full outline-none bg-transparent"
+                  autoComplete="tel"
+                  disabled={loading}
+                  ref={phoneInputRef}
+                />
+              </div>
             </div>
+
             <button
               className="w-full bg-c4 text-white font-semibold py-2 rounded-lg hover:bg-c4 transition"
               onClick={handleSendOtp}

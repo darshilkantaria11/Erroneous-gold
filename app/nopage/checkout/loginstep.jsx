@@ -131,8 +131,49 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
     }
   };
 
+
+  const handleOtpKeyDown = (e, index) => {
+    if (e.key === "Backspace") {
+      e.preventDefault();
+      const newOtp = [...otp];
+      if (newOtp[index]) {
+        newOtp[index] = "";
+        setOtp(newOtp);
+        inputsRef.current[index]?.focus();
+      } else if (index > 0) {
+        inputsRef.current[index - 1]?.focus();
+        const prevOtp = [...otp];
+        prevOtp[index - 1] = "";
+        setOtp(prevOtp);
+      }
+    } else if (e.key.match(/^[0-9]$/)) {
+      e.preventDefault();
+      const newOtp = [...otp];
+      newOtp[index] = e.key;
+      setOtp(newOtp);
+      if (index < 5) {
+        inputsRef.current[index + 1]?.focus();
+      }
+    } else if (e.key !== "Tab") {
+      e.preventDefault(); // block non-numeric keys except Tab
+    }
+  };
+  
+  const handlePaste = (e) => {
+    e.preventDefault();
+    const pasteData = e.clipboardData.getData("text").trim();
+    if (!/^\d{6}$/.test(pasteData)) return; // only accept 6 digits
+  
+    const pasteOtp = pasteData.split("");
+    setOtp(pasteOtp);
+    // Focus last input after pasting
+    inputsRef.current[5]?.focus();
+  };
+
+  
+  
   return (
-    <div className="space-y-5 px-1 mx-auto max-w-sm">
+    <div className="space-y-5 px-1 mx-auto ">
       <div>
         <h2 className="text-xl font-bold text-gray-800">Verify with WhatsApp</h2>
         <p className="text-sm text-gray-600 mt-1">
@@ -215,15 +256,18 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
                   maxLength={1}
                   value={digit}
                   onChange={(e) => handleOtpChange(idx, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(e, idx)}
+                  onPaste={handlePaste}
                   ref={(el) => (inputsRef.current[idx] = el)}
-                  className={`w-12 h-12 text-center text-xl border rounded-lg transition-all
-                    ${error ? "border-red-500 shake" : "border-gray-300"}
-                    focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                  className={`w-10 h-10 text-center text-xl border rounded-lg transition-all
+          ${error ? "border-red-500 shake" : "border-gray-300"}
+          focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   disabled={loading}
                 />
               ))}
             </div>
           </div>
+
 
           <div className="flex items-center justify-between text-sm px-1">
             <span className="text-gray-500">{timer > 0 ? `Resend OTP in ${timer}s` : "Didn't receive code?"}</span>
