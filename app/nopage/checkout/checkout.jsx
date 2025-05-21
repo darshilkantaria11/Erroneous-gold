@@ -41,31 +41,41 @@ export default function CheckoutPopup({ onClose }) {
             >
                 {/* Stepper */}
                 <div className="py-5">
-                    
+
                     <div className="flex justify-between items-center mb-3">
                         {["Login", "Address", "Payment"].map((label, idx) => {
-                            const isComplete = isStepCompleted[idx + 1];
+                            const currentStep = idx + 1;
+                            const isComplete = isStepCompleted[currentStep];
+                            const isClickable = currentStep <= step || isStepCompleted[currentStep];
+
                             return (
-                                <div key={label} className="flex items-center gap-2">
+                                <button
+                                    key={label}
+                                    className="flex items-center gap-2 focus:outline-none"
+                                    onClick={() => isClickable && setStep(currentStep)}
+                                    disabled={!isClickable}
+                                >
                                     <div
-                                        className={`w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold
-                    ${isComplete ? "bg-green-600 text-white" : step === idx + 1 ? "bg-blue-600 text-white" : "bg-gray-300 text-gray-700"}
-                  `}
+                                        className={`w-6 h-6 rounded-full text-xs flex items-center justify-center font-bold transition-all
+            ${isComplete ? "bg-green-600 text-white" :
+                                                step === currentStep ? "bg-blue-600 text-white" :
+                                                    "bg-gray-300 text-gray-700"}
+          `}
                                     >
-                                        {isComplete ? <CheckCircleIcon className="h-4 w-4" /> : idx + 1}
+                                        {isComplete ? <CheckCircleIcon className="h-4 w-4" /> : currentStep}
                                     </div>
                                     <span
-                                        className={`text-sm font-medium ${step === idx + 1 ? "text-blue-600" : "text-gray-600"
-                                            }`}
+                                        className={`text-sm font-medium transition-colors
+            ${step === currentStep ? "text-blue-600" : "text-gray-600"}
+          `}
                                     >
                                         {label}
                                     </span>
-
-                                </div>
-
+                                </button>
                             );
                         })}
                     </div>
+
 
                     {/* Animated Progress Bar */}
                     <div className="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
@@ -80,7 +90,7 @@ export default function CheckoutPopup({ onClose }) {
 
                 {/* Step Content */}
                 <div className="flex-1  overflow-y-auto">
-                    
+
 
                     <AnimatePresence mode="wait">
                         <motion.div

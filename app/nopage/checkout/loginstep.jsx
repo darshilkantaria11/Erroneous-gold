@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { generateOTP } from "../../lib/otp"; // or inline the function
+import { generateOTP } from "../../lib/otp";
 
 export default function LoginStep({ onNext }) {
+  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState(Array(6).fill(""));
@@ -15,21 +16,34 @@ export default function LoginStep({ onNext }) {
 
   const inputsRef = useRef([]);
   const phoneInputRef = useRef(null);
-  const otpRef = useRef(""); // to store generated OTP safely in-memory
+  const otpRef = useRef(""); // temporary OTP in memory
+
+  // 🔁 Check localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      if (parsed?.name && parsed?.phone) {
+        onNext(1, parsed); // auto-skip if already logged in
+      }
+    }
+  }, []);
 
   const handlePhoneChange = (e) => {
     const value = e.target.value.replace(/\D/g, "");
     if (value.length <= 10) {
       setPhone(value);
       setError("");
-      if (value.length === 10 && !otpSent) {
-        sendOTP(value);
-      }
     }
   };
 
   const sendOTP = async (phoneNum = phone) => {
     try {
+      if (!name.trim()) {
+        setError("Please enter your name.");
+        return;
+      }
+
       setLoading(true);
       setError("");
 
@@ -38,7 +52,7 @@ export default function LoginStep({ onNext }) {
       }
 
       const generatedOtp = generateOTP();
-      otpRef.current = generatedOtp; // save OTP in memory for verification
+      otpRef.current = generatedOtp;
 
       const res = await fetch("/api/send-otp", {
         method: "POST",
@@ -63,25 +77,38 @@ export default function LoginStep({ onNext }) {
     }
   };
 
-  const verifyOTP = () => {
-    setError("");
-    const enteredOtp = otp.join("");
-    if (enteredOtp.length !== 6) {
-      setError("Please enter complete 6-digit OTP");
-      return;
-    }
-    if (enteredOtp !== otpRef.current) {
-      setError("Invalid OTP entered");
+  const verifyOtp = async () => {
+    const fullOtp = otp.join("");
+    if (fullOtp !== otpRef.current) {
+      setError("Incorrect OTP");
       setOtp(Array(6).fill(""));
       inputsRef.current[0]?.focus();
       return;
     }
-    onNext(1, { phone });
+
+    try {
+      await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
+        },
+        body: JSON.stringify({ name, number: phone }),
+      });
+
+      // Save to localStorage
+      localStorage.setItem("user", JSON.stringify({ name, phone }));
+    } catch (err) {
+      console.error("Login DB error:", err);
+    }
+
+    setError("");
+    onNext(1, { name, phone });
   };
 
   useEffect(() => {
     if (otp.every((d) => d !== "") && otp.length === 6) {
-      verifyOTP();
+      verifyOtp();
     }
   }, [otp]);
 
@@ -119,27 +146,51 @@ export default function LoginStep({ onNext }) {
       <div>
         <h2 className="text-xl font-bold text-gray-800">Verify with WhatsApp</h2>
         <p className="text-sm text-gray-600 mt-1">
-          Enter your phone number. We&apos;ll send a secure 6-digit OTP via WhatsApp to verify.
+          Enter your name and phone number. We'll send a 6-digit OTP via WhatsApp to verify.
         </p>
       </div>
 
       {(!otpSent || showEditPhone) && (
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
-          <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-500">
-            <span className="text-gray-700 pr-2 mr-2 border-r border-black">+91</span>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input
-              ref={phoneInputRef}
-              type="tel"
-              inputMode="numeric"
-              maxLength={10}
-              value={phone}
-              onChange={handlePhoneChange}
-              placeholder="Enter 10 digit mobile number"
-              className="w-full outline-none bg-transparent"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your full name"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+              autoComplete="name"
               disabled={loading}
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-blue-500">
+              <span className="text-gray-700 pr-2 mr-2 border-r border-black">+91</span>
+              <input
+                ref={phoneInputRef}
+                type="tel"
+                inputMode="numeric"
+                maxLength={10}
+                value={phone}
+                onChange={handlePhoneChange}
+                placeholder="Enter 10 digit mobile number"
+                className="w-full outline-none bg-transparent"
+                autoComplete="tel"
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          <button
+            onClick={() => sendOTP()}
+            className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition"
+            disabled={loading}
+          >
+            {loading ? "Sending OTP..." : "Send OTP via WhatsApp"}
+          </button>
         </div>
       )}
 

@@ -56,7 +56,7 @@ export default function Navbar() {
         isScrolled ? "top-0" : "top-8 md:top-10"
       }`}
     >
-      <div className="md:px-4 flex justify-between items-center">
+      <div className="md:px-4 pr-2 flex justify-between items-center">
         {/* Desktop Links */}
         <div className="hidden md:flex items-center space-x-8">
           <Link href="/" className="hover:scale-110 transform transition">
@@ -76,12 +76,12 @@ export default function Navbar() {
         {/* Logo */}
         <div className="flex hover:scale-110 transform transition">
           <Link href="/" className="text-lg font-bold">
-            <Image src={Logo} alt="Logo" className="h-auto w-36" />
+            <Image src={Logo} alt="Logo" className="h-auto lg:w-36 w-32" />
           </Link>
         </div>
 
         {/* Right Icons */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-3">
           {/* Search */}
           <div className="relative flex items-center bg-white border border-c4 rounded-full px-4 py-2">
             <input
@@ -93,12 +93,12 @@ export default function Navbar() {
           </div>
 
           {/* Cart */}
-          <div className="relative hover:scale-110 transform transition">
+          {/* <div className="relative hover:scale-110 transform transition">
             <FiShoppingCart className="w-6 h-6 text-c4" />
             <div className="absolute -top-2 -right-2 bg-c4 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
               1
             </div>
-          </div>
+          </div> */}
 
           {/* User Icon + Dropdown */}
           <div
@@ -158,7 +158,7 @@ export default function Navbar() {
             <Link
               key={label}
               href="#"
-              className="w-full px-4 py-2 bg-c2 text-c4 font-medium rounded-lg transition duration-200"
+              className="w-full px-4 py-2 bg-c2 text-c4 font-medium  transition duration-200 border-b border-c4"
             >
               {label}
             </Link>
