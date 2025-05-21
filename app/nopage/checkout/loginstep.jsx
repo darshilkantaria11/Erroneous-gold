@@ -136,7 +136,7 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
       <div>
         <h2 className="text-xl font-bold text-gray-800">Verify with WhatsApp</h2>
         <p className="text-sm text-gray-600 mt-1">
-          Enter your name and phone number. We'll send a 6-digit OTP via WhatsApp to verify.
+          Enter your name and phone number. We&apso;ll send a 6-digit OTP via WhatsApp to verify.
         </p>
       </div>
 
