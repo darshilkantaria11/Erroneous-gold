@@ -162,11 +162,9 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
   const handlePaste = (e) => {
     e.preventDefault();
     const pasteData = e.clipboardData.getData("text").trim();
-    if (!/^\d{6}$/.test(pasteData)) return; // only accept 6 digits
-  
+    if (!/^\d{6}$/.test(pasteData)) return;
     const pasteOtp = pasteData.split("");
     setOtp(pasteOtp);
-    // Focus last input after pasting
     inputsRef.current[5]?.focus();
   };
 
@@ -245,28 +243,50 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
             </button>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Enter OTP</label>
-            <div className="flex gap-2 justify-center">
-              {otp.map((digit, idx) => (
-                <input
-                  key={idx}
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleOtpChange(idx, e.target.value)}
-                  onKeyDown={(e) => handleOtpKeyDown(e, idx)}
-                  onPaste={handlePaste}
-                  ref={(el) => (inputsRef.current[idx] = el)}
-                  className={`w-10 h-10 text-center text-xl border rounded-lg transition-all
-          ${error ? "border-red-500 shake" : "border-gray-300"}
-          focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                  disabled={loading}
-                />
-              ))}
+          <p className="text-center text-sm text-gray-700 mb-2">
+              Enter the 6-digit OTP sent to <strong>+91 {phone}</strong>
+            </p>
+
+            <div className="relative mb-3">
+              {/* Hidden full OTP input for paste support */}
+              <input
+                type="text"
+                inputMode="numeric"
+                pattern="\d*"
+                maxLength={6}
+                value={otp.join("")}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "").slice(0, 6).split("");
+                  setOtp([...val, ...Array(6 - val.length).fill("")]);
+                }}
+                className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
+                aria-label="OTP input"
+                autoFocus
+              />
+
+              {/* Display six digit boxes */}
+              <div className="flex justify-center gap-2">
+                {otp.map((digit, i) => (
+                  <input
+                    key={i}
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpChange(i, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(e, i)}
+                    onPaste={handlePaste}
+                    ref={(el) => (inputsRef.current[i] = el)}
+                    className={`w-10 h-12 text-center border text-xl font-medium rounded-md outline-none 
+                      ${error ? "border-red-500 ring-red-200" : "border-gray-300"} 
+                      ${otp[i] === "" && otp.slice(0, i).every((d) => d !== "") ? "border-blue-500 ring-2 ring-blue-200" : ""}
+                      focus:ring-2 focus:ring-blue-400`}
+                    
+                  />
+                ))}
+              </div>
+
             </div>
-          </div>
 
 
           <div className="flex items-center justify-between text-sm px-1">
