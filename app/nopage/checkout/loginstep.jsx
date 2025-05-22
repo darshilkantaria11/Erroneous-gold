@@ -18,7 +18,19 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
   const phoneInputRef = useRef(null);
   const otpRef = useRef("");
 
-
+  useEffect(() => {
+    const hasRedirected = sessionStorage.getItem("hasRedirected");
+  
+    if (!hasRedirected) {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        sessionStorage.setItem("hasRedirected", "true");
+        onNext(1, userData); // Move to next step
+      }
+    }
+  }, []);
+  
 
   const handlePhoneChange = (e) => {
     const value = e.target.value.replace(/\D/g, "");

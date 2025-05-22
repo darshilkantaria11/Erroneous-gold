@@ -4,11 +4,9 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
-    // 🔒 Extract API Key from Headers
     const authKey = req.headers.get("x-api-key");
     const SERVER_API_KEY = process.env.NEXT_PUBLIC_API_KEY;
 
-    // ❌ Reject Unauthorized Requests
     if (!authKey || authKey !== SERVER_API_KEY) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -21,7 +19,15 @@ export async function POST(req) {
     }
 
     const existingUser = await User.findOne({ number });
+
     if (existingUser) {
+      // If name is different, update it
+      if (existingUser.name !== name) {
+        existingUser.name = name;
+        await existingUser.save();
+        return NextResponse.json({ message: "User name updated successfully" }, { status: 200 });
+      }
+
       return NextResponse.json({ message: "User already exists" }, { status: 200 });
     }
 
