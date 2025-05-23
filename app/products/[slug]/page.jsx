@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useCart } from "../../nopage/context/CartContext";
 import ReviewForm from "../../nopage/components/review"; // adjust the path based on your project structure
+import TrustSection from "../../nopage/components/trustsection";
 
 
 const Skeleton = ({ className }) => (
@@ -255,6 +256,8 @@ export default function ProductDetail() {
           )}
         </div>
       </div>
+
+      {/* <TrustSection/> */}
 
 
       <div className="mt-12 container mx-auto px-4 lg:px-10">

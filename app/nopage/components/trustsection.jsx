@@ -70,7 +70,7 @@ export default function TrustSection() {
           <div className="min-w-[600px] bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="bg-c4 p-6">
               <h2 className="text-2xl font-bold text-white text-center">
-                Why We're Different
+                Why We&apos;re Different
               </h2>
             </div>
             <table className="w-full">
