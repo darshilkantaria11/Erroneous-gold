@@ -93,7 +93,7 @@ export default function Products() {
                                             />
                                         </div>
                                         <div className="py-4 px-1 text-start">
-                                            <h2 className="text-xl font-semibold text-c4">{product.productName}</h2>
+                                            <h2 className="text-sm lg:text-lg font-semibold text-c4">{product.productName}</h2>
                                             <div className="flex justify-start items-center space-x-2 mt-2">
                                                 <p className="text-sm text-gray-500 line-through">Rs.{product.strikeoutPrice}</p>
                                                 <p className="text-xl text-c4 font-semibold">Rs.{product.originalPrice}</p>

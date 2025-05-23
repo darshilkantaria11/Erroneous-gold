@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useCart } from "../../nopage/context/CartContext";
+import ReviewForm from "../../nopage/components/review"; // adjust the path based on your project structure
+
 
 const Skeleton = ({ className }) => (
   <div className={`animate-pulse bg-gray-200 rounded-lg relative overflow-hidden ${className}`}>
@@ -67,20 +69,20 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     if (!name.trim()) {
-        setNameError("Please enter a name before adding to cart.");
-        return;
+      setNameError("Please enter a name before adding to cart.");
+      return;
     }
 
     // Add the productName to the cart data
     addToCart(slug, {
-        id: slug,
-        name,
-        productName: product.productName, // Add the productName here
-        quantity: 1,
-        price: product.originalPrice,
-        image: product.img1
+      id: slug,
+      name,
+      productName: product.productName, // Add the productName here
+      quantity: 1,
+      price: product.originalPrice,
+      image: product.img1
     });
-};
+  };
 
 
   const increaseQuantity = () => updateQuantity(slug, (cart[slug]?.quantity || 0) + 1);
@@ -118,9 +120,8 @@ export default function ProductDetail() {
                     key={index}
                     src={img}
                     alt={`View ${index + 1}`}
-                    className={`w-[calc(25%-0.5rem)] h-24 object-cover rounded-lg cursor-pointer shadow-md transition-transform ${
-                      activeImageIndex === index ? "ring-4 ring-c4 scale-105" : "hover:scale-105"
-                    }`}
+                    className={`w-[calc(25%-0.5rem)] h-24 object-cover rounded-lg cursor-pointer shadow-md transition-transform ${activeImageIndex === index ? "ring-4 ring-c4 scale-105" : "hover:scale-105"
+                      }`}
                     whileHover={{ scale: 1.05 }}
                     onClick={() => {
                       setMainImage(img);
@@ -142,7 +143,7 @@ export default function ProductDetail() {
                 <Skeleton className="h-6 w-20" />
                 <Skeleton className="h-6 w-24" />
               </div>
-              
+
               <div className="mb-6">
                 <div className="flex gap-4 mb-4">
                   <Skeleton className="h-10 flex-1" />
@@ -179,9 +180,8 @@ export default function ProductDetail() {
                       <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-2 px-4 text-sm font-medium ${
-                          activeTab === tab ? "bg-c1 text-black" : "bg-white text-gray-700"
-                        } rounded-t-lg focus:outline-none`}
+                        className={`flex-1 py-2 px-4 text-sm font-medium ${activeTab === tab ? "bg-c1 text-black" : "bg-white text-gray-700"
+                          } rounded-t-lg focus:outline-none`}
                       >
                         {tab.charAt(0).toUpperCase() + tab.slice(1)}
                       </button>
@@ -203,9 +203,8 @@ export default function ProductDetail() {
                     setName(e.target.value);
                     setNameError("");
                   }}
-                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none ${
-                    nameError ? "border-red-500" : ""
-                  } ${product.fontName || ""}`}
+                  className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none ${nameError ? "border-red-500" : ""
+                    } ${product.fontName || ""}`}
                 />
                 {nameError && <p className="text-red-500 text-sm mt-1 ml-1">{nameError}</p>}
                 <p className="text-sm text-gray-500 ml-1 mb-1">
@@ -257,25 +256,11 @@ export default function ProductDetail() {
         </div>
       </div>
 
-      {/* {quantity > 0 && (
-        <motion.div
-          initial={{ y: 100, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          className="z-20 fixed bottom-0 left-0 right-0 h-[10vh] bg-c4 text-white flex items-center justify-between px-8"
-        >
-          <p className="text-lg">
-            {quantity} item{quantity !== 1 && 's'} added
-          </p>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-white text-c4 px-6 py-2 rounded-lg font-medium"
-            onClick={() => alert('Redirect to cart page')}
-          >
-            View Cart
-          </motion.button>
-        </motion.div>
-      )} */}
+
+      <div className="mt-12 container mx-auto px-4 lg:px-10">
+        <ReviewForm productId={slug} />
+      </div>
+
     </div>
   );
 }
