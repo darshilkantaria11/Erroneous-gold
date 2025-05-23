@@ -1,4 +1,4 @@
-// /api/reviews/route.js
+
 import { dbConnect } from "../../utils/mongoose";
 import Review from "../../models/review";
 import { NextResponse } from "next/server";
