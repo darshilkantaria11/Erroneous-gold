@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import UserPopup from "./userpopup";
+
 
 export default function ProductReviews({ productId }) {
     const [reviews, setReviews] = useState([]);
@@ -9,6 +11,7 @@ export default function ProductReviews({ productId }) {
     const [description, setDescription] = useState("");
     const [submitted, setSubmitted] = useState(false);
     const [user, setUser] = useState({ name: "", phone: "" });
+    const [showLoginPopup, setShowLoginPopup] = useState(false); // NEW
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -25,6 +28,23 @@ export default function ProductReviews({ productId }) {
 
         fetchReviews();
     }, [productId]);
+
+    const handleLoginSuccess = ({ name, phone }) => {
+        const userData = { name, phone };
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+        setShowLoginPopup(false);
+        setShowForm(true);
+    };
+
+    const handleWriteReviewClick = () => {
+        if (!user.name || !user.phone) {
+            setShowLoginPopup(true);
+        } else {
+            setShowForm(true);
+            setSubmitted(false);
+        }
+    };
 
     const handleSubmit = async () => {
         if (rating === 0) return alert("Please select a star rating.");
@@ -88,14 +108,12 @@ export default function ProductReviews({ productId }) {
                     </p>
                 </div>
                 <button
-                    onClick={() => {
-                        setShowForm(true);
-                        setSubmitted(false);
-                    }}
+                    onClick={handleWriteReviewClick}
                     className="mt-4 sm:mt-0 bg-c4 text-white px-6 py-2 rounded-md font-medium hover:shadow-md transition"
                 >
                     Write a Review
                 </button>
+
             </div>
             {/* Review Form */}
             {showForm && (
@@ -137,14 +155,30 @@ export default function ProductReviews({ productId }) {
                                 rows={4}
                             />
 
-                            <motion.button
-                                onClick={handleSubmit}
-                                className="bg-c4 text-white py-2 px-6 rounded-lg font-medium"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                            >
-                                Submit Review
-                            </motion.button>
+                            <div className="flex gap-3">
+    <motion.button
+        onClick={handleSubmit}
+        className="bg-c4 text-white py-2 px-6 rounded-lg font-medium"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+    >
+        Submit Review
+    </motion.button>
+
+    <motion.button
+        onClick={() => {
+            setShowForm(false);
+            setRating(0);
+            setDescription("");
+        }}
+        className="bg-gray-200 text-gray-800 py-2 px-6 rounded-lg font-medium"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+    >
+        Cancel
+    </motion.button>
+</div>
+
                         </>
                     )}
                 </motion.div>
@@ -176,6 +210,14 @@ export default function ProductReviews({ productId }) {
             </div>
 
 
+            {showLoginPopup && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <UserPopup
+                        onClose={() => setShowLoginPopup(false)}
+                        onSuccess={handleLoginSuccess}
+                    />
+                </div>
+            )}
 
 
         </div>
