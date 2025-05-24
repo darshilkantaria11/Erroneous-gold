@@ -86,7 +86,7 @@ export default function SlugPage() {
       <div className="text-6xl mb-4 text-c4">🔍</div>
       <h2 className="text-2xl md:text-3xl font-semibold text-c4 mb-2">No matching products found</h2>
       <p className="text-gray-500 max-w-md mb-6">
-        We couldn't find anything for "<span className="font-medium text-c4">{slug.replace(/-/g, " ")}</span>".
+        We couldn&apos;t find anything for &quot;<span className="font-medium text-c4">{slug.replace(/-/g, " ")}</span>&quot;.
         <br /> Try searching with different keywords or explore our popular collections.
       </p>
       <Link
