@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import Logo from "../../../public/logo.svg";
 import UserPopup from "./userpopup";
+import Searchbar from "./searchbar"
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -83,13 +84,8 @@ export default function Navbar() {
         {/* Right Icons */}
         <div className="flex items-center space-x-3">
           {/* Search */}
-          <div className="relative flex items-center bg-white border border-c4 rounded-full px-4 py-2">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="outline-none bg-transparent text-sm w-24 md:w-44 text-c4"
-            />
-            <FiSearch className="text-gray-500 w-5 h-5" />
+          <div className="relative flex items-center">
+            <Searchbar/>
           </div>
 
           {/* Cart */}
