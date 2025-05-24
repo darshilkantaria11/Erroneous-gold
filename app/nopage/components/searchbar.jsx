@@ -25,7 +25,9 @@ export default function SearchBar() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                 />
-                <FiSearch className="text-gray-500 w-5 h-5" />
+                <button type="submit" className="ml-2 text-gray-500 hover:text-gray-700">
+                    <FiSearch className="w-5 h-5" />
+                </button>
             </div>
         </form>
     );
