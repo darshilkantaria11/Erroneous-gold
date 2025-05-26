@@ -82,7 +82,7 @@ export default function Footer() {
                 >
                     <h2 className="text-2xl font-semibold">Contact</h2>
                     <p className="text-gray-800 text-sm leading-relaxed">
-                        123 Gold Street, Surat, Gujarat - 395001<br />
+                        St-4, pl.no.19b2, atikaindustry, Rajkot, Gujarat, India, 360002.<br />
                         <a
                             href="https://wa.me/919876543210?text=Hi%2C%20I'm%20interested%20in%20your%20jewelry%20collection."
                             className="text-c4 hover:underline block"
