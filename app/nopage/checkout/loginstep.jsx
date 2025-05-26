@@ -18,19 +18,24 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
   const phoneInputRef = useRef(null);
   const otpRef = useRef("");
 
+
   useEffect(() => {
-    const hasRedirected = sessionStorage.getItem("hasRedirected");
-  
-    if (!hasRedirected) {
+    const timer = setTimeout(() => {
+      
+      const hasRedirected = localStorage.getItem("hasRedirected");
       const storedUser = localStorage.getItem("user");
-      if (storedUser) {
+      console.log(storedUser)
+      if (!hasRedirected && storedUser) {
         const userData = JSON.parse(storedUser);
-        sessionStorage.setItem("hasRedirected", "true");
-        onNext(1, userData); // Move to next step
+        localStorage.setItem("hasRedirected", "true");
+        onNext(1, userData);
       }
-    }
+    }, 100); // wait 100ms to ensure popup is ready
+
+    return () => clearTimeout(timer);
   }, []);
-  
+
+
 
   const handlePhoneChange = (e) => {
     const value = e.target.value.replace(/\D/g, "");
@@ -170,7 +175,7 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
       e.preventDefault(); // block non-numeric keys except Tab
     }
   };
-  
+
   const handlePaste = (e) => {
     e.preventDefault();
     const pasteData = e.clipboardData.getData("text").trim();
@@ -180,8 +185,8 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
     inputsRef.current[5]?.focus();
   };
 
-  
-  
+
+
   return (
     <div className="space-y-5 px-1 mx-auto ">
       <div>
@@ -256,49 +261,49 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
           </div>
 
           <p className="text-center text-sm text-gray-700 mb-2">
-              Enter the 6-digit OTP sent to <strong>+91 {phone}</strong>
-            </p>
+            Enter the 6-digit OTP sent to <strong>+91 {phone}</strong>
+          </p>
 
-            <div className="relative mb-3">
-              {/* Hidden full OTP input for paste support */}
-              <input
-                type="text"
-                inputMode="numeric"
-                pattern="\d*"
-                maxLength={6}
-                value={otp.join("")}
-                onChange={(e) => {
-                  const val = e.target.value.replace(/\D/g, "").slice(0, 6).split("");
-                  setOtp([...val, ...Array(6 - val.length).fill("")]);
-                }}
-                className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
-                aria-label="OTP input"
-                autoFocus
-              />
+          <div className="relative mb-3">
+            {/* Hidden full OTP input for paste support */}
+            <input
+              type="text"
+              inputMode="numeric"
+              pattern="\d*"
+              maxLength={6}
+              value={otp.join("")}
+              onChange={(e) => {
+                const val = e.target.value.replace(/\D/g, "").slice(0, 6).split("");
+                setOtp([...val, ...Array(6 - val.length).fill("")]);
+              }}
+              className="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer"
+              aria-label="OTP input"
+              autoFocus
+            />
 
-              {/* Display six digit boxes */}
-              <div className="flex justify-center gap-2">
-                {otp.map((digit, i) => (
-                  <input
-                    key={i}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleOtpChange(i, e.target.value)}
-                    onKeyDown={(e) => handleOtpKeyDown(e, i)}
-                    onPaste={handlePaste}
-                    ref={(el) => (inputsRef.current[i] = el)}
-                    className={`w-10 h-12 text-center border text-xl font-medium rounded-md outline-none 
+            {/* Display six digit boxes */}
+            <div className="flex justify-center gap-2">
+              {otp.map((digit, i) => (
+                <input
+                  key={i}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={(e) => handleOtpChange(i, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(e, i)}
+                  onPaste={handlePaste}
+                  ref={(el) => (inputsRef.current[i] = el)}
+                  className={`w-10 h-12 text-center border text-xl font-medium rounded-md outline-none 
                       ${error ? "border-red-500 ring-red-200" : "border-gray-300"} 
                       ${otp[i] === "" && otp.slice(0, i).every((d) => d !== "") ? "border-blue-500 ring-2 ring-blue-200" : ""}
                       focus:ring-2 focus:ring-blue-400`}
-                    
-                  />
-                ))}
-              </div>
 
+                />
+              ))}
             </div>
+
+          </div>
 
 
           <div className="flex items-center justify-between text-sm px-1">

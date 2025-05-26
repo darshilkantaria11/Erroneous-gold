@@ -240,7 +240,10 @@ export default function CartPage() {
                             <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
-                                onClick={() => setShowCheckoutPopup(true)}
+                                onClick={() => {
+                                    localStorage.removeItem("hasRedirected");
+                                    setShowCheckoutPopup(true);
+                                }}
                                 className="w-full bg-c4 text-white py-3 rounded-lg mt-6
         hover:bg-c4 transition-colors flex items-center justify-center gap-3 font-semibold text-lg tracking-wide"
                             >
@@ -289,7 +292,7 @@ export default function CartPage() {
                         </button>
                         <h2 className="text-xl font-bold ">Checkout</h2>
                         {/* You can replace this with actual CheckoutForm component */}
-                        <Checkout/>
+                        <Checkout />
                         {/* <p className="text-sm text-gray-600">Checkout form or payment options will go here...</p> */}
                     </div>
                 </div>

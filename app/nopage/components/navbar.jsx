@@ -18,13 +18,20 @@ export default function Navbar() {
 
   const userRef = useRef(null);
 
-  useEffect(() => {
-    // Load user from localStorage
+  const checkUserLogin = () => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
       setIsLoggedIn(true);
+      // if (!showUserPopup) {
+      //   setShowUserPopup(true);
+      // }
     }
+  };
+
+
+  useEffect(() => {
+    checkUserLogin();
 
     const handleScroll = () => setIsScrolled(window.scrollY > 1);
     window.addEventListener("scroll", handleScroll);
@@ -33,6 +40,7 @@ export default function Navbar() {
   }, []);
 
   const handleUserClick = () => {
+    checkUserLogin();
     setShowUserPopup((prev) => !prev);
   };
 
@@ -53,9 +61,8 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`bg-c1 shadow-md text-c4 sticky z-50 transition-all duration-300 ${
-        isScrolled ? "top-0" : "top-8 md:top-10"
-      }`}
+      className={`bg-c1 shadow-md text-c4 sticky z-50 transition-all duration-300 ${isScrolled ? "top-0" : "top-8 md:top-10"
+        }`}
     >
       <div className="md:px-4 pr-2 flex justify-between items-center">
         {/* Desktop Links */}
@@ -85,7 +92,7 @@ export default function Navbar() {
         <div className="flex items-center space-x-3">
           {/* Search */}
           <div className="relative flex items-center">
-            <Searchbar/>
+            <Searchbar />
           </div>
 
           {/* Cart */}
