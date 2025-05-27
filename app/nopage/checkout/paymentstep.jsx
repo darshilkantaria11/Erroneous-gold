@@ -85,13 +85,29 @@ export default function PaymentStep({ userData }) {
         image: "/logo.png",
         order_id: orderData.razorpayOrderId,
         handler: async (response) => {
-          await fetch("/api/verify", {
+          const orderData = {
+            number: userData.phone,
+            name: userData.name,
+            address: userData.address,
+            items: cartItems,
+            method: "prepaid",
+            total,
+          };
+
+          const verifyRes = await fetch("/api/verify", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(response),
+            body: JSON.stringify({ ...response, orderData }),
           });
-          clearCart();
-          router.push("/thank-you");
+
+          const verifyData = await verifyRes.json();
+
+          if (verifyData.success) {
+            clearCart();
+            router.push("/");
+          } else {
+            setError("Payment verification failed. Please contact support.");
+          }
         },
         prefill: {
           name: userData.name,
