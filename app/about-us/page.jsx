@@ -120,7 +120,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-6">Your Story, Our Passion</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            With a team of master jewelers and client specialists, we're dedicated to 
+            With a team of master jewelers and client specialists, we&apos;re dedicated to 
             transforming your meaningful moments into eternal golden keepsakes.
           </p>
           <div className="flex justify-center space-x-6">
