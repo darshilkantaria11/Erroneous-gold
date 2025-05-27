@@ -84,10 +84,10 @@ export default function Footer() {
                     <p className="text-gray-800 text-sm leading-relaxed">
                         St-4, pl.no.19b2, atikaindustry, Rajkot, Gujarat, India, 360002.<br />
                         <a
-                            href="https://wa.me/919876543210?text=Hi%2C%20I'm%20interested%20in%20your%20jewelry%20collection."
+                            href="https://wa.me/917698657879?text=Hi%2C%20I'm%20interested%20in%20your%20jewelry%20collection."
                             className="text-c4 hover:underline block"
                         >
-                            📞 +91 98765 43210
+                            📞 +91 76986 57879
                         </a>
                         <a
                             href="mailto:info@erroneousgold.com"
