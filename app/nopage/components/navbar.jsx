@@ -70,13 +70,13 @@ export default function Navbar() {
           <Link href="/" className="hover:scale-110 transform transition">
             Home
           </Link>
-          <Link href="#" className="hover:scale-110 transform transition">
+          <Link href="/shop" className="hover:scale-110 transform transition">
             Shop
           </Link>
-          <Link href="#" className="hover:scale-110 transform transition">
+          <Link href="/about-us" className="hover:scale-110 transform transition">
             About Us
           </Link>
-          <Link href="#" className="hover:scale-110 transform transition">
+          <Link href="/contact-us" className="hover:scale-110 transform transition">
             Contact Us
           </Link>
         </div>
