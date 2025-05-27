@@ -20,7 +20,7 @@ export default function Footer() {
                     <p className="text-gray-800 ml-4">
                         At Erroneous Gold, we turn your stories into timeless pieces. Every necklace is uniquely crafted to celebrate love, memories, and individuality.
                     </p>
-                    <p className="text-sm text-gray-600 ml-4">"Wear your story, close to your heart."</p>
+                    <p className="text-sm text-gray-600 ml-4">&quot;Wear your story, close to your heart.&quot;</p>
                 </motion.div>
 
                 {/* Policy Links */}
