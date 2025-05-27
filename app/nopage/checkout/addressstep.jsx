@@ -27,15 +27,15 @@ export default function AddressStep({ onNext }) {
     const fetchAddress = async () => {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const phone = storedUser?.phone;
-  
+
       if (!phone) return;
-  
+
       try {
         const res = await fetch(`/api/get-address?number=${phone}`);
         if (!res.ok) throw new Error("Address not found");
-  
+
         const data = await res.json();
-  
+
         if (data.address) {
           setPincode(data.address.pincode || "");
           setAddress({
@@ -48,10 +48,10 @@ export default function AddressStep({ onNext }) {
         console.log("Prefill address failed:", err.message);
       }
     };
-  
+
     fetchAddress();
   }, []);
-  
+
 
   // Check delivery when pincode or quantity changes
   useEffect(() => {
@@ -107,9 +107,10 @@ export default function AddressStep({ onNext }) {
       });
 
       onNext(2, {
-        address,
+        address: { ...address, pincode },
         shippingCharge: deliveryInfo.shippingCharge,
       });
+
     } catch (error) {
       console.error("Address save failed:", error);
     }

@@ -91,7 +91,7 @@ export default function CheckoutPopup({ onClose }) {
                 </div>
 
                 {/* Step Content */}
-                <div className="flex-1 overflow-y-auto px-4">
+                <div className="flex-1 overflow-y-auto px-2">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={step}
