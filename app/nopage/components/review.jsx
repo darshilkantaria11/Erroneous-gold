@@ -22,15 +22,12 @@ export default function ProductReviews({ productId }) {
 
         const verifyUser = async () => {
             const stored = localStorage.getItem("user");
-            if (!stored) return;
+            const { phone, token } = JSON.parse(stored);
+            if (!phone || !token) return;
 
             try {
-                const parsed = JSON.parse(stored);
-                const res = await fetch(`/api/verifyuser?number=${parsed.phone}`, {
-                    headers: {
-                        Authorization: `Bearer ${parsed.token}`,
-                    },
-                });
+                
+                const res = await fetch(`/api/verifyuser?number=${phone}&token=${token}`);
 
                 if (res.ok) {
                     const userData = await res.json();
