@@ -6,7 +6,7 @@ import { FaFacebookF, FaTwitter, FaInstagram, FaPinterest } from "react-icons/fa
 
 export default function Footer() {
     return (
-      
+
         <footer className="bg-c3/2 text-black pt-16 border-t-2 mt-10">
             <div className="container mx-auto  grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-10">
                 {/* Logo + Description */}
@@ -16,7 +16,7 @@ export default function Footer() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                    <Image src="/logo.svg" alt="Erroneous Gold Logo" className="w-36" width={100} height={70}/>
+                    <Image src="/logo.svg" alt="Erroneous Gold Logo" className="w-36" width={100} height={70} />
                     <p className="text-gray-800 ml-4">
                         At Erroneous Gold, we turn your stories into timeless pieces. Every necklace is uniquely crafted to celebrate love, memories, and individuality.
                     </p>
@@ -25,7 +25,7 @@ export default function Footer() {
 
                 {/* Policy Links */}
                 <motion.div
-                    className="space-y-4"
+                    className="space-y-4 pl-4"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.2 }}
@@ -53,7 +53,7 @@ export default function Footer() {
 
                 {/* Quick Links */}
                 <motion.div
-                    className="space-y-4"
+                    className="space-y-4 pl-4"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
@@ -75,7 +75,7 @@ export default function Footer() {
 
                 {/* Contact Info + Social */}
                 <motion.div
-                    className="space-y-6"
+                    className="space-y-6 pl-4"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.6 }}

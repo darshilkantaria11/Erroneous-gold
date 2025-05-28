@@ -71,7 +71,7 @@ export default function PaymentStep({ userData }) {
         });
 
         clearCart();
-        router.push("/");
+        router.push("/thank-you");
         return;
       }
 
@@ -104,7 +104,7 @@ export default function PaymentStep({ userData }) {
 
           if (verifyData.success) {
             clearCart();
-            router.push("/");
+            router.push("/thank-you");
           } else {
             setError("Payment verification failed. Please contact support.");
           }

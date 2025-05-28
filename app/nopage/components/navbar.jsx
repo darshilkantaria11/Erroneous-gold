@@ -122,7 +122,7 @@ export default function Navbar() {
                     👋 Hi, {user.name}
                   </div>
                   <Link
-                    href="/orders"
+                    href="/my-orders"
                     className="block px-4 py-3 text-sm text-c4 hover:bg-gray-100 transition"
                     onClick={() => setShowUserPopup(false)}
                   >
