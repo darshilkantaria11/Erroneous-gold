@@ -14,20 +14,42 @@ export default function ProductReviews({ productId }) {
     const [showLoginPopup, setShowLoginPopup] = useState(false); // NEW
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            const parsed = JSON.parse(storedUser);
-            setUser({ name: parsed.name, phone: parsed.phone });
-        }
-
         const fetchReviews = async () => {
             const res = await fetch(`/api/getreviews?productId=${productId}`);
             const data = await res.json();
             if (res.ok) setReviews(data.reviews || []);
         };
 
+        const verifyUser = async () => {
+            const stored = localStorage.getItem("user");
+            if (!stored) return;
+
+            try {
+                const parsed = JSON.parse(stored);
+                const res = await fetch(`/api/verifyuser?number=${parsed.phone}`, {
+                    headers: {
+                        Authorization: `Bearer ${parsed.token}`,
+                    },
+                });
+
+                if (res.ok) {
+                    const userData = await res.json();
+                    setUser({ name: userData.name, phone: userData.number });
+                } else {
+                    localStorage.removeItem("user");
+                    setUser({ name: "", phone: "" });
+                }
+            } catch (err) {
+                console.error("Failed to verify user", err);
+                localStorage.removeItem("user");
+                setUser({ name: "", phone: "" });
+            }
+        };
+
+        verifyUser();
         fetchReviews();
     }, [productId]);
+
 
     const handleLoginSuccess = ({ name, phone }) => {
         const userData = { name, phone };
@@ -156,28 +178,28 @@ export default function ProductReviews({ productId }) {
                             />
 
                             <div className="flex gap-3">
-    <motion.button
-        onClick={handleSubmit}
-        className="bg-c4 text-white py-2 px-6 rounded-lg font-medium"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-    >
-        Submit Review
-    </motion.button>
+                                <motion.button
+                                    onClick={handleSubmit}
+                                    className="bg-c4 text-white py-2 px-6 rounded-lg font-medium"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Submit Review
+                                </motion.button>
 
-    <motion.button
-        onClick={() => {
-            setShowForm(false);
-            setRating(0);
-            setDescription("");
-        }}
-        className="bg-gray-200 text-gray-800 py-2 px-6 rounded-lg font-medium"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-    >
-        Cancel
-    </motion.button>
-</div>
+                                <motion.button
+                                    onClick={() => {
+                                        setShowForm(false);
+                                        setRating(0);
+                                        setDescription("");
+                                    }}
+                                    className="bg-gray-200 text-gray-800 py-2 px-6 rounded-lg font-medium"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    Cancel
+                                </motion.button>
+                            </div>
 
                         </>
                     )}

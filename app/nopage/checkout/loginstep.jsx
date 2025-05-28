@@ -20,20 +20,44 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
 
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      
+    const timer = setTimeout(async () => {
       const hasRedirected = localStorage.getItem("hasRedirected");
       const storedUser = localStorage.getItem("user");
-      console.log(storedUser)
+
       if (!hasRedirected && storedUser) {
         const userData = JSON.parse(storedUser);
-        localStorage.setItem("hasRedirected", "true");
-        onNext(1, userData);
+        const { phone, token } = userData;
+
+        if (!phone || !token) return;
+
+        try {
+          const res = await fetch(`/api/verifyuser?number=${phone}&token=${token}`);
+          if (!res.ok) throw new Error("Token invalid");
+
+          const verified = await res.json();
+
+          const updatedUser = {
+            name: verified.user.name,
+            phone: verified.user.number,
+            token: token,
+            addresses: verified.user.addresses || [],
+          };
+
+          // Save updated user info
+          // localStorage.setItem("user", JSON.stringify(updatedUser));
+          localStorage.setItem("hasRedirected", "true");
+
+          onNext(1, updatedUser);
+        } catch (err) {
+          console.warn("Auto-login verification failed:", err);
+          localStorage.removeItem("user");
+        }
       }
     }, 100); // wait 100ms to ensure popup is ready
 
     return () => clearTimeout(timer);
   }, []);
+
 
 
 
@@ -95,7 +119,7 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
     }
 
     try {
-      await fetch("/api/login", {
+      const res = await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -104,14 +128,30 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
         body: JSON.stringify({ name, number: phone }),
       });
 
-      localStorage.setItem("user", JSON.stringify({ name, phone }));
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Something went wrong");
+        return;
+      }
+
+      // Save user data including token to localStorage
+      const { user } = data;
+      localStorage.setItem("user", JSON.stringify({
+        name: user.name,
+        phone: user.number,
+        token: user.token,
+        addresses: user.addresses || [],
+      }));
+
+      setError("");
+      onNext(1, { name: user.name, phone: user.number });
     } catch (err) {
       console.error("Login DB error:", err);
+      setError("Failed to login. Try again.");
     }
-
-    setError("");
-    onNext(1, { name, phone });
   };
+
 
   useEffect(() => {
     if (otp.every((d) => d !== "") && otp.length === 6) {

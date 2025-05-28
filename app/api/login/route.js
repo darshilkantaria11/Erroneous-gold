@@ -1,11 +1,13 @@
 import { dbConnect } from "../../utils/mongoose";
 import User from "../../models/user";
 import { NextResponse } from "next/server";
+import jwt from "jsonwebtoken";
 
 export async function POST(req) {
   try {
     const authKey = req.headers.get("x-api-key");
     const SERVER_API_KEY = process.env.NEXT_PUBLIC_API_KEY;
+    const JWT_SECRET = process.env.JWT_SECRET;
 
     if (!authKey || authKey !== SERVER_API_KEY) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -18,23 +20,48 @@ export async function POST(req) {
       return NextResponse.json({ error: "Name and number are required" }, { status: 400 });
     }
 
-    const existingUser = await User.findOne({ number });
+    let user = await User.findOne({ number });
 
-    if (existingUser) {
-      // If name is different, update it
-      if (existingUser.name !== name) {
-        existingUser.name = name;
-        await existingUser.save();
-        return NextResponse.json({ message: "User name updated successfully" }, { status: 200 });
+    if (user) {
+      if (user.name !== name) {
+        user.name = name;
       }
 
-      return NextResponse.json({ message: "User already exists" }, { status: 200 });
+      const token = jwt.sign({ id: user._id, number: user.number }, JWT_SECRET, { expiresIn: "7d" });
+      user.token = token;
+      await user.save();
+
+      return NextResponse.json({
+        message: "Login successful",
+        user: {
+          name: user.name,
+          number: user.number,
+          token,
+          addresses: user.addresses,
+        },
+      });
     }
 
-    const newUser = new User({ name, number });
+    const token = jwt.sign({ number }, JWT_SECRET, { expiresIn: "7d" });
+
+    const newUser = new User({
+      name,
+      number,
+      token,
+    });
+
     await newUser.save();
 
-    return NextResponse.json({ message: "User created successfully" }, { status: 201 });
+    return NextResponse.json({
+      message: "User created successfully",
+      user: {
+        name: newUser.name,
+        number: newUser.number,
+        token,
+        addresses: [],
+      },
+    }, { status: 201 });
+
   } catch (error) {
     console.error("Login Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

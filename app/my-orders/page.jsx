@@ -10,54 +10,65 @@ export default function MyOrdersPage() {
   const [expandedItems, setExpandedItems] = useState({});
 
   useEffect(() => {
-    async function fetchOrders() {
-      try {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (!user?.phone) return;
+  async function fetchOrders() {
+    try {
+      const stored = localStorage.getItem("user");
+      if (!stored) return;
 
-        const res = await fetch(`/api/getmyorders?number=${user.phone}`);
-        const data = await res.json();
-        const ordersData = data.orders || [];
+      const { phone, token } = JSON.parse(stored);
+      if (!phone || !token) return;
 
-        setOrders(ordersData);
-
-        // Fetch product details for all items
-        const allProductIds = Array.from(
-          new Set(
-            ordersData.flatMap((order) =>
-              order.items.map((item) => item.productId)
-            )
-          )
-        );
-
-        const fetchedProducts = {};
-
-        await Promise.all(
-          allProductIds.map(async (id) => {
-            try {
-              const res = await fetch(`/api/products/fetch/${id}`, {
-                headers: {
-                  "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
-                },
-              });
-              const product = await res.json();
-              fetchedProducts[id] = product;
-            } catch (err) {
-              console.log(`Failed to fetch product ${id}`, err);
-            }
-          })
-        );
-
-        setProducts(fetchedProducts);
-      } catch (err) {
-        console.log("Error fetching orders:", err);
-      } finally {
-        setLoading(false);
+      // Verify user
+      const verifyRes = await fetch(`/api/verifyuser?number=${phone}&token=${token}`);
+      if (!verifyRes.ok) {
+        throw new Error("User verification failed");
       }
-    }
 
-    fetchOrders();
-  }, []);
+      // Fetch orders if verified
+      const ordersRes = await fetch(`/api/getmyorders?number=${phone}`);
+      const ordersData = (await ordersRes.json()).orders || [];
+
+      setOrders(ordersData);
+
+      // Fetch all product details
+      const allProductIds = Array.from(
+        new Set(
+          ordersData.flatMap((order) =>
+            order.items.map((item) => item.productId)
+          )
+        )
+      );
+
+      const fetchedProducts = {};
+      await Promise.all(
+        allProductIds.map(async (id) => {
+          try {
+            const res = await fetch(`/api/products/fetch/${id}`, {
+              headers: {
+                "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
+              },
+            });
+            const product = await res.json();
+            fetchedProducts[id] = product;
+          } catch (err) {
+            console.log(`Failed to fetch product ${id}`, err);
+          }
+        })
+      );
+
+      setProducts(fetchedProducts);
+    } catch (err) {
+      console.log("Error verifying user or fetching orders:", err);
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  fetchOrders();
+}, []);
+
 
   const toggleItemExpansion = (itemKey) => {
     setExpandedItems(prev => ({
@@ -143,7 +154,7 @@ export default function MyOrdersPage() {
               <FiPackage className="text-gray-400 text-4xl" />
             </div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">No Orders Yet</h2>
-            <p className="text-gray-600 mb-6">You haven't placed any orders yet</p>
+            <p className="text-gray-600 mb-6">You haven&apos;t placed any orders yet</p>
             <Link href="/shop" className="bg-c4 text-white font-medium py-2 px-6 rounded-lg transition duration-300">
               Start Shopping
             </Link>

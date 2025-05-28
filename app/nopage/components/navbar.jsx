@@ -18,16 +18,42 @@ export default function Navbar() {
 
   const userRef = useRef(null);
 
-  const checkUserLogin = () => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsLoggedIn(true);
-      // if (!showUserPopup) {
-      //   setShowUserPopup(true);
-      // }
-    }
-  };
+  const checkUserLogin = async () => {
+  const stored = localStorage.getItem("user");
+
+  if (!stored) return;
+
+  const parsed = JSON.parse(stored);
+  const { phone, token } = parsed;
+
+  if (!phone || !token) return;
+
+  try {
+    const res = await fetch(`/api/verifyuser?number=${phone}&token=${token}`);
+    if (!res.ok) throw new Error("Invalid user");
+
+    const data = await res.json();
+
+    const verifiedUser = {
+      name: data.user.name,
+      phone: data.user.number,
+      token,
+      addresses: data.user.addresses || [],
+    };
+
+    // Update localStorage in case any field changed
+    // localStorage.setItem("user", JSON.stringify(verifiedUser));
+
+    setUser({ name: verifiedUser.name, phone: verifiedUser.phone });
+    setIsLoggedIn(true);
+  } catch (err) {
+    console.warn("Verification failed:", err);
+    localStorage.removeItem("user");
+    setUser({ name: "", phone: "" });
+    setIsLoggedIn(false);
+  }
+};
+
 
 
   useEffect(() => {
@@ -46,7 +72,7 @@ export default function Navbar() {
 
   const handleLoginSuccess = ({ name, phone }) => {
     const userData = { name, phone };
-    localStorage.setItem("user", JSON.stringify(userData));
+    // localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
     setIsLoggedIn(true);
     setShowUserPopup(false);

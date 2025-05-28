@@ -112,7 +112,7 @@ export default function LoginPopup({ onClose, onSuccess }) {
     }
 
     try {
-      await fetch("/api/login", {
+      const res = await fetch("/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,18 +120,42 @@ export default function LoginPopup({ onClose, onSuccess }) {
         },
         body: JSON.stringify({ name, number: phone }),
       });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Something went wrong");
+        return;
+      }
+
+      const { user } = data;
+
+      // Save complete user data including token to localStorage
+      localStorage.setItem("user", JSON.stringify({
+        name: user.name,
+        phone: user.number,
+        token: user.token,
+        addresses: user.addresses || [],
+      }));
+
+      setSuccessMessage(true);
+      setError("");
+
+      setTimeout(() => {
+        onSuccess({
+          name: user.name,
+          phone: user.number,
+          token: user.token,
+          addresses: user.addresses || [],
+        });
+        onClose();
+      }, 5000);
     } catch (err) {
       console.error("Login DB error:", err);
+      setError("Failed to login. Try again.");
     }
-
-    setSuccessMessage(true);
-    setError("");
-
-    setTimeout(() => {
-      onSuccess({ name, phone });
-      onClose();
-    }, 5000);
   };
+
 
   useEffect(() => {
     if (otpSent && timer > 0) {
@@ -228,7 +252,7 @@ export default function LoginPopup({ onClose, onSuccess }) {
                       ${error ? "border-red-500 ring-red-200" : "border-gray-300"} 
                       ${otp[i] === "" && otp.slice(0, i).every((d) => d !== "") ? "border-blue-500 ring-2 ring-blue-200" : ""}
                       focus:ring-2 focus:ring-blue-400`}
-                    
+
                   />
                 ))}
               </div>

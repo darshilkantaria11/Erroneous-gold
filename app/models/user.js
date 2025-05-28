@@ -17,7 +17,11 @@ const userSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    immutable: true, // Prevent updates to the number once saved
+    immutable: true,
+  },
+  token: {
+    type: String,
+    default: null,
   },
   addresses: {
     type: [addressSchema],
