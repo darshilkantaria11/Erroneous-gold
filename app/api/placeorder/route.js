@@ -29,6 +29,7 @@ export async function POST(req) {
       city: address.city,
       state: address.state,
       fullAddress: address.line1,
+      engravedName: item.name || "", // <-- Save engraved name here
       createdAt: new Date(),
     }));
 

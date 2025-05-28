@@ -40,13 +40,19 @@ const itemSchema = new Schema(
       required: true,
       trim: true,
     },
+    engravedName: {
+      type: String,
+      trim: true,
+      default: "", // Optional: empty string if not provided
+    },
     createdAt: {
       type: Date,
-      default: Date.now,  // this will store order item date/time when inserted
+      default: Date.now,
     },
   },
-  { _id: true } // allow mongoose to create _id for each item
+  { _id: true }
 );
+
 
 const orderSchema = new Schema(
   {

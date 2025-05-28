@@ -41,10 +41,12 @@ export async function POST(req) {
             city: address.city,
             state: address.state,
             fullAddress: address.line1,
+            engravedName: item.name || "", // <-- Save engraved name here
+            createdAt: new Date(),
         }));
 
         // Step 5: Save order to DB
-       const existingOrder = await Order.findOne({ number });
+        const existingOrder = await Order.findOne({ number });
 
         if (existingOrder) {
             existingOrder.items.push(...orderItems);
