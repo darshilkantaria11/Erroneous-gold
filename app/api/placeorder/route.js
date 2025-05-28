@@ -19,7 +19,20 @@ export async function POST(req) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Include createdAt date for each item explicitly (optional here, default also works)
+    // Generate order ID: format DDMMYYYYHHMMSS + mobileNumber (IST time)
+    const nowIST = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    const pad = (n) => n.toString().padStart(2, "0");
+
+    const orderId =
+      pad(nowIST.getDate()) +
+      pad(nowIST.getMonth() + 1) +
+      nowIST.getFullYear() +
+      pad(nowIST.getHours()) +
+      pad(nowIST.getMinutes()) +
+      pad(nowIST.getSeconds()) +
+      number;
+
+    // Build items array with orderId included
     const orderItems = items.map((item) => ({
       productId: item.id,
       quantity: item.quantity,
@@ -29,8 +42,9 @@ export async function POST(req) {
       city: address.city,
       state: address.state,
       fullAddress: address.line1,
-      engravedName: item.name || "", // <-- Save engraved name here
-      createdAt: new Date(),
+      engravedName: item.name || "",
+      createdAt: nowIST,
+      orderId, // <-- added here
     }));
 
     const existingOrder = await Order.findOne({ number });
@@ -48,7 +62,7 @@ export async function POST(req) {
       });
     }
 
-    return NextResponse.json({ message: "Order placed successfully" }, { status: 201 });
+    return NextResponse.json({ message: "Order placed successfully", orderId }, { status: 201 });
   } catch (error) {
     console.error("Order Submission Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

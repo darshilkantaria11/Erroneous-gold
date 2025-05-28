@@ -70,8 +70,8 @@ export default function PaymentStep({ userData }) {
           }),
         });
 
-        clearCart();
         router.push("/thank-you");
+        clearCart();
         return;
       }
 

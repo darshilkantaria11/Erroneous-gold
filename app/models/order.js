@@ -17,7 +17,6 @@ const itemSchema = new Schema(
     },
     method: {
       type: String,
-      enum: ["cod", "prepaid"],
       required: true,
     },
     pincode: {
@@ -43,7 +42,16 @@ const itemSchema = new Schema(
     engravedName: {
       type: String,
       trim: true,
-      default: "", // Optional: empty string if not provided
+      default: "",
+    },
+    orderId: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    orderStatus: {
+      type: String,
+      default: "Confirmed",
     },
     createdAt: {
       type: Date,
@@ -52,7 +60,6 @@ const itemSchema = new Schema(
   },
   { _id: true }
 );
-
 
 const orderSchema = new Schema(
   {
@@ -66,9 +73,9 @@ const orderSchema = new Schema(
       required: true,
       trim: true,
     },
-    items: [itemSchema], // use itemSchema here
+    items: [itemSchema],
   },
-  { timestamps: true } // document-level createdAt and updatedAt
+  { timestamps: true }
 );
 
 export default models.Order || model("Order", orderSchema);

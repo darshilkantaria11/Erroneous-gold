@@ -10,64 +10,65 @@ export default function MyOrdersPage() {
   const [expandedItems, setExpandedItems] = useState({});
 
   useEffect(() => {
-  async function fetchOrders() {
-    try {
-      const stored = localStorage.getItem("user");
-      if (!stored) return;
+    async function fetchOrders() {
+      try {
+        const stored = localStorage.getItem("user");
+        if (!stored) return;
 
-      const { phone, token } = JSON.parse(stored);
-      if (!phone || !token) return;
+        const { phone, token } = JSON.parse(stored);
+        if (!phone || !token) return;
 
-      // Verify user
-      const verifyRes = await fetch(`/api/verifyuser?number=${phone}&token=${token}`);
-      if (!verifyRes.ok) {
-        throw new Error("User verification failed");
-      }
+        // Verify user
+        const verifyRes = await fetch(`/api/verifyuser?number=${phone}&token=${token}`);
+        if (!verifyRes.ok) {
+          throw new Error("User verification failed");
+        }
 
-      // Fetch orders if verified
-      const ordersRes = await fetch(`/api/getmyorders?number=${phone}`);
-      const ordersData = (await ordersRes.json()).orders || [];
+        // Fetch orders if verified
+        const ordersRes = await fetch(`/api/getmyorders?number=${phone}`);
+        const ordersData = (await ordersRes.json()).orders || [];
+        console.log(ordersData)
 
-      setOrders(ordersData);
+        setOrders(ordersData);
 
-      // Fetch all product details
-      const allProductIds = Array.from(
-        new Set(
-          ordersData.flatMap((order) =>
-            order.items.map((item) => item.productId)
+        // Fetch all product details
+        const allProductIds = Array.from(
+          new Set(
+            ordersData.flatMap((order) =>
+              order.items.map((item) => item.productId)
+            )
           )
-        )
-      );
+        );
 
-      const fetchedProducts = {};
-      await Promise.all(
-        allProductIds.map(async (id) => {
-          try {
-            const res = await fetch(`/api/products/fetch/${id}`, {
-              headers: {
-                "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
-              },
-            });
-            const product = await res.json();
-            fetchedProducts[id] = product;
-          } catch (err) {
-            console.log(`Failed to fetch product ${id}`, err);
-          }
-        })
-      );
+        const fetchedProducts = {};
+        await Promise.all(
+          allProductIds.map(async (id) => {
+            try {
+              const res = await fetch(`/api/products/fetch/${id}`, {
+                headers: {
+                  "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
+                },
+              });
+              const product = await res.json();
+              fetchedProducts[id] = product;
+            } catch (err) {
+              console.log(`Failed to fetch product ${id}`, err);
+            }
+          })
+        );
 
-      setProducts(fetchedProducts);
-    } catch (err) {
-      console.log("Error verifying user or fetching orders:", err);
-      localStorage.removeItem("user");
-      localStorage.removeItem("token");
-    } finally {
-      setLoading(false);
+        setProducts(fetchedProducts);
+      } catch (err) {
+        console.log("Error verifying user or fetching orders:", err);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      } finally {
+        setLoading(false);
+      }
     }
-  }
 
-  fetchOrders();
-}, []);
+    fetchOrders();
+  }, []);
 
 
   const toggleItemExpansion = (itemKey) => {
@@ -78,16 +79,59 @@ export default function MyOrdersPage() {
   };
 
 
-  const getItemStatus = (createdAt) => {
-    // Simulating different statuses based on order date
-    const daysSinceOrder = Math.floor(
-      (new Date() - new Date(createdAt)) / (1000 * 60 * 60 * 24)
-    );
-
-    if (daysSinceOrder < 1) return { text: "Processing", color: "bg-yellow-100 text-yellow-800", icon: <FiClock className="text-yellow-500" /> };
-    if (daysSinceOrder < 3) return { text: "Shipped", color: "bg-blue-100 text-blue-800", icon: <FiTruck className="text-blue-500" /> };
-    return { text: "Delivered", color: "bg-green-100 text-green-800", icon: <FiCheckCircle className="text-green-500" /> };
+  const getItemStatus = (status) => {
+    switch (status) {
+      case "Confirmed":
+        return {
+          text: "Confirmed",
+          color: "bg-yellow-100 text-yellow-800",
+          icon: <FiClock className="text-yellow-500" />,
+        };
+      case "Crafting":
+        return {
+          text: "Crafting",
+          color: "bg-purple-100 text-purple-800",
+          icon: <FiPackage className="text-purple-500" />,
+        };
+      case "Shipped":
+        return {
+          text: "Shipped",
+          color: "bg-blue-100 text-blue-800",
+          icon: <FiTruck className="text-blue-500" />,
+        };
+      case "Delivered":
+        return {
+          text: "Delivered",
+          color: "bg-green-100 text-green-800",
+          icon: <FiCheckCircle className="text-green-500" />,
+        };
+      case "Cancelled":
+        return {
+          text: "Cancelled by Customer",
+          color: "bg-red-100 text-red-800",
+          icon: <FiCalendar className="text-red-500" />,
+        };
+      case "Rejected":
+        return {
+          text: "Rejected by Store",
+          color: "bg-gray-100 text-gray-800",
+          icon: <FiCalendar className="text-gray-500" />,
+        };
+      case "Replaced":
+        return {
+          text: "Replaced",
+          color: "bg-orange-100 text-orange-800",
+          icon: <FiTruck className="text-orange-500" />,
+        };
+      default:
+        return {
+          text: "Processing",
+          color: "bg-yellow-100 text-yellow-800",
+          icon: <FiClock className="text-yellow-500" />,
+        };
+    }
   };
+
 
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
@@ -98,9 +142,10 @@ export default function MyOrdersPage() {
   const allOrderItems = orders.flatMap(order =>
     order.items.map(item => ({
       ...item,
-      orderId: order._id,
+      ordersId: order.orderId,
       customerName: order.name,
       customerPhone: order.number
+
     }))
   );
 
@@ -163,9 +208,11 @@ export default function MyOrdersPage() {
           <div className="space-y-6">
             {allOrderItems.slice().reverse().map((item, index) => {
 
-              const itemKey = `${item.orderId}-${item.productId}-${index}`;
+              const itemKey = `${item.ordersId}-${item.productId}-${index}`;
               const product = products[item.productId];
-              const status = getItemStatus(item.createdAt);
+              const status = getItemStatus(item.orderStatus);
+              
+
               const isExpanded = expandedItems[itemKey];
 
 
@@ -248,9 +295,8 @@ export default function MyOrdersPage() {
                                 {status.text}
                               </span>
                             </div>
-                            <div className="flex justify-between">
-                              <span className="text-gray-600">Quantity:</span>
-                              <span className="font-medium">{item.quantity}</span>
+                            <div className="flex justify-between ">
+                             <p> Order ID:</p> <p>{item.orderId}</p>
                             </div>
                           </div>
                         </div>
@@ -280,12 +326,19 @@ export default function MyOrdersPage() {
                                   {product ? product.productName : "Product Unavailable"}
                                 </h3>
                                 <div className="mt-2 flex flex-wrap gap-2">
-                                  <p className="text-sm bg-green-50 text-c4 px-2 py-1 rounded">
+                                  <div className="text-sm  text-c4  rounded">
+                                    <div className="flex">
+                                      <span className="text-gray-600">Quantity:</span>
+                                      <span className="font-medium px-1">{item.quantity}</span>
+                                    </div>
+                                  </div>
+                                  <p className="text-sm  text-c4  rounded">
                                     Product ID: {item.productId}
                                   </p>
-                                  <p className="text-sm bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                                    MRP: ₹{product?.originalPrice || item.amount}
+                                  <p className="text-sm  text-gray-700 bg-green-50 px-2 py-1 rounded">
+                                    MRP: ₹{(product?.originalPrice ?? 0) * (item?.quantity ?? 0)}
                                   </p>
+
                                 </div>
                               </div>
                               <div className="text-right flex justify-center items-center">
