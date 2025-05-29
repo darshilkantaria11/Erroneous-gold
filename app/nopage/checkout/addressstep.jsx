@@ -59,9 +59,12 @@ export default function AddressStep({ onNext }) {
       if (pincode.length === 6) {
         setIsChecking(true);
         try {
-          const res = await fetch(
-            `/api/shiprocket-pincode-check?pincode=${pincode}&quantity=${quantity}`
-          );
+          const res = await fetch(`/api/shiprocket-pincode-check?pincode=${pincode}&quantity=${quantity}`, {
+            headers: {
+              'x-api-key': process.env.NEXT_PUBLIC_API_KEY,
+            }
+          });
+
           const data = await res.json();
 
           if (data.error) throw new Error(data.error);

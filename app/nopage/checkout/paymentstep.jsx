@@ -65,7 +65,7 @@ export default function PaymentStep({ userData }) {
             name: userData.name,
             address: userData.address,
             items: cartItems,
-            method: "cod",
+            method: "COD",
             total,
           }),
         });

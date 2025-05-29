@@ -30,16 +30,20 @@ async function getShiprocketToken() {
 
 
 export async function GET(req) {
+   const apiKey = req.headers.get("x-api-key");
+  if (apiKey !== process.env.NEXT_PUBLIC_API_KEY) {
+    return new Response("Unauthorized", { status: 401 });
+  }
   try {
     const { searchParams } = new URL(req.url);
     const pincode = searchParams.get("pincode");
     const quantity = parseInt(searchParams.get("quantity")) || 1;
 
     const pickupPostcode = "360002";
-    const weight = parseInt(process.env.SHIPPING_WEIGHT) || 400;
-    const length = parseInt(process.env.SHIPPING_LENGTH) || 30;
-    const width = parseInt(process.env.SHIPPING_WIDTH) || 30;
-    const height = parseInt(process.env.SHIPPING_HEIGHT) || 30;
+    const weight = parseInt(process.env.SHIPPING_WEIGHT) || 100;
+    const length = parseInt(process.env.SHIPPING_LENGTH) || 10;
+    const width = parseInt(process.env.SHIPPING_WIDTH) || 10;
+    const height = parseInt(process.env.SHIPPING_HEIGHT) || 10;
 
     const totalWeight = (weight / 1000) * quantity;
     const volumetricWeight = ((length * width * height) / 5000) * quantity;
