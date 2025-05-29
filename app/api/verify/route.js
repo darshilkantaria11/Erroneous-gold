@@ -4,7 +4,6 @@ import { dbConnect } from "../../utils/mongoose";
 
 export async function POST(req) {
     try {
-        // Step 1: Parse request body
         const body = await req.json();
         const {
             razorpay_order_id,
@@ -13,7 +12,6 @@ export async function POST(req) {
             orderData,
         } = body;
 
-        // Step 2: Verify Razorpay signature
         const generated_signature = crypto
             .createHmac("sha256", process.env.RAZORPAY_SECRET)
             .update(`${razorpay_order_id}|${razorpay_payment_id}`)
@@ -26,13 +24,22 @@ export async function POST(req) {
             );
         }
 
-        // Step 3: Connect to database
         await dbConnect();
 
         const { number, name, address, items, method } = orderData;
 
-        // Step 4: Format order items
+        // Generate a unique orderId (you can use a timestamp + random hex for simplicity)
+         const orderId =
+      pad(nowIST.getDate()) +
+      pad(nowIST.getMonth() + 1) +
+      nowIST.getFullYear() +
+      pad(nowIST.getHours()) +
+      pad(nowIST.getMinutes()) +
+      pad(nowIST.getSeconds()) +
+      number;
+
         const orderItems = items.map((item) => ({
+            orderId, // ✅ Required field injected here
             productId: item.id,
             quantity: item.quantity,
             amount: (item.price - 100) * item.quantity,
@@ -41,11 +48,10 @@ export async function POST(req) {
             city: address.city,
             state: address.state,
             fullAddress: address.line1,
-            engravedName: item.name || "", // <-- Save engraved name here
+            engravedName: item.name || "",
             createdAt: new Date(),
         }));
 
-        // Step 5: Save order to DB
         const existingOrder = await Order.findOne({ number });
 
         if (existingOrder) {
@@ -59,7 +65,6 @@ export async function POST(req) {
             });
         }
 
-        // Step 6: Return success
         return new Response(JSON.stringify({ success: true }), { status: 200 });
     } catch (error) {
         console.error("Verification error:", error);

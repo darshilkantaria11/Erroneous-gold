@@ -253,7 +253,7 @@ export default function MyOrdersPage() {
                           <span>{status.text}</span>
                         </div>
                         <div className="text-lg font-bold text-gray-800">
-                          ₹{item.amount * item.quantity}
+                          ₹{item.amount}
                         </div>
                         <button className="flex items-center text-c4 font-medium">
                           <span>{isExpanded ? "Less details" : "More details"}</span>
@@ -289,12 +289,12 @@ export default function MyOrdersPage() {
                               <span className="text-gray-600">Payment Method:</span>
                               <span className="font-medium">{item.method === "cod" ? "Cash on Delivery" : "Prepaid"}</span>
                             </div>
-                            <div className="flex justify-between mb-2">
+                            {/* <div className="flex justify-between mb-2">
                               <span className="text-gray-600">Delivery Status:</span>
                               <span className={`font-medium ${status.text === "Delivered" ? "text-green-600" : status.text === "Shipped" ? "text-blue-600" : "text-yellow-600"}`}>
                                 {status.text}
                               </span>
-                            </div>
+                            </div> */}
                             <div className="flex justify-between ">
                              <p> Order ID:</p> <p>{item.orderId}</p>
                             </div>

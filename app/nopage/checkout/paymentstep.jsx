@@ -103,6 +103,15 @@ export default function PaymentStep({ userData }) {
           const verifyData = await verifyRes.json();
 
           if (verifyData.success) {
+            await fetch("/api/placeorder", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": process.env.NEXT_PUBLIC_API_KEY
+              },
+              body: JSON.stringify(orderData),
+            });
+
             clearCart();
             router.push("/thank-you");
           } else {
