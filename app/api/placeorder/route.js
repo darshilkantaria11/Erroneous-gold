@@ -20,7 +20,10 @@ export async function POST(req) {
     }
 
     // Generate order ID: format DDMMYYYYHHMMSS + mobileNumber (IST time)
-    const nowIST = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    const nowUTC = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000;
+    const nowIST = new Date(nowUTC.getTime() + istOffset);
+
     const pad = (n) => n.toString().padStart(2, "0");
 
     const orderId =
