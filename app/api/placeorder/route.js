@@ -23,6 +23,7 @@ export async function POST(req) {
     const nowUTC = new Date();
     const istOffset = 5.5 * 60 * 60 * 1000;
     const nowIST = new Date(nowUTC.getTime() + istOffset);
+    const nowISTT = new Date(nowUTC.getTime());
 
     const pad = (n) => n.toString().padStart(2, "0");
 
@@ -46,7 +47,7 @@ export async function POST(req) {
       state: address.state,
       fullAddress: address.line1,
       engravedName: item.name || "",
-      createdAt: nowIST,
+      createdAt: nowISTT,
       orderId, // <-- added here
     }));
 
