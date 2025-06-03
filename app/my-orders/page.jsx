@@ -287,7 +287,7 @@ export default function MyOrdersPage() {
                           <div className="bg-white rounded-lg p-4 text-sm border border-gray-200">
                             <div className="flex justify-between mb-2">
                               <span className="text-gray-600">Payment Method:</span>
-                              <span className="font-medium">{item.method === "cod" ? "Cash on Delivery" : "Prepaid"}</span>
+                              <span className="font-medium">{item.method === "COD" ? "Cash on Delivery" : "Prepaid"}</span>
                             </div>
                             {/* <div className="flex justify-between mb-2">
                               <span className="text-gray-600">Delivery Status:</span>

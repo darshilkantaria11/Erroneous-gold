@@ -11,8 +11,11 @@ export default function PaymentStep({ userData }) {
   const cartItems = Object.values(cart);
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingCharge = userData?.shippingCharge || 0;
+  const totalQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const discount = totalQuantity * 100;
   const total = subtotal;
-  const online = total - 100;
+  const online = total - discount;
+
   const [loadingText, setLoadingText] = useState("");
 
 
@@ -78,7 +81,7 @@ export default function PaymentStep({ userData }) {
 
       const razorpayOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-        amount: total * 100,
+        amount: online ,
         currency: "INR",
         name: "Erroneous Gold",
         description: "Order Payment",
@@ -232,7 +235,8 @@ export default function PaymentStep({ userData }) {
             </div>
             <div className="text-left mt-1">
               <div className="text-right  line-through opacity-60 text-xs ml-1">₹{total}</div>
-              <div className="text-right  text-base">₹{total - 100}</div>
+              <div className="text-right text-base">₹{online}</div>
+
             </div>
           </button>
         ))}
