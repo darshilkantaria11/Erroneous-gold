@@ -7,7 +7,7 @@ import { FaFacebookF, FaTwitter, FaInstagram, FaPinterest } from "react-icons/fa
 export default function Footer() {
     return (
 
-        <footer className="bg-c3/2 text-black pt-16 border-t-2 mt-10">
+        <footer className="bg-[#FBF9F2] text-black pt-16 border-t-2 mt-10">
             <div className="container mx-auto  grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-10">
                 {/* Logo + Description */}
                 <motion.div
@@ -50,9 +50,33 @@ export default function Footer() {
                         ))}
                     </ul>
                 </motion.div>
+                 <motion.div
+                    className="space-y-4 pl-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                    <h2 className="text-2xl font-semibold">Quick Links</h2>
+                    <ul className="space-y-2">
+                        {[
+                            "About us",
+                            "Shop",
+                          
+                        ].map((link) => (
+                            <li key={link}>
+                                <Link
+                                    href={`/${link.toLowerCase().replace(/ /g, "-")}`}
+                                    className="text-black hover:text-c4 transition-all"
+                                >
+                                    {link}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </motion.div>
 
                 {/* Quick Links */}
-                <motion.div
+                {/* <motion.div
                     className="space-y-4 pl-4"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -71,7 +95,7 @@ export default function Footer() {
                             </li>
                         ))}
                     </ul>
-                </motion.div>
+                </motion.div> */}
 
                 {/* Contact Info + Social */}
                 <motion.div
@@ -98,7 +122,7 @@ export default function Footer() {
                     </p>
 
                     <div className="flex space-x-4">
-                        {[FaFacebookF, FaTwitter, FaInstagram, FaPinterest].map((Icon, index) => (
+                        {[FaFacebookF, FaInstagram,].map((Icon, index) => (
                             <motion.a
                                 key={index}
                                 href="#"

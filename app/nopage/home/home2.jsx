@@ -168,7 +168,7 @@ export default function Products() {
                     )}
                 </motion.div>
 
-                {!loading && (
+                {/* {!loading && (
                     <div className="flex justify-center mt-4">
                         <Link href="/shop">
                             <motion.button
@@ -180,7 +180,7 @@ export default function Products() {
                             </motion.button>
                         </Link>
                     </div>
-                )}
+                )} */}
             </div>
         </div>
     );
