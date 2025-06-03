@@ -21,8 +21,8 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <div className="relative flex flex-col items-center justify-center h-[60vh] bg-[#F8F5E9] text-[#1B4638] overflow-hidden bg-cover bg-center">
-      
+    <div className="relative flex flex-col items-center justify-center h-[45vh] lg:h-[60vh] bg-[#F8F5E9] text-[#1B4638] overflow-hidden bg-cover bg-center">
+
       {/* Floating Sparkles */}
       {sparks.map((spark) => (
         <motion.div
@@ -91,27 +91,29 @@ export default function HeroSection() {
       >
         {/* Start Project Button */}
         <Link href="/shop">
-        <motion.div
-          className="px-8 py-4 bg-c4 text-c1 text-lg font-bold rounded-full   transition duration-100 m-2"
-          whileHover={{ scale: 1.1}}
-          whileTap={{ scale: 0.95 }}
+          <motion.div
+            className="px-8 py-4 bg-c4 text-c1 text-lg font-bold rounded-full   transition duration-100 m-2"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           >
-         Shop Now
-        </motion.div>
-          </Link>
+            Shop Now
+          </motion.div>
+        </Link>
 
         {/* View Work Button */}
-        <motion.a
-          href="#"
-          className="px-8 py-4 border-2 border-c4 text-lg font-bold rounded-full  text-c4   transition duration-100 m-2"
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-           Learn More
-        </motion.a>
+        <Link href="/about-us">
+          <motion.div
+
+            className="px-8 py-4 border-2 border-c4 text-lg font-bold rounded-full  text-c4   transition duration-100 m-2"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Learn More
+          </motion.div>
+        </Link>
       </motion.div>
-      
-      
+
+
     </div>
   );
 }
