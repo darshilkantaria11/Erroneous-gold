@@ -128,7 +128,7 @@ export default function ProductDetail() {
               <motion.img
                 src={mainImage}
                 alt={product.productName}
-                className="w-full h-96 object-cover rounded-lg shadow-md"
+                className="w-full h-[65vh] object-fit rounded-lg shadow-md"
                 initial={{ scale: 0.95 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.8 }}
@@ -232,9 +232,12 @@ export default function ProductDetail() {
                       setName(e.target.value);
                       setNameError("");
                     }}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none ${nameError ? "border-red-500" : ""
-                      } ${product.fontName || ""}`}
+                    className={`w-full px-4 py-5 text-xl border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none 
+    leading-relaxed tracking-wide overflow-visible 
+    ${nameError ? "border-red-500" : ""} 
+    ${product.fontName || ""}`}
                   />
+
                   {nameError && <p className="text-red-500 text-sm mt-1 ml-1">{nameError}</p>}
                   <p className="text-sm text-gray-500 ml-1 mb-1">
                     Your name will be engraved on the product.

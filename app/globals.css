@@ -5,13 +5,37 @@
 
 @font-face {
   font-family: 'YourFont';
-  src: url('/fonts/AnandaBlackPersonalUseRegular-rg9Rx.ttf') format('truetype');
+  src: url('/fonts/AUTUMNCHANT.OTF') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-size: larger;
 }
 
-.font1 {
+.autumnchant {
+  font-family: 'YourFont', sans-serif;
+}
+
+@font-face {
+  font-family: 'YourFont';
+  src: url('/fonts/CANDLESCRIPTDEMOVERSION.OTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-size: larger;
+}
+
+.candlescript {
+  font-family: 'YourFont', sans-serif;
+}
+
+@font-face {
+  font-family: 'YourFont';
+  src: url('/fonts/MILKSHAKE.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-size: larger;
+}
+
+.milkshake {
   font-family: 'YourFont', sans-serif;
 }
 
