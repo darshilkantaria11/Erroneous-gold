@@ -4,7 +4,7 @@
 
 
 @font-face {
-  font-family: 'YourFont';
+  font-family: 'autumnchant';
   src: url('/fonts/AUTUMNCHANT.OTF') format('truetype');
   font-weight: normal;
   font-style: normal;
@@ -12,11 +12,11 @@
 }
 
 .autumnchant {
-  font-family: 'YourFont', sans-serif;
+  font-family: 'autumnchant', sans-serif;
 }
 
 @font-face {
-  font-family: 'YourFont';
+  font-family: 'candlescript';
   src: url('/fonts/CANDLESCRIPTDEMOVERSION.OTF') format('truetype');
   font-weight: normal;
   font-style: normal;
@@ -24,11 +24,11 @@
 }
 
 .candlescript {
-  font-family: 'YourFont', sans-serif;
+  font-family: 'candlescript', sans-serif;
 }
 
 @font-face {
-  font-family: 'YourFont';
+  font-family: 'milkshake';
   src: url('/fonts/MILKSHAKE.TTF') format('truetype');
   font-weight: normal;
   font-style: normal;
@@ -36,7 +36,7 @@
 }
 
 .milkshake {
-  font-family: 'YourFont', sans-serif;
+  font-family: 'milkshake', sans-serif;
 }
 
 

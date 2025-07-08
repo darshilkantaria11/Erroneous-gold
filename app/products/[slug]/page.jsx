@@ -232,7 +232,7 @@ export default function ProductDetail() {
                       setName(e.target.value);
                       setNameError("");
                     }}
-                    className={`w-full px-4 py-5 text-xl border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none 
+                    className={`w-full px-4 py-3 text-xl border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none 
     leading-relaxed tracking-wide overflow-visible 
     ${nameError ? "border-red-500" : ""} 
     ${product.fontName || ""}`}
