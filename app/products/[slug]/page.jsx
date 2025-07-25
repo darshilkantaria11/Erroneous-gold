@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useCart } from "../../nopage/context/CartContext";
-import ReviewForm from "../../nopage/components/review"; // adjust the path based on your project structure
+import ReviewForm from "../../nopage/components/review";
 import TrustSection from "../../nopage/components/trustsection";
-import Checkout from "../../nopage/checkout/checkout"
+import Checkout from "../../nopage/checkout/checkout";
 import { XMarkIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 
 const Skeleton = ({ className }) => (
@@ -24,6 +24,8 @@ export default function ProductDetail() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [activeTab, setActiveTab] = useState("description");
   const [name, setName] = useState("");
+  const [name1, setName1] = useState(""); // First name for couple necklaces
+  const [name2, setName2] = useState(""); // Second name for couple necklaces
   const [quantity, setQuantity] = useState(0);
   const [nameError, setNameError] = useState("");
   const [showCheckoutPopup, setShowCheckoutPopup] = useState(false);
@@ -32,10 +34,20 @@ export default function ProductDetail() {
     const cartItem = cart[slug];
     if (cartItem) {
       setQuantity(cartItem.quantity);
-      setName(cartItem.name || "");
+      
+      // Handle couple necklace name splitting
+      if (cartItem.name && cartItem.name.includes(" ")) {
+        const names = cartItem.name.split(" ");
+        setName1(names[0] || "");
+        setName2(names[1] || "");
+      } else {
+        setName(cartItem.name || "");
+      }
     } else {
       setQuantity(0);
       setName("");
+      setName1("");
+      setName2("");
     }
   }, [cart, slug]);
 
@@ -71,35 +83,64 @@ export default function ProductDetail() {
   } : {};
 
   const handleAddToCart = () => {
-    if (!name.trim()) {
-      setNameError("Please enter a name before adding to cart.");
+    let fullName = "";
+    
+    if (product?.category === "couplenamenecklace") {
+      if (!name1.trim() || !name2.trim()) {
+        setNameError("Please enter both names before adding to cart.");
+        return;
+      }
+      fullName = `${name1} ${name2}`;
+    } else {
+      if (!name.trim()) {
+        setNameError("Please enter a name before adding to cart.");
+        return;
+      }
+      fullName = name;
+    }
+
+    if (fullName.length > 21) {
+      setNameError("Total name length must be 10 characters or less.");
       return;
     }
 
-
-    // Add the productName to the cart data
     addToCart(slug, {
       id: slug,
-      name,
-      productName: product.productName, // Add the productName here
+      name: fullName,
+      productName: product.productName,
       quantity: 1,
       price: product.originalPrice,
       image: product.img1
     });
   };
+
   const handleAddToBuy = () => {
-    if (!name.trim()) {
-      setNameError("Please enter a name before adding to cart.");
+    let fullName = "";
+    
+    if (product?.category === "couplenamenecklace") {
+      if (!name1.trim() || !name2.trim()) {
+        setNameError("Please enter both names before adding to cart.");
+        return;
+      }
+      fullName = `${name1} ${name2}`;
+    } else {
+      if (!name.trim()) {
+        setNameError("Please enter a name before adding to cart.");
+        return;
+      }
+      fullName = name;
+    }
+
+    if (fullName.length > 21) {
+      setNameError("Total name length must be 10 characters or less.");
       return;
     }
 
     const cartItem = cart[slug];
-
     if (!cartItem) {
-      // Add the product only if it's not already in the cart
       addToCart(slug, {
         id: slug,
-        name,
+        name: fullName,
         productName: product.productName,
         quantity: 1,
         price: product.originalPrice,
@@ -107,11 +148,8 @@ export default function ProductDetail() {
       });
     }
 
-    // Always show checkout popup (regardless of cart state)
     setShowCheckoutPopup(true);
   };
-
-
 
   const increaseQuantity = () => updateQuantity(slug, (cart[slug]?.quantity || 0) + 1);
   const decreaseQuantity = () => updateQuantity(slug, (cart[slug]?.quantity || 0) - 1);
@@ -221,27 +259,71 @@ export default function ProductDetail() {
                 </div>
 
                 <div className="mt-6">
-                  <h3 className="text-lg font-semibold text-gray-800 ml-1">
-                    Enter Your Name <span className="font-normal text-xs">(Max 10 character)</span>
-                  </h3>
-                  <input
-                    type="text"
-                    maxLength={10}
-                    value={name}
-                    onChange={(e) => {
-                      setName(e.target.value);
-                      setNameError("");
-                    }}
-                    className={`w-full px-4 py-3 text-xl border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none 
-    leading-relaxed tracking-wide overflow-visible 
-    ${nameError ? "border-red-500" : ""} 
-    ${product.fontName || ""}`}
-                  />
-
-                  {nameError && <p className="text-red-500 text-sm mt-1 ml-1">{nameError}</p>}
-                  <p className="text-sm text-gray-500 ml-1 mb-1">
-                    Your name will be engraved on the product.
-                  </p>
+                  {product.category === "couplenamenecklace" ? (
+                    <>
+                      <h3 className="text-lg font-semibold text-gray-800 ml-1">
+                        Enter Names <span className="font-normal text-xs">(Max 5 characters each)</span>
+                      </h3>
+                      <div className="flex gap-4 mb-4">
+                        <div className="w-1/2">
+                          <input
+                            type="text"
+                            maxLength={10}
+                            value={name1}
+                            onChange={(e) => {
+                              setName1(e.target.value);
+                              setNameError("");
+                            }}
+                            placeholder="First Name"
+                            className={`w-full px-4 py-3 text-xl border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none 
+                              leading-relaxed tracking-wide overflow-visible 
+                              ${nameError ? "border-red-500" : ""}`}
+                          />
+                        </div>
+                        <div className="w-1/2">
+                          <input
+                            type="text"
+                            maxLength={10}
+                            value={name2}
+                            onChange={(e) => {
+                              setName2(e.target.value);
+                              setNameError("");
+                            }}
+                            placeholder="Second Name"
+                            className={`w-full px-4 py-3 text-xl border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none 
+                              leading-relaxed tracking-wide overflow-visible 
+                              ${nameError ? "border-red-500" : ""}`}
+                          />
+                        </div>
+                      </div>
+                      {nameError && <p className="text-red-500 text-sm mt-1 ml-1">{nameError}</p>}
+                      <p className="text-sm text-gray-500 ml-1 mb-1">
+                        Names will be combined with a space and engraved on the product.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="text-lg font-semibold text-gray-800 ml-1">
+                        Enter Your Name <span className="font-normal text-xs">(Max 10 characters)</span>
+                      </h3>
+                      <input
+                        type="text"
+                        maxLength={10}
+                        value={name}
+                        onChange={(e) => {
+                          setName(e.target.value);
+                          setNameError("");
+                        }}
+                        className={`w-full px-4 py-3 text-xl border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none 
+                          leading-relaxed tracking-wide overflow-visible 
+                          ${nameError ? "border-red-500" : ""}`}
+                      />
+                      {nameError && <p className="text-red-500 text-sm mt-1 ml-1">{nameError}</p>}
+                      <p className="text-sm text-gray-500 ml-1 mb-1">
+                        Your name will be engraved on the product.
+                      </p>
+                    </>
+                  )}
                 </div>
 
                 <div className="mt-8 flex w-full flex-row gap-4">
@@ -289,13 +371,9 @@ export default function ProductDetail() {
           </div>
         </div>
 
-        {/* <TrustSection/> */}
-
-
         <div className="mt-12 container mx-auto px-4 lg:px-10">
           <ReviewForm productId={slug} />
         </div>
-
       </div>
       {showCheckoutPopup && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-2">
@@ -307,9 +385,7 @@ export default function ProductDetail() {
               <XMarkIcon className="h-6 w-6" />
             </button>
             <h2 className="text-xl font-bold ">Checkout</h2>
-            {/* You can replace this with actual CheckoutForm component */}
             <Checkout />
-            {/* <p className="text-sm text-gray-600">Checkout form or payment options will go here...</p> */}
           </div>
         </div>
       )}
