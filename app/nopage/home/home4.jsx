@@ -31,7 +31,7 @@ export default function Products() {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [reviewsSummary, setReviewsSummary] = useState({});
-    const limit = 20;
+    const limit = 12;
     const pathname = usePathname(); // Get current route path
 
     // Reset state when route changes (including on initial mount)
@@ -69,7 +69,7 @@ export default function Products() {
             setProducts(prev => {
                 const seen = new Set(prev.map(p => p._id));
                 const filtered = data.filter(
-                    p => p.category === "singlenamenecklace" && p.status === "live"
+                    p => p.category === "rakhi" && p.status === "live"
                 );
                 if (filtered.length < limit) setHasMore(false);
                 const unique = filtered.filter(p => !seen.has(p._id));
@@ -124,7 +124,7 @@ export default function Products() {
                         initial={{ opacity: 0, y: -50 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}>
-                        Single Name Necklace
+                        Rakhi
                     </motion.h1>
                 )}
 

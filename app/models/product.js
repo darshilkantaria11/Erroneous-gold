@@ -46,9 +46,19 @@ const productSchema = new Schema(
       required: [true, "Font name is required"],
       trim: true,
     },
+    category: {
+      type: String,
+      enum: ["singlenamenecklace", "couplenamenecklace", "keychain", "rakhi"],
+      default: "singlenamenecklace",
+    },
+    status: {
+      type: String,
+      enum: ["live", "inactive"], // ✅ New field for product visibility
+      default: "live",
+    },
   },
   {
-    timestamps: true, // Automatically manage createdAt and updatedAt
+    timestamps: true,
   }
 );
 

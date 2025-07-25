@@ -20,10 +20,10 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <CartProvider>
           <div className=" ">
-            <Headline />
+            {/* <Headline /> */}
             <Navbar />
             {children}
-            <Bottom />
+            {/* <Bottom /> */}
             <Footer />
             <CartNotification />
           </div>

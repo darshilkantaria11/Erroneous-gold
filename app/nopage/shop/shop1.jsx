@@ -97,7 +97,7 @@ export default function Products() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                    Crafted Elegance Collection
+                    Single Name Necklace
                 </motion.h1>
 
                 <motion.div

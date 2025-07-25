@@ -87,7 +87,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`bg-c1 shadow-md text-c4 sticky z-50 transition-all duration-300 ${isScrolled ? "top-0" : "top-8 md:top-10"
+      className={`bg-c1 shadow-md text-c4 sticky z-50 transition-all duration-300 ${isScrolled ? "top-0" : "top-0 md:top-0"
         }`}
     >
       <div className="md:px-4 pr-2 flex justify-between items-center">
@@ -96,9 +96,9 @@ export default function Navbar() {
           <Link href="/" className="hover:scale-110 transform transition">
             Home
           </Link>
-          <Link href="/shop" className="hover:scale-110 transform transition">
+          {/* <Link href="/shop" className="hover:scale-110 transform transition">
             Shop
-          </Link>
+          </Link> */}
           <Link href="/about-us" className="hover:scale-110 transform transition">
             About Us
           </Link>
@@ -183,7 +183,7 @@ export default function Navbar() {
         className="md:hidden overflow-hidden bg-c2 rounded-b-xl"
       >
         <div className="flex flex-col items-start space-y-3 px-4 py-4 bg-c1 shadow-lg">
-          {["Home", "Shop", "About Us", "Contact Us"].map((label) => (
+          {["Home", "About Us", "Contact Us"].map((label) => (
             <Link
               key={label}
               href="#"
