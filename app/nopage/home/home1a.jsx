@@ -83,13 +83,13 @@ export default function HeroSection() {
       </motion.div>
 
       {/* 🚀 Buttons with Delay */}
-      <motion.div
+      {/* <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2.5, duration: 1 }}
         className="relative z-10 flex  md:mt-6  flex-row "
       >
-        {/* Start Project Button */}
+       
         <Link href="/shop">
           <motion.div
             className="px-8 py-4 bg-c4 text-c1 text-lg font-bold rounded-full   transition duration-100 m-2"
@@ -100,7 +100,7 @@ export default function HeroSection() {
           </motion.div>
         </Link>
 
-        {/* View Work Button */}
+       
         <Link href="/about-us">
           <motion.div
 
@@ -111,7 +111,7 @@ export default function HeroSection() {
             Learn More
           </motion.div>
         </Link>
-      </motion.div>
+      </motion.div> */}
 
 
     </div>
