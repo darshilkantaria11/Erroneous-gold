@@ -19,6 +19,12 @@ const userSchema = new Schema({
     unique: true,
     immutable: true,
   },
+  email: {
+    type: String,
+    trim: true,
+    lowercase: true,
+    default: null,
+  },
   token: {
     type: String,
     default: null,

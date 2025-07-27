@@ -44,7 +44,7 @@ export default function TopCategories() {
             transition={{ delay: index * 0.1,  ease: 'easeOut' }}
             whileHover={{ scale: 1.05 }}
           >
-            <Link href={`/category/${category.slug}`}>
+            <Link href={`/${category.slug}`}>
               <div className="w-40 h-40 lg:w-64 lg:h-64 rounded-full border border-gray-200 overflow-hidden mx-auto shadow-md cursor-pointer">
                 <img
                   src={category.image}

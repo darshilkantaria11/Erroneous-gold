@@ -34,7 +34,7 @@ export default function ProductDetail() {
     const cartItem = cart[slug];
     if (cartItem) {
       setQuantity(cartItem.quantity);
-      
+
       // Handle couple necklace name splitting
       if (cartItem.name && cartItem.name.includes(" ")) {
         const names = cartItem.name.split(" ");
@@ -84,7 +84,7 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     let fullName = "";
-    
+
     if (product?.category === "couplenamenecklace") {
       if (!name1.trim() || !name2.trim()) {
         setNameError("Please enter both names before adding to cart.");
@@ -116,7 +116,7 @@ export default function ProductDetail() {
 
   const handleAddToBuy = () => {
     let fullName = "";
-    
+
     if (product?.category === "couplenamenecklace") {
       if (!name1.trim() || !name2.trim()) {
         setNameError("Please enter both names before adding to cart.");
@@ -163,14 +163,28 @@ export default function ProductDetail() {
             {loading ? (
               <Skeleton className="w-full h-96 rounded-lg" />
             ) : (
-              <motion.img
-                src={mainImage}
-                alt={product.productName}
-                className="w-full h-[65vh] object-fit rounded-lg shadow-md"
-                initial={{ scale: 0.95 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.8 }}
-              />
+              <div
+                className="relative w-full h-[65vh] overflow-hidden rounded-lg shadow-md bg-center bg-no-repeat bg-cover"
+                style={{ backgroundImage: `url(${mainImage})` }}
+                onMouseMove={(e) => {
+                  const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.pageX - left) / width) * 100;
+                  const y = ((e.pageY - top) / height) * 100;
+                  e.currentTarget.style.backgroundPosition = `${x}% ${y}%`;
+                  e.currentTarget.style.backgroundSize = "200%";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundPosition = "center";
+                  e.currentTarget.style.backgroundSize = "cover";
+                }}
+              >
+                <img
+                  src={mainImage}
+                  alt={product?.productName}
+                  className="w-full h-full object-cover opacity-0"
+                />
+              </div>
+
             )}
 
             {loading ? (
@@ -277,7 +291,7 @@ export default function ProductDetail() {
                             placeholder="First Name"
                             className={`w-full px-4 py-3 text-xl border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none 
                               leading-relaxed tracking-wide overflow-visible 
-                              ${nameError ? "border-red-500" : ""}`}
+                              ${nameError ? "border-red-500" : ""} ${product.fontName || ""}`}
                           />
                         </div>
                         <div className="w-1/2">
@@ -292,7 +306,7 @@ export default function ProductDetail() {
                             placeholder="Second Name"
                             className={`w-full px-4 py-3 text-xl border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none 
                               leading-relaxed tracking-wide overflow-visible 
-                              ${nameError ? "border-red-500" : ""}`}
+                              ${nameError ? "border-red-500" : ""} ${product.fontName || ""}`}
                           />
                         </div>
                       </div>
@@ -316,7 +330,7 @@ export default function ProductDetail() {
                         }}
                         className={`w-full px-4 py-3 text-xl border rounded-lg focus:ring-2 focus:ring-c4 focus:outline-none 
                           leading-relaxed tracking-wide overflow-visible 
-                          ${nameError ? "border-red-500" : ""}`}
+                          ${nameError ? "border-red-500" : ""} ${product.fontName || ""}`}
                       />
                       {nameError && <p className="text-red-500 text-sm mt-1 ml-1">{nameError}</p>}
                       <p className="text-sm text-gray-500 ml-1 mb-1">

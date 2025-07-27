@@ -5,27 +5,27 @@ import Products from "./nopage/home/Products"
 
 export default function Home() {
   return (
-   <>
-   <Home1/>
-   <Home6/>
-   <Products 
-  category="singlenamenecklace" 
-  title="Single Name Necklaces" 
-/>
-<Products 
-  category="rakhi" 
-  title="Rakhi" 
-/>
+    <>
+      <Home1 />
+      <Home6 />
+      <Products
+        category="singlenamenecklace"
+        title="Single Name Necklaces"
+      />
+      <Products
+        category="rakhi"
+        title="Rakhi"
+      />
 
-<Products 
-  category="couplenamenecklace" 
-  title="Couple Name Necklaces" 
-/>
-<Products 
-  category="keychain" 
-  title="Keychains" 
-/>
+      <Products
+        category="couplenamenecklace"
+        title="Couple Name Necklaces"
+      />
+      <Products
+        category="keychain"
+        title="Keychains"
+      />
 
-   </>
+    </>
   )
 }

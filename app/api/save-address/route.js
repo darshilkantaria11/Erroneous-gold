@@ -12,9 +12,16 @@ export async function POST(req) {
     }
 
     await dbConnect();
-    const { number, address } = await req.json();
+    const { number, address, email } = await req.json();
 
-    if (!number || !address || !address.pincode || !address.city || !address.state || !address.fullAddress) {
+    if (
+      !number ||
+      !address ||
+      !address.pincode ||
+      !address.city ||
+      !address.state ||
+      !address.fullAddress
+    ) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
@@ -23,18 +30,23 @@ export async function POST(req) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // ✅ Replace first address if exists, otherwise add it
+    // ✅ Update or add address
     if (user.addresses && user.addresses.length > 0) {
       user.addresses[0] = address;
     } else {
       user.addresses.push(address);
     }
 
+    // ✅ Update email if provided
+    if (email) {
+      user.email = email;
+    }
+
     await user.save();
 
-    return NextResponse.json({ message: "Address saved" }, { status: 200 });
+    return NextResponse.json({ message: "Address and email saved" }, { status: 200 });
   } catch (error) {
-    console.error("Address Save Error:", error);
+    console.error("User Save Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

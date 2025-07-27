@@ -81,23 +81,23 @@ export default function SlugPage() {
   }, [slug]);
 
   if (notFoundFlag) {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
-      <div className="text-6xl mb-4 text-c4">🔍</div>
-      <h2 className="text-2xl md:text-3xl font-semibold text-c4 mb-2">No matching products found</h2>
-      <p className="text-gray-500 max-w-md mb-6">
-        We couldn&apos;t find anything for &quot;<span className="font-medium text-c4">{slug.replace(/-/g, " ")}</span>&quot;.
-        <br /> Try searching with different keywords or explore our popular collections.
-      </p>
-      <Link
-        href="/"
-        className="px-6 py-2 bg-c4  text-white rounded-full text-sm font-medium transition-colors"
-      >
-        Go Back Home
-      </Link>
-    </div>
-  );
-}
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
+        <div className="text-6xl mb-4 text-c4">🔍</div>
+        <h2 className="text-2xl md:text-3xl font-semibold text-c4 mb-2">No matching products found</h2>
+        <p className="text-gray-500 max-w-md mb-6">
+          We couldn&apos;t find anything for &quot;<span className="font-medium text-c4">{slug.replace(/-/g, " ")}</span>&quot;.
+          <br /> Try searching with different keywords or explore our popular collections.
+        </p>
+        <Link
+          href="/"
+          className="px-6 py-2 bg-c4  text-white rounded-full text-sm font-medium transition-colors"
+        >
+          Go Back Home
+        </Link>
+      </div>
+    );
+  }
 
 
   return (
@@ -134,49 +134,52 @@ export default function SlugPage() {
               </div>
             ))
           ) : (
-            products.map((product) => {
-              const summary = reviewsSummary[product._id] || { avgRating: 0, count: 0 };
-              return (
-                <motion.div
-                  key={product._id}
-                  className="overflow-hidden hover:shadow-2xl transition-shadow duration-500"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Link href={`/products/${product._id}`}>
-                    <div>
-                      <div className="relative w-full md:h-72 h-52 overflow-hidden">
-                        <motion.img
-                          src={product.img1}
-                          alt={product.productName}
-                          className="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-500"
-                          initial={{ opacity: 1 }}
-                          whileHover={{ opacity: 0 }}
-                        />
-                        <motion.img
-                          src={product.img2}
-                          alt={`${product.productName} Hover`}
-                          className="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-500"
-                          initial={{ opacity: 0 }}
-                          whileHover={{ opacity: 1 }}
-                        />
-                      </div>
-                      <div className="py-4 px-1 text-start">
-                        <h2 className="text-sm lg:text-lg font-semibold text-c4">{product.productName}</h2>
-                        <div className="flex justify-start items-center space-x-2 ">
-                          <p className="text-xs lg:text-sm text-gray-400 line-through">Rs.{product.strikeoutPrice}</p>
-                          <p className="text-md lg:text-xl text-c4 font-semibold">Rs.{product.originalPrice}</p>
+            products
+              .filter((product) => product.status === "live")
+              .map((product) => {
+
+                const summary = reviewsSummary[product._id] || { avgRating: 0, count: 0 };
+                return (
+                  <motion.div
+                    key={product._id}
+                    className="overflow-hidden hover:shadow-2xl transition-shadow duration-500"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Link href={`/products/${product._id}`}>
+                      <div>
+                        <div className="relative w-full md:h-72 h-52 overflow-hidden">
+                          <motion.img
+                            src={product.img1}
+                            alt={product.productName}
+                            className="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-500"
+                            initial={{ opacity: 1 }}
+                            whileHover={{ opacity: 0 }}
+                          />
+                          <motion.img
+                            src={product.img2}
+                            alt={`${product.productName} Hover`}
+                            className="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-500"
+                            initial={{ opacity: 0 }}
+                            whileHover={{ opacity: 1 }}
+                          />
                         </div>
-                        <div className="flex items-center space-x-2 ">
-                          <StarRating rating={summary.avgRating} />
-                          <span className="text-sm text-gray-600">({summary.count})</span>
+                        <div className="py-4 px-1 text-start">
+                          <h2 className="text-sm lg:text-lg font-semibold text-c4">{product.productName}</h2>
+                          <div className="flex justify-start items-center space-x-2 ">
+                            <p className="text-xs lg:text-sm text-gray-400 line-through">Rs.{product.strikeoutPrice}</p>
+                            <p className="text-md lg:text-xl text-c4 font-semibold">Rs.{product.originalPrice}</p>
+                          </div>
+                          <div className="flex items-center space-x-2 ">
+                            <StarRating rating={summary.avgRating} />
+                            <span className="text-sm text-gray-600">({summary.count})</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                </motion.div>
-              );
-            })
+                    </Link>
+                  </motion.div>
+                );
+              })
           )}
         </motion.div>
       </div>
