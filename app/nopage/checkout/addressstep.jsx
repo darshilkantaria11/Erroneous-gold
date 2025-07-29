@@ -263,7 +263,7 @@ export default function AddressStep({ onNext }) {
               <XCircleIcon className="h-5 w-5 text-red-600" />
               <div>
                 <p className="font-medium text-red-800">
-                  Sorry, we don't deliver to this area
+                  Sorry, we don&apos;t deliver to this area
                 </p>
                 <p className="text-sm text-red-700">
                   Please try a different pincode
