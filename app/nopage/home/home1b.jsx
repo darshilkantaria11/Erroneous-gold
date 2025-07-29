@@ -1,32 +1,58 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 
 export default function TopCategories() {
-  const categories = [
+  const allCategories = [
     {
       name: 'Single Name Necklaces',
-      image:
-        'https://raw.githubusercontent.com/erroneousgold/images/refs/heads/main/autum%20rose%201.webp',
+      image: 'https://raw.githubusercontent.com/erroneousgold/images/refs/heads/main/autum%20rose%201.webp',
       slug: 'single-name-necklaces',
+      apiCategory: 'singlenamenecklace',
     },
     {
       name: 'Rakhi',
       image: 'https://raw.githubusercontent.com/erroneousgold/images/refs/heads/main/OM%20Name%20Rakhi%2001.webp',
       slug: 'rakhi',
+      apiCategory: 'rakhi',
     },
     {
       name: 'Couple Name Necklaces',
       image: 'https://raw.githubusercontent.com/erroneousgold/images/refs/heads/main/autum%20rose%201.webp',
       slug: 'couple-name-necklaces',
+      apiCategory: 'couplenamenecklace',
     },
     {
       name: 'Keychains',
       image: 'https://raw.githubusercontent.com/erroneousgold/images/refs/heads/main/OM%20Name%20Rakhi%2001.webp',
       slug: 'keychains',
+      apiCategory: 'keychain',
     },
   ]
+
+  const [visibleCategories, setVisibleCategories] = useState([])
+
+  useEffect(() => {
+    const fetchLiveCategories = async () => {
+      const key = process.env.NEXT_PUBLIC_API_KEY // optional: remove if not needed on frontend
+      const promises = allCategories.map(async (cat) => {
+        const res = await fetch(`/api/products?category=${cat.apiCategory}&limit=1`, {
+          headers: {
+            'x-api-key': key || '', // if required
+          },
+        })
+        const data = await res.json()
+        return data.length > 0 ? cat : null
+      })
+
+      const results = await Promise.all(promises)
+      setVisibleCategories(results.filter(Boolean))
+    }
+
+    fetchLiveCategories()
+  }, [])
 
   return (
     <section className="py-10 px-4 md:px-16">
@@ -34,14 +60,20 @@ export default function TopCategories() {
         TOP CATEGORIES
       </h2>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center">
-        {categories.map((category, index) => (
+      <div
+        className={`gap-8 ${visibleCategories.length < 4
+            ? 'flex flex-wrap justify-center'
+            : 'grid grid-cols-2 md:grid-cols-4 justify-items-center'
+          }`}
+      >
+
+        {visibleCategories.map((category, index) => (
           <motion.div
             key={category.slug}
             className="text-center"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1,  ease: 'easeOut' }}
+            transition={{ delay: index * 0.1, ease: 'easeOut' }}
             whileHover={{ scale: 1.05 }}
           >
             <Link href={`/${category.slug}`}>
