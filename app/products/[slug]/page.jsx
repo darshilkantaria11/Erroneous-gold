@@ -157,14 +157,14 @@ export default function ProductDetail() {
   return (
     <>
       <div className="bg-c1 rounded-xl py-10">
-        <div className="container mx-auto px-4 lg:px-10 grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="container mx-auto px-4 lg:px-10 flex flex-col lg:flex-row justify-between">
           {/* Product Images */}
-          <div className="space-y-4">
+          <div className="space-y-4 lg:w-2/5">
             {loading ? (
               <Skeleton className="w-full h-96 rounded-lg" />
             ) : (
               <div
-                className="relative w-full h-[65vh] overflow-hidden rounded-lg shadow-md bg-center bg-no-repeat bg-cover"
+                className="relative w-full aspect-[4/4] overflow-hidden rounded-lg shadow-md bg-center bg-no-repeat bg-cover"
                 style={{ backgroundImage: `url(${mainImage})` }}
                 onMouseMove={(e) => {
                   const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -184,6 +184,7 @@ export default function ProductDetail() {
                   className="w-full h-full object-cover opacity-0"
                 />
               </div>
+
 
             )}
 
@@ -216,7 +217,7 @@ export default function ProductDetail() {
           </div>
 
           {/* Product Details */}
-          <div className="bg-white rounded-lg p-6 shadow-lg">
+          <div className="bg-white rounded-lg p-6 shadow-lg lg:w-3/5 lg:ml-8 mt-4 lg:mt-0">
             {loading ? (
               <>
                 <Skeleton className="h-10 w-3/4 mb-4" />
