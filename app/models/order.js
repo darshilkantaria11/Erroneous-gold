@@ -73,9 +73,15 @@ const orderSchema = new Schema(
       required: true,
       trim: true,
     },
+    email: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     items: [itemSchema],
   },
   { timestamps: true }
 );
+
 
 export default models.Order || model("Order", orderSchema);

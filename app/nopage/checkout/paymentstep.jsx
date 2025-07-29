@@ -66,6 +66,7 @@ export default function PaymentStep({ userData }) {
           body: JSON.stringify({
             number: userData.phone,
             name: userData.name,
+            email: userData.email,
             address: userData.address,
             items: cartItems,
             method: "COD",
@@ -91,6 +92,7 @@ export default function PaymentStep({ userData }) {
           const orderData = {
             number: userData.phone,
             name: userData.name,
+            email: userData.email,
             address: userData.address,
             items: cartItems,
             method: "prepaid",

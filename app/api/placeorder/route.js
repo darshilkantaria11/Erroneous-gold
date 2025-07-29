@@ -13,9 +13,9 @@ export async function POST(req) {
 
     await dbConnect();
 
-    const { number, name, address, items, method } = await req.json();
+    const { number, name, email, address, items, method } = await req.json();
 
-    if (!number || !name || !address || !items || !method) {
+    if (!number || !name || !email || !address || !items || !method) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -54,17 +54,20 @@ export async function POST(req) {
     const existingOrder = await Order.findOne({ number });
 
     if (existingOrder) {
-      // Append new items to existing order
       existingOrder.items.push(...orderItems);
+      existingOrder.name = name;
+      existingOrder.email = email;
       await existingOrder.save();
-    } else {
-      // Create a new order
+    }
+    else {
       await Order.create({
         number,
         name,
+        email,
         items: orderItems,
       });
     }
+
 
     return NextResponse.json({ message: "Order placed successfully", orderId }, { status: 201 });
   } catch (error) {

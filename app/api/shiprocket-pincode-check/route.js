@@ -89,13 +89,18 @@ export async function GET(req) {
         courier?.shipping_cost ||
         0;
 
-      if (courier?.etd) {
-        expectedDate = new Date(courier.etd).toLocaleDateString("en-IN", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-        });
-      }
+     if (courier?.etd) {
+  const originalDate = new Date(courier.etd);
+  const finalDate = new Date(originalDate);
+  finalDate.setDate(originalDate.getDate() + 5); // add 5 days
+
+  expectedDate = finalDate.toLocaleDateString("en-IN", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+  });
+}
+
     }
 
     return Response.json({
