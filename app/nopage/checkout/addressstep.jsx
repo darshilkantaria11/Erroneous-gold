@@ -12,6 +12,8 @@ import { useCart } from "../context/CartContext";
 export default function AddressStep({ onNext }) {
   const { getTotalItems } = useCart();
   const quantity = getTotalItems();
+  const [postOfficeOptions, setPostOfficeOptions] = useState([]);
+
 
   const [pincode, setPincode] = useState("");
   const [email, setEmail] = useState("");
@@ -36,7 +38,7 @@ export default function AddressStep({ onNext }) {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const phone = storedUser?.phone;
       const storedEmail = storedUser?.email;
-      
+
       // Set email if available
       if (storedEmail) setEmail(storedEmail);
 
@@ -47,10 +49,10 @@ export default function AddressStep({ onNext }) {
         if (!res.ok) throw new Error("Address not found");
 
         const data = await res.json();
-        
+
         // Set email from API if available
         if (data.email) setEmail(data.email);
-        
+
         if (data.address) {
           setPincode(data.address.pincode || "");
           setAddress({
@@ -88,17 +90,41 @@ export default function AddressStep({ onNext }) {
             shippingCharge: data.shippingCharge,
             expectedDate: data.expectedDate,
           });
-          
-          // Clear pincode error when serviceable
+
           if (data.serviceable) {
-            setErrors(prev => ({ ...prev, pincode: "", serviceable: "" }));
+            setErrors((prev) => ({ ...prev, pincode: "", serviceable: "" }));
+          }
+
+          // 📍 Fetch post office options for dropdown
+          const locationRes = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+          const locationData = await locationRes.json();
+          const postOffices = locationData?.[0]?.PostOffice || [];
+
+          const options = postOffices.map(po => ({
+            label: `${po.Name}, ${po.District}`,
+            city: po.Name,
+            district: po.District,
+            state: po.State,
+          }));
+
+          setPostOfficeOptions(options);
+
+          // Autofill city and state from first option
+          if (options.length > 0) {
+            setAddress(prev => ({
+              ...prev,
+              city: options[0].label,
+              state: options[0].state,
+            }));
           }
         } catch (error) {
+          console.error("Pincode check failed:", error.message);
           setDeliveryInfo({
             serviceable: false,
             shippingCharge: 0,
             expectedDate: "",
           });
+          setPostOfficeOptions([]);
         } finally {
           setIsChecking(false);
         }
@@ -107,6 +133,7 @@ export default function AddressStep({ onNext }) {
 
     checkPincode();
   }, [pincode, quantity]);
+
 
   const validateForm = () => {
     const newErrors = {
@@ -146,12 +173,12 @@ export default function AddressStep({ onNext }) {
       newErrors.city = "City is required";
       isValid = false;
     }
-    
+
     if (!address.state.trim()) {
       newErrors.state = "State is required";
       isValid = false;
     }
-    
+
     if (!address.line1.trim()) {
       newErrors.line1 = "Complete address is required";
       isValid = false;
@@ -208,9 +235,8 @@ export default function AddressStep({ onNext }) {
               setErrors(prev => ({ ...prev, email: "" }));
             }}
             placeholder="you@example.com"
-            className={`w-full pl-4 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              errors.email ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full pl-4 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.email ? "border-red-500" : "border-gray-300"
+              }`}
           />
         </div>
         {errors.email && (
@@ -236,18 +262,17 @@ export default function AddressStep({ onNext }) {
               setErrors(prev => ({ ...prev, pincode: "" }));
             }}
             placeholder="Enter 6-digit pincode"
-            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              errors.pincode ? "border-red-500" : "border-gray-300"
-            }`}
+            className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${errors.pincode ? "border-red-500" : "border-gray-300"
+              }`}
           />
         </div>
-        
+
         {isChecking && (
           <p className="text-sm text-blue-600 mt-1 animate-pulse">
             Checking serviceability...
           </p>
         )}
-        
+
         {errors.pincode && (
           <p className="text-sm text-red-600 mt-1">
             {errors.pincode}
@@ -291,26 +316,33 @@ export default function AddressStep({ onNext }) {
             <div className="flex gap-4">
               <div className="w-1/2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  City <span className="text-red-500">*</span>
+                  Area / City <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   value={address.city}
                   onChange={(e) => {
-                    setAddress({ ...address, city: e.target.value });
+                    const selectedOption = postOfficeOptions.find(opt => opt.label === e.target.value);
+                    setAddress(prev => ({
+                      ...prev,
+                      city: selectedOption?.label || "",
+                      state: selectedOption?.state || "",
+                    }));
                     setErrors(prev => ({ ...prev, city: "" }));
                   }}
-                  placeholder="Ex: Mumbai"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.city ? "border-red-500" : "border-gray-300"
-                  }`}
-                />
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.city ? "border-red-500" : "border-gray-300"
+                    }`}
+                >
+                  {postOfficeOptions.map((option, index) => (
+                    <option key={index} value={option.label}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
                 {errors.city && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {errors.city}
-                  </p>
+                  <p className="text-sm text-red-600 mt-1">{errors.city}</p>
                 )}
               </div>
+
 
               <div className="w-1/2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -323,10 +355,10 @@ export default function AddressStep({ onNext }) {
                     setAddress({ ...address, state: e.target.value });
                     setErrors(prev => ({ ...prev, state: "" }));
                   }}
+                  readOnly
                   placeholder="Ex: Maharashtra"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                    errors.state ? "border-red-500" : "border-gray-300"
-                  }`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.state ? "border-red-500" : "border-gray-300"
+                    }`}
                 />
                 {errors.state && (
                   <p className="text-sm text-red-600 mt-1">
@@ -348,9 +380,8 @@ export default function AddressStep({ onNext }) {
                 }}
                 placeholder="House No., Street Name, Area, Landmark"
                 rows="3"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${
-                  errors.line1 ? "border-red-500" : "border-gray-300"
-                }`}
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 ${errors.line1 ? "border-red-500" : "border-gray-300"
+                  }`}
               />
               {errors.line1 && (
                 <p className="text-sm text-red-600 mt-1">
