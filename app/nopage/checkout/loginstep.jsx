@@ -19,44 +19,44 @@ export default function LoginStep({ onNext, defaultName = "", defaultPhone = "" 
   const otpRef = useRef("");
 
 
-  useEffect(() => {
-    const timer = setTimeout(async () => {
-      const hasRedirected = localStorage.getItem("hasRedirected");
-      const storedUser = localStorage.getItem("user");
+  // useEffect(() => {
+  //   const timer = setTimeout(async () => {
+  //     const hasRedirected = localStorage.getItem("hasRedirected");
+  //     const storedUser = localStorage.getItem("user");
 
-      if (!hasRedirected && storedUser) {
-        const userData = JSON.parse(storedUser);
-        const { phone, token } = userData;
+  //     if (!hasRedirected && storedUser) {
+  //       const userData = JSON.parse(storedUser);
+  //       const { phone, token } = userData;
 
-        if (!phone || !token) return;
+  //       if (!phone || !token) return;
 
-        try {
-          const res = await fetch(`/api/verifyuser?number=${phone}&token=${token}`);
-          if (!res.ok) throw new Error("Token invalid");
+  //       try {
+  //         const res = await fetch(`/api/verifyuser?number=${phone}&token=${token}`);
+  //         if (!res.ok) throw new Error("Token invalid");
 
-          const verified = await res.json();
+  //         const verified = await res.json();
 
-          const updatedUser = {
-            name: verified.user.name,
-            phone: verified.user.number,
-            token: token,
-            addresses: verified.user.addresses || [],
-          };
+  //         const updatedUser = {
+  //           name: verified.user.name,
+  //           phone: verified.user.number,
+  //           token: token,
+  //           addresses: verified.user.addresses || [],
+  //         };
 
-          // Save updated user info
-          // localStorage.setItem("user", JSON.stringify(updatedUser));
-          localStorage.setItem("hasRedirected", "true");
+  //         // Save updated user info
+  //         // localStorage.setItem("user", JSON.stringify(updatedUser));
+  //         localStorage.setItem("hasRedirected", "true");
 
-          onNext(1, updatedUser);
-        } catch (err) {
-          console.warn("Auto-login verification failed:", err);
-          localStorage.removeItem("user");
-        }
-      }
-    }, 100); // wait 100ms to ensure popup is ready
+  //         onNext(1, updatedUser);
+  //       } catch (err) {
+  //         console.warn("Auto-login verification failed:", err);
+  //         localStorage.removeItem("user");
+  //       }
+  //     }
+  //   }, 100); // wait 100ms to ensure popup is ready
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
 
 

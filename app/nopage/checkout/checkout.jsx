@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import LoginStep from "./loginstep";
@@ -18,6 +18,38 @@ export default function CheckoutPopup({ onClose }) {
         phone: "",
         address: {},
     });
+    useEffect(() => {
+        const checkAuth = async () => {
+            const storedUser = localStorage.getItem("user");
+            if (storedUser) {
+                const userData = JSON.parse(storedUser);
+                const { phone, token } = userData;
+
+                try {
+                    const res = await fetch(`/api/verifyuser?number=${phone}&token=${token}`);
+                    if (res.ok) {
+                        const verified = await res.json();
+                        
+                        // Update user data
+                        setUserData(prev => ({
+                            ...prev,
+                            name: verified.user.name,
+                            phone: verified.user.number,
+                            addresses: verified.user.addresses || []
+                        }));
+
+                        // Skip login step
+                        setIsStepCompleted(prev => ({ ...prev, 1: true }));
+                        setStep(2);
+                    }
+                } catch (err) {
+                    console.warn("Auto-login verification failed:", err);
+                }
+            }
+        };
+
+        checkAuth();
+    }, []);
 
     const completeStep = (stepNum, data) => {
         setIsStepCompleted((prev) => ({ ...prev, [stepNum]: true }));
