@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState,  useMemo, useRef } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
@@ -31,6 +31,36 @@ export default function Products({ category, title }) {
     const [hasMore, setHasMore] = useState(true);
     const [reviewsSummary, setReviewsSummary] = useState({});
     const limit = 20;
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [selectedFilter, setSelectedFilter] = useState(null);
+    const filterRef = useRef(null);
+
+     useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setIsFilterOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const sortedProducts = useMemo(() => {
+    if (!selectedFilter) return products;
+    
+    return [...products].sort((a, b) => {
+      switch (selectedFilter) {
+        case "price_low_high":
+          return a.originalPrice - b.originalPrice;
+        case "price_high_low":
+          return b.originalPrice - a.originalPrice;
+        case "alphabetical":
+          return a.productName.localeCompare(b.productName);
+        default:
+          return 0;
+      }
+    });
+  }, [products, selectedFilter]);
 
     // Reset state when category changes
     useEffect(() => {
@@ -56,7 +86,7 @@ export default function Products({ category, title }) {
             const data = await res.json();
 
             if (data.length < limit) setHasMore(false);
-            
+
             setProducts(prev => {
                 const seen = new Set(prev.map(p => p._id));
                 const unique = data.filter(p => !seen.has(p._id));
@@ -100,27 +130,120 @@ export default function Products({ category, title }) {
     return (
         <div className="bg-c1 py-4 mb-20">
             <div className="container mx-auto px-6">
-                {products.length > 0 && title && (
-                    <motion.h1 
-                        className="text-2xl md:text-4xl font-bold text-center mb-14 text-c4 tracking-wide"
-                        initial={{ opacity: 0, y: -50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
+               <div className="flex justify-between items-center mb-8">
+          {products.length > 0 && title && (
+            <motion.h1 
+              className="text-2xl md:text-4xl font-bold text-c4 tracking-wide"
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              {title}
+            </motion.h1>
+          )}
+          
+          {(products.length > 0 || loading) && (
+            <div className="relative" ref={filterRef}>
+              <button
+                onClick={() => setIsFilterOpen(!isFilterOpen)}
+                className="flex items-center gap-2 bg-white text-c4 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors shadow-sm"
+              >
+                <span>Filter</span>
+                <svg 
+                  className={`w-4 h-4 transition-transform ${isFilterOpen ? "rotate-180" : ""}`}
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24" 
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              
+              {isFilterOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10 border border-gray-200 overflow-hidden"
+                >
+                  <button
+                    onClick={() => {
+                      setSelectedFilter("price_low_high");
+                      setIsFilterOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center ${
+                      selectedFilter === "price_low_high" ? "bg-gray-50 font-medium" : ""
+                    }`}
+                  >
+                    {selectedFilter === "price_low_high" && (
+                      <svg className="w-4 h-4 mr-2 text-c4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    Price: Low to High
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedFilter("price_high_low");
+                      setIsFilterOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center ${
+                      selectedFilter === "price_high_low" ? "bg-gray-50 font-medium" : ""
+                    }`}
+                  >
+                    {selectedFilter === "price_high_low" && (
+                      <svg className="w-4 h-4 mr-2 text-c4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    Price: High to Low
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSelectedFilter("alphabetical");
+                      setIsFilterOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors flex items-center ${
+                      selectedFilter === "alphabetical" ? "bg-gray-50 font-medium" : ""
+                    }`}
+                  >
+                    {selectedFilter === "alphabetical" && (
+                      <svg className="w-4 h-4 mr-2 text-c4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                    Alphabetical Order
+                  </button>
+                  {selectedFilter && (
+                    <button
+                      onClick={() => {
+                        setSelectedFilter(null);
+                        setIsFilterOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-3 text-gray-500 hover:bg-gray-50 transition-colors border-t border-gray-200 flex items-center"
                     >
-                        {title}
-                    </motion.h1>
-                )}
+                      <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Clear Filter
+                    </button>
+                  )}
+                </motion.div>
+              )}
+            </div>
+          )}
+        </div>
 
-                <motion.div 
+                <motion.div
                     className="grid gap-6 grid-cols-2 md:grid-cols-4"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.6 }}
                 >
-                    {products.map((product) => {
+                    {sortedProducts.map((product) => {
                         const summary = reviewsSummary[product._id] || { avgRating: 0, count: 0 };
                         return (
-                            <motion.div 
+                            <motion.div
                                 key={product._id}
                                 className="overflow-hidden hover:shadow-2xl transition-shadow duration-500"
                                 whileHover={{ scale: 1.02 }}
@@ -134,14 +257,14 @@ export default function Products({ category, title }) {
                                                 alt={product.productName}
                                                 className="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-500"
                                                 initial={{ opacity: 1 }}
-                                                whileHover={{ opacity: 0 }} 
+                                                whileHover={{ opacity: 0 }}
                                             />
                                             <motion.img
                                                 src={product.img2}
                                                 alt={`${product.productName} Hover`}
                                                 className="w-full h-full object-cover absolute top-0 left-0 transition-opacity duration-500"
                                                 initial={{ opacity: 0 }}
-                                                whileHover={{ opacity: 1 }} 
+                                                whileHover={{ opacity: 1 }}
                                             />
                                         </div>
                                         <div className="py-4 px-1 text-start">
@@ -177,8 +300,8 @@ export default function Products({ category, title }) {
                 </motion.div>
                 {hasMore && !loading && (
                     <div className="text-center mt-8">
-                        <button 
-                            onClick={loadMore} 
+                        <button
+                            onClick={loadMore}
                             className="bg-c4 text-white px-6 py-2 rounded-lg hover:bg-c4/90 transition-all"
                         >
                             Load More
