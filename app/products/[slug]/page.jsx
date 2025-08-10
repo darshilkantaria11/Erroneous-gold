@@ -220,7 +220,8 @@ export default function ProductDetail() {
 
           {/* Product Details */}
           <div className="bg-white rounded-lg p-6 shadow-lg lg:w-3/5 lg:ml-8 mt-4 lg:mt-0">
-            <div className="flex items-center justify-end  gap-3 mt-4">
+            <div className="relative"> {/* Make the parent relative */}
+              {/* Share Button */}
               <motion.button
                 onClick={async () => {
                   const shareData = {
@@ -233,25 +234,28 @@ export default function ProductDetail() {
                     try {
                       await navigator.share(shareData);
                     } catch (err) {
-                      console.log("Share cancelled", err);
+                      console.error("Share cancelled", err);
                     }
                   } else {
                     try {
                       await navigator.clipboard.writeText(window.location.href);
                       alert("Link copied to clipboard!");
                     } catch (err) {
-                      console.log("Failed to copy link:", err);
+                      console.error("Failed to copy link:", err);
                     }
                   }
                 }}
-                className="flex items-center gap-2 bg-c1 text-black px-4 py-2 rounded-lg font-medium transition-all"
+                className="absolute top-0 right-0 flex items-center gap-2 bg-c1 text-black px-3 py-3 rounded-full font-medium shadow-md transition-all"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
                 <ShareIcon className="h-5 w-5" />
-                Share
+                
               </motion.button>
+
+              {/* Your existing product image or details here */}
             </div>
+
             {loading ? (
               <>
                 <Skeleton className="h-10 w-3/4 mb-4" />
