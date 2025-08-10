@@ -7,6 +7,7 @@ import ReviewForm from "../../nopage/components/review";
 import TrustSection from "../../nopage/components/trustsection";
 import Checkout from "../../nopage/checkout/checkout";
 import { XMarkIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
+import { ShareIcon } from "@heroicons/react/24/outline";
 
 const Skeleton = ({ className }) => (
   <div className={`animate-pulse bg-gray-200 rounded-lg relative overflow-hidden ${className}`}>
@@ -216,8 +217,41 @@ export default function ProductDetail() {
             )}
           </div>
 
+
           {/* Product Details */}
           <div className="bg-white rounded-lg p-6 shadow-lg lg:w-3/5 lg:ml-8 mt-4 lg:mt-0">
+            <div className="flex items-center justify-end  gap-3 mt-4">
+              <motion.button
+                onClick={async () => {
+                  const shareData = {
+                    title: product.productName,
+                    text: `Check out this product: ${product.productName}`,
+                    url: window.location.href,
+                  };
+
+                  if (navigator.share) {
+                    try {
+                      await navigator.share(shareData);
+                    } catch (err) {
+                      console.log("Share cancelled", err);
+                    }
+                  } else {
+                    try {
+                      await navigator.clipboard.writeText(window.location.href);
+                      alert("Link copied to clipboard!");
+                    } catch (err) {
+                      console.log("Failed to copy link:", err);
+                    }
+                  }
+                }}
+                className="flex items-center gap-2 bg-c1 text-black px-4 py-2 rounded-lg font-medium transition-all"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ShareIcon className="h-5 w-5" />
+                Share
+              </motion.button>
+            </div>
             {loading ? (
               <>
                 <Skeleton className="h-10 w-3/4 mb-4" />
