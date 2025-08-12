@@ -5,7 +5,7 @@ import Product from '../../models/product';
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { items, shippingCharge = 0 } = body;
+    const { items, discountAmount = 0 } = body;
 
     await dbConnect();
 
@@ -24,8 +24,8 @@ export async function POST(req) {
       subtotal += itemPrice * quantity;
     }
 
-    const discount = 100; // apply this only if prepaid, adjust as needed
-    const total = subtotal - discount;
+    const discount = 100; // Quantity discount
+    const total = subtotal - discount - discountAmount; // Apply coupon discount
 
     if (total <= 0) {
       return new Response(JSON.stringify({ success: false, message: "Invalid total" }), { status: 400 });

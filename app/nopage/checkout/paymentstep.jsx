@@ -15,18 +15,84 @@ export default function PaymentStep({ userData }) {
   const discount = totalQuantity * 100;
   const total = subtotal;
   const online = total - discount;
-
+  
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponError, setCouponError] = useState("");
+  const [isCouponEligible, setIsCouponEligible] = useState(true);
   const [loadingText, setLoadingText] = useState("");
-
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Calculate prices with coupon discount
+  const discountFromCoupon = appliedCoupon ? appliedCoupon.discount : 0;
+  const totalAfterCoupon = total - discountFromCoupon;
+  const onlineAfterCoupon = online - discountFromCoupon;
 
+  useEffect(() => {
+    const checkCouponEligibility = async () => {
+      try {
+        const res = await fetch("/api/coupon/check", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            userPhone: userData.phone,
+          }),
+        });
+        
+        const data = await res.json();
+        setIsCouponEligible(data.eligible);
+      } catch (error) {
+        console.error("Coupon eligibility check failed:", error);
+      }
+    };
+    
+    if (userData?.phone) {
+      checkCouponEligibility();
+    }
+  }, [userData]);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setCouponError("Please enter a coupon code");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/coupon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          couponCode: couponCode.trim(),
+          userPhone: userData.phone 
+        }),
+      });
+
+      const data = await res.json();
+      
+      if (data.valid) {
+        setAppliedCoupon({
+          code: data.couponCode,
+          discount: data.discount
+        });
+        setCouponError("");
+      } else {
+        setCouponError(data.message || "Invalid coupon");
+      }
+    } catch (error) {
+      setCouponError("Failed to apply coupon");
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+    setCouponError("");
+  };
 
   const validateOrder = () => {
     if (shippingCharge < 0) throw new Error("Invalid shipping charge. Please refresh.");
-    if (total <= 0) throw new Error("Order total cannot be zero.");
+    if (totalAfterCoupon <= 0) throw new Error("Order total cannot be zero.");
   };
 
   const handlePayment = async (paymentMethod) => {
@@ -36,32 +102,36 @@ export default function PaymentStep({ userData }) {
       setError("");
       validateOrder();
 
+      // Create order payload with coupon details
+      const orderPayload = {
+        items: cartItems.map((item) => ({
+          id: item.id,
+          quantity: item.quantity,
+          name: item.name || "",
+        })),
+        address: userData.address,
+        shippingCharge,
+        paymentMethod,
+        couponCode: appliedCoupon?.code || null,
+        discountAmount: discountFromCoupon
+      };
+
       const orderRes = await fetch("/api/pay", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          items: cartItems.map((item) => ({
-            id: item.id,
-            quantity: item.quantity,
-            name: item.name || "", // if engraved
-          })),
-          address: userData.address,
-          shippingCharge,
-          paymentMethod,
-        }),
-
+        body: JSON.stringify(orderPayload),
       });
 
       if (!orderRes.ok) throw new Error("Failed to create order.");
       const orderData = await orderRes.json();
 
       if (paymentMethod === "cod") {
-        // Store the order
+        // Store the order with coupon details
         await fetch("/api/placeorder", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": process.env.NEXT_PUBLIC_API_KEY // or a hardcoded value for testing
+            "x-api-key": process.env.NEXT_PUBLIC_API_KEY
           },
           body: JSON.stringify({
             number: userData.phone,
@@ -70,7 +140,9 @@ export default function PaymentStep({ userData }) {
             address: userData.address,
             items: cartItems,
             method: "COD",
-            total,
+            total: totalAfterCoupon,
+            couponCode: appliedCoupon?.code || null,
+            discountAmount: discountFromCoupon
           }),
         });
 
@@ -79,10 +151,10 @@ export default function PaymentStep({ userData }) {
         return;
       }
 
-
+      // Razorpay payment flow
       const razorpayOptions = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY,
-        amount: online ,
+        amount: onlineAfterCoupon * 100, // Convert to paise
         currency: "INR",
         name: "Erroneous Gold",
         description: "Order Payment",
@@ -96,7 +168,9 @@ export default function PaymentStep({ userData }) {
             address: userData.address,
             items: cartItems,
             method: "prepaid",
-            total,
+            total: onlineAfterCoupon,
+            couponCode: appliedCoupon?.code || null,
+            discountAmount: discountFromCoupon
           };
 
           const verifyRes = await fetch("/api/verify", {
@@ -160,6 +234,8 @@ export default function PaymentStep({ userData }) {
         </div>
       )}
 
+      
+
 
       {/* Order Summary */}
       <div className="bg-white rounded shadow space-y-3 p-1">
@@ -195,6 +271,12 @@ export default function PaymentStep({ userData }) {
             <span>Subtotal</span>
             <span>₹{subtotal}</span>
           </div>
+          {appliedCoupon && (
+            <div className="flex justify-between">
+              <span>Coupon Discount ({appliedCoupon.code})</span>
+              <span className="text-green-600">-₹{appliedCoupon.discount}</span>
+            </div>
+          )}
           <div className="flex justify-between">
             <span>Shipping</span>
             <span className="flex items-center gap-2">
@@ -205,10 +287,66 @@ export default function PaymentStep({ userData }) {
           </div>
           <div className="flex justify-between font-semibold text-base text-gray-900 pt-2 border-t">
             <span>Total</span>
-            <span>₹{total}</span>
+            <span>₹{totalAfterCoupon}</span>
           </div>
         </div>
       </div>
+      {isCouponEligible && (
+        <div className="bg-white rounded shadow p-4">
+          <h2 className="text-base font-semibold mb-3">Apply Coupon</h2>
+          
+          {appliedCoupon ? (
+            <div className="flex justify-between items-center bg-green-50 p-3 rounded border border-green-200">
+              <div className="flex items-center">
+                <span className="text-green-600 mr-2">✓</span>
+                <span>
+                  Coupon applied: {appliedCoupon.code} (-₹{appliedCoupon.discount})
+                </span>
+              </div>
+              <button 
+                onClick={handleRemoveCoupon}
+                className="text-gray-500 hover:text-red-500"
+              >
+                ✕ Remove
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Enter coupon code"
+                className="flex-1 border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-c4"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                disabled={!isCouponEligible}
+              />
+              <button
+                onClick={handleApplyCoupon}
+                className="bg-c4 text-white px-4 rounded hover:bg-c4/90 transition-colors disabled:opacity-50"
+                disabled={!couponCode.trim() || !isCouponEligible}
+              >
+                Apply
+              </button>
+            </div>
+          )}
+          
+          {couponError && (
+            <div className="text-red-500 text-sm mt-2">{couponError}</div>
+          )}
+          
+          {!appliedCoupon && isCouponEligible && (
+            <div className="text-xs text-gray-500 mt-2">
+              Use <span className="font-bold">WELCOME50</span> for ₹50 off your first order
+            </div>
+          )}
+          
+          {!isCouponEligible && (
+            <div className="text-gray-500 text-sm mt-2">
+              You've already used your welcome coupon
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Payment Options */}
       <div className="bg-white rounded shadow p-1 space-y-4">
@@ -229,7 +367,7 @@ export default function PaymentStep({ userData }) {
             className="relative w-full flex justify-between items-center bg-c1 text-black py-3 px-2 rounded transition text-sm"
           >
             <div className="absolute -top-2 left-2 bg-c4 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full">
-              Free Gift + ₹100 Off
+              Free Gift + ₹{100 * totalQuantity} off
             </div>
             <div className="text-left mt-1">
               <p className="font-bold">{method.label}</p>
@@ -237,7 +375,7 @@ export default function PaymentStep({ userData }) {
             </div>
             <div className="text-left mt-1">
               <div className="text-right  line-through opacity-60 text-xs ml-1">₹{total}</div>
-              <div className="text-right text-base">₹{online}</div>
+              <div className="text-right text-base">₹{onlineAfterCoupon}</div>
 
             </div>
           </button>
@@ -252,7 +390,7 @@ export default function PaymentStep({ userData }) {
             <p className="font-bold">Cash on Delivery</p>
             <p className="text-xs text-gray-300">We Recommend Prepaid for Fast Shipping</p>
           </div>
-          <div className="text-right  text-base">₹{total}</div>
+          <div className="text-right  text-base">₹{totalAfterCoupon}</div>
         </button>
 
         <div className="text-xs text-gray-600 pt-4 border-t mt-4 space-y-1">

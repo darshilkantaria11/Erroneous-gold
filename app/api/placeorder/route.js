@@ -1,5 +1,6 @@
 import { dbConnect } from "../../utils/mongoose";
 import Order from "../../models/order";
+import Coupon from "../../models/Coupon";
 import { NextResponse } from "next/server";
 
 export async function POST(req) {
@@ -13,13 +14,23 @@ export async function POST(req) {
 
     await dbConnect();
 
-    const { number, name, email, address, items, method } = await req.json();
+    const { 
+      number, 
+      name, 
+      email, 
+      address, 
+      items, 
+      method,
+      total,
+      couponCode,
+      discountAmount
+    } = await req.json();
 
-    if (!number || !name || !email || !address || !items || !method) {
+    if (!number || !name || !email || !address || !items || !method || !total) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // Generate order ID: format DDMMYYYYHHMMSS + mobileNumber (IST time)
+    // Generate order ID
     const nowUTC = new Date();
     const istOffset = 5.5 * 60 * 60 * 1000;
     const nowIST = new Date(nowUTC.getTime() + istOffset);
@@ -36,11 +47,11 @@ export async function POST(req) {
       pad(nowIST.getSeconds()) +
       number;
 
-    // Build items array with orderId included
+    // Build items array
     const orderItems = items.map((item) => ({
       productId: item.id,
       quantity: item.quantity,
-      amount: item.price * item.quantity,
+      amount: total,
       method,
       pincode: address.pincode,
       city: address.city,
@@ -48,26 +59,44 @@ export async function POST(req) {
       fullAddress: address.line1,
       engravedName: item.name || "",
       createdAt: nowISTT,
-      orderId, // <-- added here
+      orderId,
     }));
 
+    // Create order
     const existingOrder = await Order.findOne({ number });
 
     if (existingOrder) {
       existingOrder.items.push(...orderItems);
       existingOrder.name = name;
       existingOrder.email = email;
+      existingOrder.total = total;
+      existingOrder.couponCode = couponCode || null;
+      existingOrder.discountAmount = discountAmount || 0;
       await existingOrder.save();
-    }
-    else {
+    } else {
       await Order.create({
         number,
         name,
         email,
         items: orderItems,
+        total,
+        couponCode: couponCode || null,
+        discountAmount: discountAmount || 0
       });
     }
 
+    // Record coupon usage if applied
+    if (couponCode && discountAmount > 0) {
+      try {
+        await Coupon.create({
+          userPhone: number,
+          couponCode,
+          orderId
+        });
+      } catch (couponError) {
+        console.error("Failed to record coupon usage:", couponError);
+      }
+    }
 
     return NextResponse.json({ message: "Order placed successfully", orderId }, { status: 201 });
   } catch (error) {

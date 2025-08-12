@@ -35,11 +35,10 @@ export default function WishlistPage() {
         return () => window.removeEventListener("storage", checkLogin);
     }, []);
 
-    const fetchWishlistProducts = async (phone) => {
+const fetchWishlistProducts = async (phone) => {
     try {
         setLoading(true);
 
-        // 1. Get wishlist product IDs from DB
         const wishlistRes = await fetch(`/api/wishlist?userPhone=${phone}`);
         if (!wishlistRes.ok) throw new Error("Failed to fetch wishlist");
 
@@ -52,7 +51,6 @@ export default function WishlistPage() {
             return;
         }
 
-        // 2. Fetch product details one by one using /products/fetch/[id] API
         const fetchedProducts = await Promise.all(
             wishlistItems.map(async (item) => {
                 const res = await fetch(`/api/products/fetch/${item.productId}`, {
@@ -65,8 +63,12 @@ export default function WishlistPage() {
             })
         );
 
-        // Remove null responses in case some products were deleted
-        setProducts(fetchedProducts.filter(Boolean));
+        // ✅ Keep only valid, live products
+        setProducts(
+            fetchedProducts
+                .filter(Boolean)
+                .filter(product => product.status === "live")
+        );
 
     } catch (error) {
         console.error("Failed to fetch wishlist products:", error);
@@ -74,6 +76,7 @@ export default function WishlistPage() {
         setLoading(false);
     }
 };
+
 
 
     const toggleWishlist = async (productId) => {
