@@ -342,7 +342,7 @@ export default function PaymentStep({ userData }) {
           
           {!isCouponEligible && (
             <div className="text-gray-500 text-sm mt-2">
-              You've already used your welcome coupon
+              You&apos;ve already used your welcome coupon
             </div>
           )}
         </div>
