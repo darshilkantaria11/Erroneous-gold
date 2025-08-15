@@ -1,22 +1,287 @@
-"use client";
-import { useEffect, useState } from "react";
-import { FiPackage, FiCalendar, FiMapPin, FiCreditCard, FiTruck, FiCheckCircle, FiClock, FiChevronRight } from "react-icons/fi";
-import Link from "next/link";
+"use client"
+import { useEffect, useState } from 'react';
+import {
+  FiPackage,
+  FiCalendar,
+  FiMapPin,
+  FiCreditCard,
+  FiTruck,
+  FiCheckCircle,
+  FiClock,
+  FiChevronRight,
+  FiMail
+} from "react-icons/fi";
 
-export default function MyOrdersPage() {
-  const [orders, setOrders] = useState([]);
+// Format date utility
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const options = {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  };
+
+  return date.toLocaleDateString('en-GB', options).replace(',', '');
+};
+
+// Status helper function
+const getItemStatus = (status) => {
+  switch (status) {
+    case "Confirmed":
+      return {
+        text: "Confirmed",
+        color: "bg-yellow-100 text-yellow-800",
+        icon: <FiClock className="text-yellow-500" />,
+      };
+    case "Crafting":
+      return {
+        text: "Crafting",
+        color: "bg-purple-100 text-purple-800",
+        icon: <FiPackage className="text-purple-500" />,
+      };
+    case "Shipped":
+      return {
+        text: "Shipped",
+        color: "bg-blue-100 text-blue-800",
+        icon: <FiTruck className="text-blue-500" />,
+      };
+    case "Delivered":
+      return {
+        text: "Delivered",
+        color: "bg-green-100 text-green-800",
+        icon: <FiCheckCircle className="text-green-500" />,
+      };
+    case "Cancelled":
+      return {
+        text: "Cancelled by Customer",
+        color: "bg-red-100 text-red-800",
+        icon: <FiCalendar className="text-red-500" />,
+      };
+    case "Rejected":
+      return {
+        text: "Rejected by Store",
+        color: "bg-gray-100 text-gray-800",
+        icon: <FiCalendar className="text-gray-500" />,
+      };
+    case "Replaced":
+      return {
+        text: "Replaced",
+        color: "bg-orange-100 text-orange-800",
+        icon: <FiTruck className="text-orange-500" />,
+      };
+    default:
+      return {
+        text: "Processing",
+        color: "bg-yellow-100 text-yellow-800",
+        icon: <FiClock className="text-yellow-500" />,
+      };
+  }
+};
+
+// Order Card Component
+const OrderCard = ({ order, products }) => {
+  const [expanded, setExpanded] = useState(false);
+  const statusInfo = getItemStatus(order.status);
+
+  // Calculate total amount for the order
+  const totalAmount = order.items.reduce((sum, item) =>   (item.amount),0);
+
+  // Toggle expanded view
+  const toggleExpand = () => {
+    setExpanded(!expanded);
+  };
+
+  // Generate help email link for a product
+  const getHelpEmailLink = (product, item) => {
+    const email = "info@erroneousgold.com";
+    const subject = `Help Request for Order #${order.orderId} - ${product.productName}`;
+    const body = `Dear Support Team,\n\nI need assistance with my order:\n\n` +
+      `Order ID: ${order.orderId}\n` +
+      `Product ID: ${item.productId}\n` +
+      `Product Name: ${product.productName}\n\n` +
+      `Please describe your concern below:\n[Please include details about your issue and attach any relevant images]\n\n` +
+      `Thank you,\n${order.userName}\n${order.userPhone}`;
+    
+    return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
+  return (
+    <div className="border border-gray-200 rounded-xl overflow-hidden mb-6 shadow-sm hover:shadow-md transition-shadow bg-white">
+      <div className="p-4">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className={`${statusInfo.color} px-3 py-1 rounded-full text-xs flex items-center gap-1`}>
+              {statusInfo.icon}
+              <span className="font-medium">{statusInfo.text}</span>
+            </div>
+            <div className="text-sm text-gray-500">{formatDate(order.createdAt)}</div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="text-sm font-medium bg-gray-100 px-2 py-1 rounded">
+              Order ID: {order.orderId}
+            </div>
+           
+            <button
+              onClick={toggleExpand}
+              className="text-blue-600 text-sm flex items-center gap-1"
+            >
+              {expanded ? 'Less details' : 'More details'}
+              <FiChevronRight
+                className={`transition-transform ${expanded ? 'rotate-90' : ''}`}
+              />
+            </button>
+          </div>
+        </div>
+
+        {expanded && (
+          <div className="mt-4 space-y-5">
+            {/* Shipping Address */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center gap-2 text-gray-700 mb-2">
+                <FiMapPin className="text-gray-500" />
+                <h3 className="font-medium text-gray-900">Shipping Address</h3>
+              </div>
+              <div className="pl-6 text-sm">
+                <div className="font-medium text-gray-900">{order.userName}</div>
+                <div className="text-gray-600">{order.shippingAddress.full}</div>
+                <div className="text-gray-600">{order.shippingAddress.city}, {order.shippingAddress.state} - {order.shippingAddress.pincode}</div>
+                <div className="mt-1 text-gray-900">Phone: {order.userPhone}</div>
+              </div>
+            </div>
+            
+            {/* Payment & Delivery */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center gap-2 text-gray-700 mb-2">
+                <FiCreditCard className="text-gray-500" />
+                <h3 className="font-medium text-gray-900">Payment & Delivery</h3>
+              </div>
+              <div className="pl-6 text-sm">
+                <div>
+                  <span className="text-gray-600">Payment Method: </span>
+                  <span className="font-medium text-gray-900">{order.paymentMethod}</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Product Details */}
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <div className="flex items-center gap-2 text-gray-700 mb-2">
+                <FiPackage className="text-gray-500" />
+                <h3 className="font-medium text-gray-900">Product Details</h3>
+              </div>
+              
+              <div className="pl-2">
+                {order.items.map((item) => {
+                  const product = products[item.productId];
+                  return (
+                    <div key={item._id} className="border-t border-gray-200 py-4">
+                      <div className="flex gap-4">
+                        {product ? (
+                          <img
+                            src={product.img1}
+                            alt={product.productName}
+                            className="w-20 h-20 object-contain border rounded-lg bg-white"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <FiPackage className="text-gray-400" />
+                          </div>
+                        )}
+                        
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900">
+                            {product ? product.productName : "Product Not Found"}
+                          </h4>
+                          
+                          <div className="grid  gap-2 mt-2 text-sm">
+                            <div>
+                              <span className="text-gray-600">MRP: </span>
+                              <span className="font-medium text-gray-900">₹{product.originalPrice}</span>
+                            </div>
+                            
+                            <div className="sm:col-span-2">
+                              <span className="text-gray-600">Quantity: </span>
+                              <span className="font-medium text-gray-900">{item.quantity}</span>
+                            </div>
+                            
+                            <div className="sm:col-span-2">
+                              <span className="text-gray-600">Total: </span>
+                              <span className="font-medium text-gray-900">₹{(item.quantity) * (product.originalPrice)}</span>
+                            </div>
+                            
+                            {item.engravedName && (
+                              <div className="sm:col-span-2">
+                                <span className="text-gray-600">Engraved Name: </span>
+                                <span className="font-medium text-gray-900">{item.engravedName}</span>
+                              </div>
+                            )}
+                            
+                            <div className="sm:col-span-2">
+                              <span className="text-gray-600">Product ID: </span>
+                              <span className="font-mono text-xs text-gray-600">{item.productId}</span>
+                            </div>
+                            
+                            {/* Help with Product Button */}
+                            {product && (
+                              <div className="sm:col-span-2 mt-2">
+                                <a 
+                                  href={getHelpEmailLink(product, item)}
+                                  className="inline-flex items-center gap-1.5 text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 py-1.5 px-3 rounded-lg transition-colors"
+                                >
+                                  <FiMail className="w-4 h-4" />
+                                  <span>Click for Help</span>
+                                </a>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  For returns, exchanges, or any product concerns
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+                
+                <div className="border-t border-gray-200 pt-4 mt-2 flex justify-end">
+                  <div className="text-right">
+                    <div className="text-sm text-gray-600">Purchased at:</div>
+                    <div className="text-lg font-bold text-gray-900">₹{totalAmount}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Main Orders Page Component
+export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
+  const [groupedOrders, setGroupedOrders] = useState([]);
   const [products, setProducts] = useState({});
-  const [expandedItems, setExpandedItems] = useState({});
 
   useEffect(() => {
     async function fetchOrders() {
       try {
         const stored = localStorage.getItem("user");
-        if (!stored) return;
+        if (!stored) {
+          setLoading(false);
+          return;
+        }
 
         const { phone, token } = JSON.parse(stored);
-        if (!phone || !token) return;
+        if (!phone || !token) {
+          setLoading(false);
+          return;
+        }
 
         // Verify user
         const verifyRes = await fetch(`/api/verifyuser?number=${phone}&token=${token}`);
@@ -27,18 +292,54 @@ export default function MyOrdersPage() {
         // Fetch orders if verified
         const ordersRes = await fetch(`/api/getmyorders?number=${phone}`);
         const ordersData = (await ordersRes.json()).orders || [];
-        console.log(ordersData)
 
-        setOrders(ordersData);
+        // Flatten all items and add top-level order info
+        let allItems = [];
+        ordersData.forEach(order => {
+          order.items.forEach(item => {
+            allItems.push({
+              ...item,
+              userName: order.name,
+              userPhone: order.number
+            });
+          });
+        });
+
+        // Group items by orderId
+        const ordersGrouped = {};
+        allItems.forEach(item => {
+          if (!ordersGrouped[item.orderId]) {
+            ordersGrouped[item.orderId] = [];
+          }
+          ordersGrouped[item.orderId].push(item);
+        });
+
+        // Create grouped orders array
+        const ordersArray = Object.keys(ordersGrouped).map(orderId => {
+          const items = ordersGrouped[orderId];
+          const firstItem = items[0];
+
+          return {
+            orderId,
+            status: firstItem.orderStatus,
+            userName: firstItem.userName,
+            userPhone: firstItem.userPhone,
+            shippingAddress: {
+              full: firstItem.fullAddress,
+              city: firstItem.city,
+              state: firstItem.state,
+              pincode: firstItem.pincode
+            },
+            paymentMethod: firstItem.method,
+            createdAt: firstItem.createdAt,
+            items: items,
+          };
+        }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        setGroupedOrders(ordersArray);
 
         // Fetch all product details
-        const allProductIds = Array.from(
-          new Set(
-            ordersData.flatMap((order) =>
-              order.items.map((item) => item.productId)
-            )
-          )
-        );
+        const allProductIds = Array.from(new Set(allItems.map(item => item.productId)));
 
         const fetchedProducts = {};
         await Promise.all(
@@ -53,6 +354,7 @@ export default function MyOrdersPage() {
               fetchedProducts[id] = product;
             } catch (err) {
               console.log(`Failed to fetch product ${id}`, err);
+              fetchedProducts[id] = null;
             }
           })
         );
@@ -70,300 +372,36 @@ export default function MyOrdersPage() {
     fetchOrders();
   }, []);
 
-
-  const toggleItemExpansion = (itemKey) => {
-    setExpandedItems(prev => ({
-      ...prev,
-      [itemKey]: !prev[itemKey]
-    }));
-  };
-
-
-  const getItemStatus = (status) => {
-    switch (status) {
-      case "Confirmed":
-        return {
-          text: "Confirmed",
-          color: "bg-yellow-100 text-yellow-800",
-          icon: <FiClock className="text-yellow-500" />,
-        };
-      case "Crafting":
-        return {
-          text: "Crafting",
-          color: "bg-purple-100 text-purple-800",
-          icon: <FiPackage className="text-purple-500" />,
-        };
-      case "Shipped":
-        return {
-          text: "Shipped",
-          color: "bg-blue-100 text-blue-800",
-          icon: <FiTruck className="text-blue-500" />,
-        };
-      case "Delivered":
-        return {
-          text: "Delivered",
-          color: "bg-green-100 text-green-800",
-          icon: <FiCheckCircle className="text-green-500" />,
-        };
-      case "Cancelled":
-        return {
-          text: "Cancelled by Customer",
-          color: "bg-red-100 text-red-800",
-          icon: <FiCalendar className="text-red-500" />,
-        };
-      case "Rejected":
-        return {
-          text: "Rejected by Store",
-          color: "bg-gray-100 text-gray-800",
-          icon: <FiCalendar className="text-gray-500" />,
-        };
-      case "Replaced":
-        return {
-          text: "Replaced",
-          color: "bg-orange-100 text-orange-800",
-          icon: <FiTruck className="text-orange-500" />,
-        };
-      default:
-        return {
-          text: "Processing",
-          color: "bg-yellow-100 text-yellow-800",
-          icon: <FiClock className="text-yellow-500" />,
-        };
-    }
-  };
-
-
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
-
-  // Create a flattened array of all order items
-  const allOrderItems = orders.flatMap(order =>
-    order.items.map(item => ({
-      ...item,
-      ordersId: order.orderId,
-      customerName: order.name,
-      customerPhone: order.number
-
-    }))
-  );
-
   return (
-    <div className="min-h-screen bg-back p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">My Orders</h1>
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <p className="text-gray-600">View your order history and track shipments</p>
-            <div className="flex items-center gap-2 text-sm">
-              {/* <span className="bg-gray-200 rounded-full px-3 py-1">{orders.length} orders</span> */}
-              <span className="bg-white rounded-full px-3 py-1">{allOrderItems.length} orders</span>
-            </div>
-          </div>
+    <div className="min-h-screen bg-c1 py-6 sm:py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        <div className="mb-8 text-center sm:text-left">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">My Orders</h1>
+          <p className="text-gray-600 mt-1">View your order history and track shipments</p>
         </div>
-
+        
         {loading ? (
-          <div className="space-y-6">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-pulse">
-                <div className="p-5">
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="h-6 bg-gray-200 rounded w-40" />
-                    <div className="h-4 bg-gray-200 rounded w-24" />
-                  </div>
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-16 h-16 bg-gray-200 rounded-md" />
-                    <div className="flex-1">
-                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-                      <div className="h-3 bg-gray-200 rounded w-1/2" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <div className="h-3 bg-gray-200 rounded w-1/4 mb-2" />
-                      <div className="h-3 bg-gray-200 rounded w-3/4" />
-                    </div>
-                    <div>
-                      <div className="h-3 bg-gray-200 rounded w-1/4 mb-2" />
-                      <div className="h-3 bg-gray-200 rounded w-3/4" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
+          <div className="flex flex-col items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+            <p className="text-gray-600">Loading your orders...</p>
           </div>
-        ) : allOrderItems.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-            <div className="mx-auto bg-gray-100 rounded-full p-4 w-24 h-24 flex items-center justify-center mb-4">
-              <FiPackage className="text-gray-400 text-4xl" />
+        ) : groupedOrders.length === 0 ? (
+          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center max-w-md mx-auto shadow-sm">
+            <div className="text-gray-400 mb-4">
+              <FiPackage className="mx-auto text-4xl" />
             </div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">No Orders Yet</h2>
-            <p className="text-gray-600 mb-6">You haven&apos;t placed any orders yet</p>
-            <Link href="/shop" className="bg-c4 text-white font-medium py-2 px-6 rounded-lg transition duration-300">
-              Start Shopping
-            </Link>
+            <h3 className="text-xl font-medium text-gray-900 mb-2">No orders found</h3>
+            <p className="text-gray-600">You haven't placed any orders yet.</p>
           </div>
         ) : (
           <div className="space-y-6">
-            {allOrderItems.slice().reverse().map((item, index) => {
-
-              const itemKey = `${item.ordersId}-${item.productId}-${index}`;
-              const product = products[item.productId];
-              const status = getItemStatus(item.orderStatus);
-              
-
-              const isExpanded = expandedItems[itemKey];
-
-
-              return (
-                <div key={itemKey} className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                  <div
-                    className="p-5 cursor-pointer"
-                    onClick={() => toggleItemExpansion(itemKey)}
-
-                  >
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                      <div className="flex items-start gap-3">
-                        {product ? (
-                          <img
-                            src={product.img1}
-                            alt={product.productName}
-                            className="w-16 h-16 object-cover rounded-lg border border-gray-200"
-                          />
-                        ) : (
-                          <div className="bg-gray-100 border border-gray-200 rounded-lg w-16 h-16 flex items-center justify-center">
-                            <FiPackage className="text-gray-400" />
-                          </div>
-                        )}
-                        <div>
-                          <h3 className="font-semibold text-gray-800">
-                            {product ? product.productName : "Product Unavailable"}
-                          </h3>
-                          <p className="text-sm text-gray-500 flex items-center gap-1 mt-1">
-                            <FiCalendar className="text-gray-400" />
-                            <span>{formatDate(item.createdAt)}</span>
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-3">
-                        <div className={`${status.color} px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1`}>
-                          {status.icon}
-                          <span>{status.text}</span>
-                        </div>
-                        <div className="text-lg font-bold text-gray-800">
-                          ₹{item.amount}
-                        </div>
-                        <button className="flex items-center text-c4 font-medium">
-                          <span>{isExpanded ? "Less details" : "More details"}</span>
-                          <FiChevronRight className={`transition-transform duration-300 ${isExpanded ? "rotate-90" : ""}`} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {isExpanded && (
-                    <div className="p-5 border-t border-gray-100 bg-gray-50">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div>
-                          <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                            <FiMapPin className="text-gray-500" />
-                            Shipping Address
-                          </h4>
-                          <div className="bg-white rounded-lg p-4 text-sm border border-gray-200">
-                            <p className="font-medium">{item.customerName}</p>
-                            <p className="text-gray-600">{item.fullAddress}</p>
-                            <p className="text-gray-600">{item.city}, {item.state} - {item.pincode}</p>
-                            <p className="text-gray-600 mt-2">Phone: {item.customerPhone}</p>
-                          </div>
-                        </div>
-
-                        <div>
-                          <h4 className="font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                            <FiCreditCard className="text-gray-500" />
-                            Payment & Delivery
-                          </h4>
-                          <div className="bg-white rounded-lg p-4 text-sm border border-gray-200">
-                            <div className="flex justify-between mb-2">
-                              <span className="text-gray-600">Payment Method:</span>
-                              <span className="font-medium">{item.method === "COD" ? "Cash on Delivery" : "Prepaid"}</span>
-                            </div>
-                            {/* <div className="flex justify-between mb-2">
-                              <span className="text-gray-600">Delivery Status:</span>
-                              <span className={`font-medium ${status.text === "Delivered" ? "text-green-600" : status.text === "Shipped" ? "text-blue-600" : "text-yellow-600"}`}>
-                                {status.text}
-                              </span>
-                            </div> */}
-                            <div className="flex justify-between ">
-                             <p> Order ID:</p> <p>{item.orderId}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="bg-white rounded-lg p-4 border border-gray-200">
-                        <h4 className="font-semibold text-gray-700 mb-3">Product Details</h4>
-                        <div className="flex flex-col sm:flex-row gap-4">
-                          <div className="flex-shrink-0">
-                            {product ? (
-                              <img
-                                src={product.img1}
-                                alt={product.productName}
-                                className="w-20 h-20 object-cover rounded-lg border border-gray-200"
-                              />
-                            ) : (
-                              <div className="bg-gray-100 border border-gray-200 rounded-lg w-20 h-20 flex items-center justify-center">
-                                <FiPackage className="text-gray-400" />
-                              </div>
-                            )}
-                          </div>
-
-                          <div className="flex-1">
-                            <div className="flex flex-col md:flex-row md:justify-between gap-2">
-                              <div>
-                                <h3 className="font-medium text-gray-800">
-                                  {product ? product.productName : "Product Unavailable"}
-                                </h3>
-                                <div className="mt-2 flex flex-wrap gap-2">
-                                  <div className="text-sm  text-c4  rounded">
-                                    <div className="flex">
-                                      <span className="text-gray-600">Quantity:</span>
-                                      <span className="font-medium px-1">{item.quantity}</span>
-                                    </div>
-                                  </div>
-                                  <p className="text-sm  text-c4  rounded">
-                                    Product ID: {item.productId}
-                                  </p>
-                                  <p className="text-sm  text-gray-700 bg-green-50 px-2 py-1 rounded">
-                                    MRP: ₹{(product?.originalPrice ?? 0) * (item?.quantity ?? 0)}
-                                  </p>
-
-                                </div>
-                              </div>
-                              <div className="text-right flex justify-center items-center">
-                                <p className="text-sm text-gray-600 p-1">Purchased at</p>
-                                <p className="font-bold text-lg text-gray-800">₹{item.amount}</p>
-                              </div>
-                            </div>
-
-                            {item.engravedName && (
-                              <div className="mt-3">
-                                <p className="text-sm">
-                                  <span className="font-medium text-gray-700">Engraved Name:</span>{" "}
-                                  <span className="text-c4 font-medium">{item.engravedName}</span>
-                                </p>
-                              </div>
-                            )}
-
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+            {groupedOrders.map((order) => (
+              <OrderCard 
+                key={order.orderId} 
+                order={order} 
+                products={products} 
+              />
+            ))}
           </div>
         )}
       </div>

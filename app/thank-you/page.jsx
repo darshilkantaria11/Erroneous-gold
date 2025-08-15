@@ -80,7 +80,7 @@ export default function ThankYouPage() {
                         View Your Orders
                     </Link>
                     <Link
-                        href="/shop"
+                        href="/"
                         className="bg-white hover:bg-gray-100 text-c4 font-medium py-3 px-6 border border-gray-300 rounded-lg transition duration-300"
                     >
                         Explore More Products
