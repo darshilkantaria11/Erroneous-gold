@@ -46,6 +46,18 @@ const productSchema = new Schema(
       required: [true, "Font name is required"],
       trim: true,
     },
+    chain1: {
+      type: String,
+      trim: true,
+    },
+    chain2: {
+      type: String,
+      trim: true,
+    },
+    chain3: {
+      type: String,
+      trim: true,
+    },
     category: {
       type: String,
       enum: ["singlenamenecklace", "couplenamenecklace", "keychain", "rakhi"],
@@ -53,7 +65,7 @@ const productSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["live", "inactive"], // ✅ New field for product visibility
+      enum: ["live", "inactive"],
       default: "live",
     },
   },

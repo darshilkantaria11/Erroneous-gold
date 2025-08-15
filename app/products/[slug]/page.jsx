@@ -30,6 +30,7 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(0);
   const [nameError, setNameError] = useState("");
   const [showCheckoutPopup, setShowCheckoutPopup] = useState(false);
+  const [selectedChain, setSelectedChain] = useState(0);
 
   useEffect(() => {
     const cartItem = cart[slug];
@@ -111,7 +112,9 @@ export default function ProductDetail() {
       productName: product.productName,
       quantity: 1,
       price: product.originalPrice,
-      image: product.img1
+      image: product.img1,
+      selectedChain: [product.chain1, product.chain2, product.chain3].filter(Boolean)[selectedChain]
+
     });
   };
 
@@ -145,7 +148,9 @@ export default function ProductDetail() {
         productName: product.productName,
         quantity: 1,
         price: product.originalPrice,
-        image: product.img1
+        image: product.img1,
+        selectedChain: [product.chain1, product.chain2, product.chain3].filter(Boolean)[selectedChain]
+
       });
     }
 
@@ -154,6 +159,12 @@ export default function ProductDetail() {
 
   const increaseQuantity = () => updateQuantity(slug, (cart[slug]?.quantity || 0) + 1);
   const decreaseQuantity = () => updateQuantity(slug, (cart[slug]?.quantity || 0) - 1);
+
+  useEffect(() => {
+    if (product && (product.category === "singlelenamenecklace" || product.category === "couplenamenecklace")) {
+      setSelectedChain(product.chain1 || "");
+    }
+  }, [product]);
 
   return (
     <>
@@ -250,7 +261,7 @@ export default function ProductDetail() {
                 whileTap={{ scale: 0.95 }}
               >
                 <ShareIcon className="h-5 w-5" />
-                
+
               </motion.button>
 
               {/* Your existing product image or details here */}
@@ -378,6 +389,33 @@ export default function ProductDetail() {
                     </>
                   )}
                 </div>
+                {(product?.category === "singlenamenecklace" || product?.category === "couplenamenecklace") && (
+                  <div className="mt-6">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Choose Chain Type</h3>
+                    <div className="flex gap-3">
+                      {[product.chain1, product.chain2, product.chain3].filter(Boolean).map((chainImg, idx) => (
+                        <label key={idx} className="cursor-pointer">
+                          <input
+                            type="radio"
+                            name="chain"
+                            value={idx}
+                            checked={selectedChain === idx} // ✅ Compare index instead of image string
+                            onChange={() => setSelectedChain(idx)}
+                            className="hidden"
+                          />
+                          <img
+                            src={chainImg}
+                            alt={`Chain ${idx + 1}`}
+                            className={`w-24 h-20 object-cover rounded-md border-2 
+              ${selectedChain === idx ? "border-c4 border-8" : "border-transparent"} 
+              hover:scale-105 transition-transform`}
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
 
                 <div className="mt-8 flex w-full flex-row gap-4">
                   <div className="w-1/2">

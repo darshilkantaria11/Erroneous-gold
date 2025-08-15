@@ -44,6 +44,11 @@ const itemSchema = new Schema(
       trim: true,
       default: "",
     },
+    chain: {
+      type: String,
+      trim: true,
+      default: "",
+    },
     orderId: {
       type: String,
       required: true,

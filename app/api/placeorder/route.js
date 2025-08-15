@@ -58,6 +58,7 @@ export async function POST(req) {
       state: address.state,
       fullAddress: address.line1,
       engravedName: item.name || "",
+      chain: item.selectedChain || "",
       createdAt: nowISTT,
       orderId,
     }));

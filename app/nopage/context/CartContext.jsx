@@ -56,37 +56,44 @@ export function CartProvider({ children }) {
   const getTotalPrice = () => Object.values(cart).reduce((total, item) => total + item.price * item.quantity, 0);
 
   const addToCart = (productId, productData) => {
-    setCart((prev) => {
-      const existing = prev[productId] || { quantity: 0 };
-      const updatedCart = {
-        ...prev,
-        [productId]: {
-          ...productData,
-          quantity: existing.quantity + 1,
-          weight: productData.weight,
-          dimensions: productData.dimensions,
-        },
-      };
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-      return updatedCart;
-    });
-  };
+  setCart((prev) => {
+    const existing = prev[productId] || { quantity: 0 };
+
+    const updatedCart = {
+      ...prev,
+      [productId]: {
+        ...productData,
+        quantity: existing.quantity + 1,
+        weight: productData.weight,
+        dimensions: productData.dimensions,
+        selectedChain: productData.selectedChain || existing.selectedChain || null, // ✅ store chain type
+      },
+    };
+
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    return updatedCart;
+  });
+};
+
 
   const updateQuantity = (productId, newQuantity) => {
-    setCart((prev) => {
-      const updatedCart = { ...prev };
-      if (newQuantity <= 0) {
-        delete updatedCart[productId];
-      } else {
-        updatedCart[productId] = {
-          ...updatedCart[productId],
-          quantity: newQuantity,
-        };
-      }
-      localStorage.setItem("cart", JSON.stringify(updatedCart));
-      return updatedCart;
-    });
-  };
+  setCart((prev) => {
+    const updatedCart = { ...prev };
+
+    if (newQuantity <= 0) {
+      delete updatedCart[productId];
+    } else {
+      updatedCart[productId] = {
+        ...updatedCart[productId],
+        quantity: newQuantity,
+        selectedChain: prev[productId]?.selectedChain || null, // ✅ keep chain selection
+      };
+    }
+
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    return updatedCart;
+  });
+};
 
   const clearCart = () => {
     setCart({});

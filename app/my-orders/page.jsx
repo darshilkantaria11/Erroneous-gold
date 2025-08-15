@@ -87,7 +87,7 @@ const OrderCard = ({ order, products }) => {
   const statusInfo = getItemStatus(order.status);
 
   // Calculate total amount for the order
-  const totalAmount = order.items.reduce((sum, item) =>   (item.amount),0);
+  const totalAmount = order.items.reduce((sum, item) => (item.amount), 0);
 
   // Toggle expanded view
   const toggleExpand = () => {
@@ -104,7 +104,7 @@ const OrderCard = ({ order, products }) => {
       `Product Name: ${product.productName}\n\n` +
       `Please describe your concern below:\n[Please include details about your issue and attach any relevant images]\n\n` +
       `Thank you,\n${order.userName}\n${order.userPhone}`;
-    
+
     return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
@@ -124,7 +124,7 @@ const OrderCard = ({ order, products }) => {
             <div className="text-sm font-medium bg-gray-100 px-2 py-1 rounded">
               Order ID: {order.orderId}
             </div>
-           
+
             <button
               onClick={toggleExpand}
               className="text-blue-600 text-sm flex items-center gap-1"
@@ -152,7 +152,7 @@ const OrderCard = ({ order, products }) => {
                 <div className="mt-1 text-gray-900">Phone: {order.userPhone}</div>
               </div>
             </div>
-            
+
             {/* Payment & Delivery */}
             <div className="bg-gray-50 p-4 rounded-lg">
               <div className="flex items-center gap-2 text-gray-700 mb-2">
@@ -166,14 +166,14 @@ const OrderCard = ({ order, products }) => {
                 </div>
               </div>
             </div>
-            
+
             {/* Product Details */}
             <div className="bg-gray-50 p-4 rounded-lg">
               <div className="flex items-center gap-2 text-gray-700 mb-2">
                 <FiPackage className="text-gray-500" />
                 <h3 className="font-medium text-gray-900">Product Details</h3>
               </div>
-              
+
               <div className="pl-2">
                 {order.items.map((item) => {
                   const product = products[item.productId];
@@ -191,44 +191,54 @@ const OrderCard = ({ order, products }) => {
                             <FiPackage className="text-gray-400" />
                           </div>
                         )}
-                        
+
                         <div className="flex-1">
                           <h4 className="font-medium text-gray-900">
                             {product ? product.productName : "Product Not Found"}
                           </h4>
-                          
+
                           <div className="grid  gap-2 mt-2 text-sm">
                             <div>
                               <span className="text-gray-600">MRP: </span>
                               <span className="font-medium text-gray-900">₹{product.originalPrice}</span>
                             </div>
-                            
+
                             <div className="sm:col-span-2">
                               <span className="text-gray-600">Quantity: </span>
                               <span className="font-medium text-gray-900">{item.quantity}</span>
                             </div>
-                            
+
                             <div className="sm:col-span-2">
                               <span className="text-gray-600">Total: </span>
                               <span className="font-medium text-gray-900">₹{(item.quantity) * (product.originalPrice)}</span>
                             </div>
-                            
+
                             {item.engravedName && (
                               <div className="sm:col-span-2">
                                 <span className="text-gray-600">Engraved Name: </span>
                                 <span className="font-medium text-gray-900">{item.engravedName}</span>
                               </div>
                             )}
-                            
+                            {item.chain && (
+                              <div className="sm:col-span-2">
+                                <span className="text-gray-600">Chain: </span>
+                                <img
+                                  src={item.chain}
+                                  alt={item.chain}
+                                  className="w-16 h-12 object-contain border rounded-lg bg-white"
+                                />
+                              </div>
+                            )}
+
                             <div className="sm:col-span-2">
                               <span className="text-gray-600">Product ID: </span>
                               <span className="font-mono text-xs text-gray-600">{item.productId}</span>
                             </div>
-                            
+
                             {/* Help with Product Button */}
                             {product && (
                               <div className="sm:col-span-2 mt-2">
-                                <a 
+                                <a
                                   href={getHelpEmailLink(product, item)}
                                   className="inline-flex items-center gap-1.5 text-sm bg-blue-50 hover:bg-blue-100 text-blue-700 py-1.5 px-3 rounded-lg transition-colors"
                                 >
@@ -246,7 +256,7 @@ const OrderCard = ({ order, products }) => {
                     </div>
                   );
                 })}
-                
+
                 <div className="border-t border-gray-200 pt-4 mt-2 flex justify-end">
                   <div className="text-right">
                     <div className="text-sm text-gray-600">Purchased at:</div>
@@ -379,7 +389,7 @@ export default function OrdersPage() {
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">My Orders</h1>
           <p className="text-gray-600 mt-1">View your order history and track shipments</p>
         </div>
-        
+
         {loading ? (
           <div className="flex flex-col items-center justify-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
@@ -396,10 +406,10 @@ export default function OrdersPage() {
         ) : (
           <div className="space-y-6">
             {groupedOrders.map((order) => (
-              <OrderCard 
-                key={order.orderId} 
-                order={order} 
-                products={products} 
+              <OrderCard
+                key={order.orderId}
+                order={order}
+                products={products}
               />
             ))}
           </div>

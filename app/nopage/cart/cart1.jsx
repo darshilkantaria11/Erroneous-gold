@@ -119,10 +119,25 @@ export default function CartPage() {
                                             {item.name ? (
                                                 <p className="text-gray-500 text-sm mt-1">
                                                     Engraved Name: {item.name}
+                                                    Chain:-
                                                 </p>
+
                                             ) : (
                                                 <Skeleton className="h-4 w-1/2 mt-1" />
                                             )}
+                                            {item.selectedChain && (
+                                                <>
+                                                    <p className="text-gray-500 text-sm mt-1">
+                                                        Chain:-
+                                                    </p>
+                                                    <img
+                                                        src={item.selectedChain}
+                                                        alt="Selected Chain"
+                                                        className="w-24 h-20 object-cover"
+                                                    />
+                                                </>
+                                            )}
+
 
                                             <div className="mt-4 flex justify-between items-center">
                                                 {item.price ? (
@@ -189,6 +204,19 @@ export default function CartPage() {
                                                     ) : (
                                                         <Skeleton className="h-4 w-32 mt-1" />
                                                     )}
+                                                    {item.selectedChain && (
+                                                        <>
+                                                            <p className="text-gray-500 text-sm mt-1">
+                                                                Chain:-
+                                                            </p>
+                                                            <img
+                                                                src={item.selectedChain}
+                                                                alt="Selected Chain"
+                                                                className="w-24 h-20 object-cover"
+                                                            />
+                                                        </>
+                                                    )}
+
                                                 </div>
                                             </div>
 
