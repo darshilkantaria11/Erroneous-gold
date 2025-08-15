@@ -161,10 +161,13 @@ export default function ProductDetail() {
   const decreaseQuantity = () => updateQuantity(slug, (cart[slug]?.quantity || 0) - 1);
 
   useEffect(() => {
-    if (product && (product.category === "singlelenamenecklace" || product.category === "couplenamenecklace")) {
-      setSelectedChain(product.chain1 || "");
-    }
-  }, [product]);
+  if (!product) return;
+  
+  if (product.category === "singlelenamenecklace" || product.category === "couplenamenecklace") {
+    setSelectedChain(product.chain1 || "");
+  }
+}, [product]);
+
 
   return (
     <>
