@@ -32,6 +32,7 @@ export default function ProductDetail() {
   const [showCheckoutPopup, setShowCheckoutPopup] = useState(false);
   const [selectedChain, setSelectedChain] = useState(0);
 
+  // All hooks must be at the top without any conditional returns
   useEffect(() => {
     const cartItem = cart[slug];
     if (cartItem) {
@@ -75,6 +76,13 @@ export default function ProductDetail() {
     if (slug) fetchProduct();
   }, [slug]);
 
+  useEffect(() => {
+    if (product && (product.category === "singlenamenecklace" || product.category === "couplenamenecklace")) {
+      setSelectedChain(product.chain1 || "");
+    }
+  }, [product]);
+
+  // Place conditional returns AFTER all hooks
   if (error) return <p className="text-center text-lg text-red-500">{error}</p>;
 
   const additionalImages = product ? [product.img1, product.img2, product.img3, product.img4].filter(Boolean) : [];
@@ -159,15 +167,6 @@ export default function ProductDetail() {
 
   const increaseQuantity = () => updateQuantity(slug, (cart[slug]?.quantity || 0) + 1);
   const decreaseQuantity = () => updateQuantity(slug, (cart[slug]?.quantity || 0) - 1);
-
-  useEffect(() => {
-  if (!product) return;
-  
-  if (product.category === "singlelenamenecklace" || product.category === "couplenamenecklace") {
-    setSelectedChain(product.chain1 || "");
-  }
-}, [product]);
-
 
   return (
     <>
@@ -455,6 +454,7 @@ export default function ProductDetail() {
                       className="flex-1 w-full bg-c4 text-white py-3 rounded-lg font-medium transition-all text-center"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      disabled={!name.trim() && (!name1.trim() || !name2.trim())}
                     >
                       Buy now
                     </motion.button>
