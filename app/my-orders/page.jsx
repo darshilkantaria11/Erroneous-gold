@@ -391,7 +391,7 @@ export default function OrdersPage() {
               <FiPackage className="mx-auto text-4xl" />
             </div>
             <h3 className="text-xl font-medium text-gray-900 mb-2">No orders found</h3>
-            <p className="text-gray-600">You haven't placed any orders yet.</p>
+            <p className="text-gray-600">You haven&apos;t placed any orders yet.</p>
           </div>
         ) : (
           <div className="space-y-6">
