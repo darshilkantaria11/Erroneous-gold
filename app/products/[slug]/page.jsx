@@ -101,6 +101,8 @@ export default function ProductDetail() {
         return;
       }
       fullName = `${name1} ${name2}`;
+    } else if (product?.category === "carcharam") {
+      fullName = ""; // ✅ No name needed
     } else {
       if (!name.trim()) {
         setNameError("Please enter a name before adding to cart.");
@@ -122,9 +124,9 @@ export default function ProductDetail() {
       price: product.originalPrice,
       image: product.img1,
       selectedChain: [product.chain1, product.chain2, product.chain3].filter(Boolean)[selectedChain]
-
     });
   };
+
 
   const handleAddToBuy = () => {
     let fullName = "";
@@ -135,6 +137,8 @@ export default function ProductDetail() {
         return;
       }
       fullName = `${name1} ${name2}`;
+    } else if (product?.category === "carcharam") {
+      fullName = ""; // ✅ No name needed
     } else {
       if (!name.trim()) {
         setNameError("Please enter a name before adding to cart.");
@@ -367,7 +371,7 @@ export default function ProductDetail() {
                         Names will be combined with a space and engraved on the product.
                       </p>
                     </>
-                  ) : (
+                  ) : product.category === "carcharam" ? null : (
                     <>
                       <h3 className="text-lg font-semibold text-gray-800 ml-1">
                         Enter Your Name <span className="font-normal text-xs">(Max 10 characters)</span>
@@ -454,10 +458,15 @@ export default function ProductDetail() {
                       className="flex-1 w-full bg-c4 text-white py-3 rounded-lg font-medium transition-all text-center"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      disabled={!name.trim() && (!name1.trim() || !name2.trim())}
+                      disabled={
+                        product?.category !== "carcharam" &&
+                        !name.trim() &&
+                        (!name1.trim() || !name2.trim())
+                      }
                     >
                       Buy now
                     </motion.button>
+
                   </div>
                 </div>
               </motion.div>

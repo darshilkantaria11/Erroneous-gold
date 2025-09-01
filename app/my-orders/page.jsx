@@ -68,7 +68,7 @@ const getItemStatus = (status) => {
       };
     case "Replaced":
       return {
-        text: "Replaced",
+        text: "Order on Replacement",
         color: "bg-orange-100 text-orange-800",
         icon: <FiTruck className="text-orange-500" />,
       };

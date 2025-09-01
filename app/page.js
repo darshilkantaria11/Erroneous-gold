@@ -25,6 +25,10 @@ export default function Home() {
         category="keychain"
         title="Keychains"
       />
+      <Products
+        category="carcharam"
+        title="Car Charam"
+      />
 
     </>
   )

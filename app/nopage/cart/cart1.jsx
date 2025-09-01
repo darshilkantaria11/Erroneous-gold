@@ -201,9 +201,14 @@ export default function CartPage() {
                                                         <p className="text-gray-500 text-sm mt-1">
                                                             Engraved Name: {item.name}
                                                         </p>
-                                                    ) : (
+                                                    ) : loading ? (
                                                         <Skeleton className="h-4 w-32 mt-1" />
+                                                    ) : item.category === "carcharam" ? null : (
+                                                        <p className="text-gray-400 text-sm mt-1 italic">
+                                                            No name required
+                                                        </p>
                                                     )}
+
                                                     {item.selectedChain && (
                                                         <>
                                                             <p className="text-gray-500 text-sm mt-1">

@@ -253,7 +253,7 @@ export default function Products({ category, title }) {
   };
 
   return (
-    <div className="bg-c1 py-4 mb-20">
+    <div className="bg-c1 ">
       <div className="container mx-auto px-6">
         {showLoginPopup && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">

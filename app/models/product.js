@@ -60,7 +60,7 @@ const productSchema = new Schema(
     },
     category: {
       type: String,
-      enum: ["singlenamenecklace", "couplenamenecklace", "keychain", "rakhi"],
+      enum: ["singlenamenecklace", "couplenamenecklace", "keychain", "rakhi", "carcharam"],
       default: "singlenamenecklace",
     },
     status: {

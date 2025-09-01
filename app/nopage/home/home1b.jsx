@@ -30,6 +30,12 @@ export default function TopCategories() {
       slug: 'keychains',
       apiCategory: 'keychain',
     },
+     {
+      name: 'Car Charam',
+      image: 'https://raw.githubusercontent.com/erroneousgold/images/refs/heads/main/OM%20Name%20Rakhi%2001.webp',
+      slug: 'carcharam',
+      apiCategory: 'carcharam',
+    },
   ]
 
   const [visibleCategories, setVisibleCategories] = useState([])
