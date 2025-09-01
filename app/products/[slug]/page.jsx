@@ -8,6 +8,7 @@ import TrustSection from "../../nopage/components/trustsection";
 import Checkout from "../../nopage/checkout/checkout";
 import { XMarkIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { ShareIcon } from "@heroicons/react/24/outline";
+import Comparison from "../../nopage/components/comparison"
 
 const Skeleton = ({ className }) => (
   <div className={`animate-pulse bg-gray-200 rounded-lg relative overflow-hidden ${className}`}>
@@ -492,6 +493,7 @@ export default function ProductDetail() {
           </div>
         </div>
       )}
+      <Comparison/>
     </>
   );
 }
