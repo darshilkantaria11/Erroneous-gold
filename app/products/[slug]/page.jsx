@@ -31,7 +31,10 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(0);
   const [nameError, setNameError] = useState("");
   const [showCheckoutPopup, setShowCheckoutPopup] = useState(false);
-  const [selectedChain, setSelectedChain] = useState(0);
+  const [selectedChain, setSelectedChain] = useState(null);
+  const [chainError, setChainError] = useState("");
+
+
 
   // All hooks must be at the top without any conditional returns
   useEffect(() => {
@@ -77,11 +80,11 @@ export default function ProductDetail() {
     if (slug) fetchProduct();
   }, [slug]);
 
-  useEffect(() => {
-    if (product && (product.category === "singlenamenecklace" || product.category === "couplenamenecklace")) {
-      setSelectedChain(product.chain1 || "");
-    }
-  }, [product]);
+  // useEffect(() => {
+  //   if (product && (product.category === "singlenamenecklace" || product.category === "couplenamenecklace")) {
+  //     setSelectedChain(product.chain1 || "");
+  //   }
+  // }, [product]);
 
   // Place conditional returns AFTER all hooks
   if (error) return <p className="text-center text-lg text-red-500">{error}</p>;
@@ -95,6 +98,15 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     let fullName = "";
+    if (
+    (product?.category === "singlenamenecklace" || product?.category === "couplenamenecklace") &&
+    selectedChain === null
+  ) {
+    setChainError("Please choose a chain type before proceeding.");
+    return;
+  } else {
+    setChainError("");
+  }
 
     if (product?.category === "couplenamenecklace") {
       if (!name1.trim() || !name2.trim()) {
@@ -131,6 +143,16 @@ export default function ProductDetail() {
 
   const handleAddToBuy = () => {
     let fullName = "";
+
+    if (
+    (product?.category === "singlenamenecklace" || product?.category === "couplenamenecklace") &&
+    selectedChain === null
+  ) {
+    setChainError("Please choose a chain type before proceeding.");
+    return;
+  } else {
+    setChainError("");
+  }
 
     if (product?.category === "couplenamenecklace") {
       if (!name1.trim() || !name2.trim()) {
@@ -420,6 +442,9 @@ export default function ProductDetail() {
                         </label>
                       ))}
                     </div>
+                    {chainError && (
+  <p className="text-red-500 text-sm mt-2">{chainError}</p>
+)}
                   </div>
                 )}
 

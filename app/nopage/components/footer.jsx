@@ -106,7 +106,7 @@ export default function Footer() {
                 >
                     <h2 className="text-2xl font-semibold">Contact</h2>
                     <p className="text-gray-800 text-sm leading-relaxed">
-                        St-4, pl.no.19b2, atikaindustry, Rajkot, Gujarat, India, 360002.<br />
+                        STREE NO:- 4, PLOT NO: 19 B2, ATIKA INDUSTRIAL AREA , RAJKOT, GUJARAT, INDIA, 360002<br />
                         <a
                             href="https://wa.me/917698657879?text=Hi%2C%20I'm%20interested%20in%20your%20jewelry%20collection."
                             className="text-c4 hover:underline block"
