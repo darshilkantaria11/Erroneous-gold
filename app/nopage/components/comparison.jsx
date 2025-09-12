@@ -11,16 +11,15 @@ export default function ComparisonTable() {
     "Long Lasting Jewellery",
     "Affordable Prices",
     "Trendiest Designs",
-    "Celebrity Verified",
   ];
 
   return (
     <div className="w-full flex justify-center px-4 py-10">
       <div className="max-w-3xl w-full border-4 border-c4 rounded-lg overflow-hidden">
         {/* Header */}
-        <div className="grid grid-cols-3 bg-green-100 text-c4 font-bold text-center">
-          <div className="py-4 border-r border-c4"> </div>
-          <div className="py-4 border-r border-c4">Erroneous Gold</div>
+        <div className="grid grid-cols-3 bg-c4 text-white font-bold text-center">
+          <div className="py-4 border-r border-black"> </div>
+          <div className="py-4 border-r border-black">Erroneous Gold</div>
           <div className="py-4">OTHERS</div>
         </div>
 
