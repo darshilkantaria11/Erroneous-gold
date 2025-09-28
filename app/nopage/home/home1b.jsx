@@ -32,7 +32,7 @@ export default function TopCategories() {
     },
      {
       name: 'Car Charam',
-      image: '/carcharm.png',
+      image: 'https://raw.githubusercontent.com/erroneousgold/images/refs/heads/main/carcharm.webp',
       slug: 'carcharam',
       apiCategory: 'carcharam',
     },
