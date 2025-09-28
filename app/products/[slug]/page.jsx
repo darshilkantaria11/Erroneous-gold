@@ -9,6 +9,7 @@ import Checkout from "../../nopage/checkout/checkout";
 import { XMarkIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { ShareIcon } from "@heroicons/react/24/outline";
 import Comparison from "../../nopage/components/comparison"
+import Trust from "../../nopage/components/trust"
 
 const Skeleton = ({ className }) => (
   <div className={`animate-pulse bg-gray-200 rounded-lg relative overflow-hidden ${className}`}>
@@ -261,7 +262,7 @@ export default function ProductDetail() {
 
 
           {/* Product Details */}
-          <div className="bg-white rounded-lg p-6 shadow-lg lg:w-3/5 lg:ml-8 mt-4 lg:mt-0">
+          <div className="bg-white rounded-lg p-6 shadow-lg lg:w-3/5 lg:ml-8 mt-4 lg:mt-0 ">
             <div className="relative"> {/* Make the parent relative */}
               {/* Share Button */}
               <motion.button
@@ -524,6 +525,7 @@ export default function ProductDetail() {
                     </motion.button>
 
                   </div>
+
                 </div>
                  <div className="mt-6">
                   <div className="border rounded-lg">
@@ -542,11 +544,13 @@ export default function ProductDetail() {
                     <div className="p-4 bg-c1 text-black rounded-b-lg">{dropdownContent[activeTab]}</div>
                   </div>
                 </div>
+                <Trust/>
               
               </motion.div>
             )}
           </div>
         </div>
+            <Comparison />
 
         <div className="mt-12 container mx-auto px-4 lg:px-10">
           <ReviewForm productId={slug} />
@@ -566,7 +570,7 @@ export default function ProductDetail() {
           </div>
         </div>
       )}
-      <Comparison />
+     
     </>
   );
 }
