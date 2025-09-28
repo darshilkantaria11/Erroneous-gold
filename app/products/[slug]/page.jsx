@@ -335,23 +335,7 @@ export default function ProductDetail() {
                   <p className="text-2xl font-semibold text-gray-700">Rs. {product.originalPrice}</p>
                 </div>
 
-                <div className="mt-6">
-                  <div className="border rounded-lg">
-                    <div className="flex">
-                      {Object.keys(dropdownContent).map((tab) => (
-                        <button
-                          key={tab}
-                          onClick={() => setActiveTab(tab)}
-                          className={`flex-1 py-2 px-4 text-sm font-medium ${activeTab === tab ? "bg-c1 text-black" : "bg-white text-gray-700"
-                            } rounded-t-lg focus:outline-none`}
-                        >
-                          {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="p-4 bg-c1 text-black rounded-b-lg">{dropdownContent[activeTab]}</div>
-                  </div>
-                </div>
+
 
                 <div className="mt-6">
                   {product.category === "couplenamenecklace" ? (
@@ -541,6 +525,24 @@ export default function ProductDetail() {
 
                   </div>
                 </div>
+                 <div className="mt-6">
+                  <div className="border rounded-lg">
+                    <div className="flex">
+                      {Object.keys(dropdownContent).map((tab) => (
+                        <button
+                          key={tab}
+                          onClick={() => setActiveTab(tab)}
+                          className={`flex-1 py-2 px-4 text-sm font-medium ${activeTab === tab ? "bg-c1 text-black" : "bg-white text-gray-700"
+                            } rounded-t-lg focus:outline-none`}
+                        >
+                          {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="p-4 bg-c1 text-black rounded-b-lg">{dropdownContent[activeTab]}</div>
+                  </div>
+                </div>
+              
               </motion.div>
             )}
           </div>
