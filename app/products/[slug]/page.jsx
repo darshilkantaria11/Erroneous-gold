@@ -33,6 +33,8 @@ export default function ProductDetail() {
   const [showCheckoutPopup, setShowCheckoutPopup] = useState(false);
   const [selectedChain, setSelectedChain] = useState(null);
   const [chainError, setChainError] = useState("");
+  const [previewImg, setPreviewImg] = useState(null);
+
 
 
 
@@ -99,14 +101,14 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     let fullName = "";
     if (
-    (product?.category === "singlenamenecklace" || product?.category === "couplenamenecklace") &&
-    selectedChain === null
-  ) {
-    setChainError("Please choose a chain type before proceeding.");
-    return;
-  } else {
-    setChainError("");
-  }
+      (product?.category === "singlenamenecklace" || product?.category === "couplenamenecklace") &&
+      selectedChain === null
+    ) {
+      setChainError("Please choose a chain type before proceeding.");
+      return;
+    } else {
+      setChainError("");
+    }
 
     if (product?.category === "couplenamenecklace") {
       if (!name1.trim() || !name2.trim()) {
@@ -145,14 +147,14 @@ export default function ProductDetail() {
     let fullName = "";
 
     if (
-    (product?.category === "singlenamenecklace" || product?.category === "couplenamenecklace") &&
-    selectedChain === null
-  ) {
-    setChainError("Please choose a chain type before proceeding.");
-    return;
-  } else {
-    setChainError("");
-  }
+      (product?.category === "singlenamenecklace" || product?.category === "couplenamenecklace") &&
+      selectedChain === null
+    ) {
+      setChainError("Please choose a chain type before proceeding.");
+      return;
+    } else {
+      setChainError("");
+    }
 
     if (product?.category === "couplenamenecklace") {
       if (!name1.trim() || !name2.trim()) {
@@ -421,32 +423,76 @@ export default function ProductDetail() {
                 {(product?.category === "singlenamenecklace" || product?.category === "couplenamenecklace") && (
                   <div className="mt-6">
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">Choose Chain Type</h3>
-                    <div className="flex gap-3">
-                      {[product.chain1, product.chain2, product.chain3].filter(Boolean).map((chainImg, idx) => (
-                        <label key={idx} className="cursor-pointer">
-                          <input
-                            type="radio"
-                            name="chain"
-                            value={idx}
-                            checked={selectedChain === idx} // ✅ Compare index instead of image string
-                            onChange={() => setSelectedChain(idx)}
-                            className="hidden"
-                          />
-                          <img
-                            src={chainImg}
-                            alt={`Chain ${idx + 1}`}
-                            className={`w-24 h-20 object-cover rounded-md border-2 
-              ${selectedChain === idx ? "border-c4 border-8" : "border-transparent"} 
-              hover:scale-105 transition-transform`}
-                          />
-                        </label>
-                      ))}
+                    <div className="flex gap-6">
+                      {[product.chain1, product.chain2, product.chain3]
+                        .filter(Boolean)
+                        .map((chainImg, idx) => {
+                          const chainNames = ["Box Chain", "Jalebi Chain", "Sitari Chain"];
+                          return (
+                            <div key={idx} className="relative text-center">
+                              <label className="cursor-pointer block">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedChain === idx}
+                                  onChange={() =>
+                                    setSelectedChain(selectedChain === idx ? null : idx)
+                                  }
+                                  className="hidden"
+                                />
+                                <img
+                                  src={chainImg}
+                                  alt={chainNames[idx]}
+                                  className={`w-24 h-20 object-cover rounded-md border-2 
+                  ${selectedChain === idx ? "border-c4 border-8" : "border-transparent"} 
+                  hover:scale-105 transition-transform`}
+                                />
+                              </label>
+
+                              {/* 👁 Eye Button */}
+                              <button
+                                type="button"
+                                onClick={() => setPreviewImg(chainImg)}
+                                className="absolute top-1 right-1 bg-black bg-opacity-50 text-white p-1 rounded-full hover:bg-opacity-70"
+                              >
+                                👁
+                              </button>
+
+                              {/* ✅ Chain Name */}
+                              <p className="mt-2 text-sm font-medium text-gray-700">
+                                {chainNames[idx]}
+                              </p>
+                            </div>
+                          );
+                        })}
                     </div>
-                    {chainError && (
-  <p className="text-red-500 text-sm mt-2">{chainError}</p>
-)}
+
+                    {chainError && <p className="text-red-500 text-sm mt-2">{chainError}</p>}
+                  </div>
+
+
+
+                )}
+
+                {previewImg && (
+                  <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+                    <div className="relative">
+                      <img
+                        src={previewImg}
+                        alt="Preview"
+                        className="max-h-[80vh] max-w-[90vw] rounded-lg shadow-lg"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setPreviewImg(null)}
+                        className="absolute top-2 right-2 bg-white text-black px-3 py-1 rounded-full shadow hover:bg-gray-200"
+                      >
+                        ✕
+                      </button>
+                    </div>
                   </div>
                 )}
+
+
 
 
                 <div className="mt-8 flex w-full flex-row gap-4">
@@ -518,7 +564,7 @@ export default function ProductDetail() {
           </div>
         </div>
       )}
-      <Comparison/>
+      <Comparison />
     </>
   );
 }
