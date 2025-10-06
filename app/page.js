@@ -43,6 +43,7 @@ export const metadata = {
   },
   alternates: {
     canonical: "https://erroneousgold.com",
+    
   },
 };
 
