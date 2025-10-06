@@ -281,7 +281,7 @@ export default function PaymentStep({ userData }) {
             <span>Shipping</span>
             <span className="flex items-center gap-2">
               <span className="text-green-600 ">Free</span>
-              <span className="line-through text-gray-400">₹{shippingCharge || 99}</span>
+              {/* <span className="line-through text-gray-400">₹{shippingCharge || 99}</span> */}
             </span>
 
           </div>
