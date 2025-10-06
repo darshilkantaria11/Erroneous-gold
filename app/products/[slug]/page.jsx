@@ -20,6 +20,64 @@ const Skeleton = ({ className }) => (
   </div>
 );
 
+export async function generateMetadata({ params }) {
+  const { slug } = params;
+
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/products/fetch/${slug}`, {
+      headers: { "x-api-key": process.env.NEXT_PUBLIC_API_KEY },
+      next: { revalidate: 60 },
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch product");
+
+    const product = await res.json();
+
+    return {
+      title: `${product.productName} | Erroneous Gold`,
+      description: product.description || "Explore this product at Erroneous Gold.",
+      keywords: [
+        product.productName,
+        product.category,
+        "personalized gifts",
+        "custom jewelry",
+        "Erroneous Gold",
+      ],
+      openGraph: {
+        title: product.productName,
+        description: product.description || "Explore this product at Erroneous Gold.",
+        url: `https://erroneousgold.com/product/${slug}`,
+        siteName: "Erroneous Gold",
+        images: [
+          {
+            url: product.img1 || "https://erroneousgold.com/open.png",
+            width: 1200,
+            height: 630,
+            alt: product.productName,
+          },
+        ],
+        locale: "en_IN",
+        type: "product",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: product.productName,
+        description: product.description || "Explore this product at Erroneous Gold.",
+        images: [product.img1 || "https://erroneousgold.com/open.png"],
+      },
+      alternates: {
+        canonical: `https://erroneousgold.com/product/${slug}`,
+      },
+    };
+  } catch (err) {
+    console.error("SEO metadata fetch error:", err);
+    return {
+      title: "Erroneous Gold - Product",
+      description: "Explore our products at Erroneous Gold.",
+    };
+  }
+}
+
 export default function ProductDetail() {
   const { slug } = useParams();
   const { cart, addToCart, updateQuantity } = useCart();
