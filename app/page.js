@@ -25,7 +25,7 @@ export const metadata = {
     siteName: "Erroneous Gold",
     images: [
       {
-        url: "https://erroneousgold.com/logo.svg", // replace with actual OG image URL
+        url: "https://erroneousgold.com/open.png", // replace with actual OG image URL
         width: 1200,
         height: 630,
         alt: "Personalized Name Jewelry – Erroneous Gold",
@@ -39,7 +39,7 @@ export const metadata = {
     title: "Erroneous Gold – Personalized Jewelry Store",
     description:
       "Create your own name jewelry – necklaces, keychains, and pendants handcrafted with precision and love.",
-    images: ["https://erroneousgold.com/logo.svg"], // same OG image
+    images: ["https://erroneousgold.com/open.png"], // same OG image
   },
   alternates: {
     canonical: "https://erroneousgold.com",
