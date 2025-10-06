@@ -30,7 +30,7 @@ export const metadata = {
       },
     ],
     locale: "en_IN",
-    type: "product",
+    
   },
   twitter: {
     card: "summary_large_image",
