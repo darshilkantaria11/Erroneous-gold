@@ -424,7 +424,7 @@ export default function ProductDetail() {
                       {[product.chain1, product.chain2, product.chain3]
                         .filter(Boolean)
                         .map((chainImg, idx) => {
-                          const chainNames = ["Box Chain", "Jalebi Chain", "Sitari Chain"];
+                          const chainNames = ["Box Chain", "Jalebi Chain", "Mangalsutra Chain"];
                           return (
                             <div key={idx} className="relative text-center">
                               <label className="cursor-pointer block">

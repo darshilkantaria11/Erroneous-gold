@@ -31,6 +31,24 @@ export default function TopCategories() {
       apiCategory: 'keychain',
     },
      {
+      name: 'Designer Pendents',
+      image: 'https://raw.githubusercontent.com/erroneousgold/images/refs/heads/main/Designer%20Pendent.webp',
+      slug: 'designerpendents',
+      apiCategory: 'designerpendents',
+    },
+     {
+      name: 'Single Name Keychains',
+      image: 'https://raw.githubusercontent.com/erroneousgold/images/refs/heads/main/Single%20Name%20Keychain.webp',
+      slug: 'singlenamekeychain',
+      apiCategory: 'singlenamekeychain',
+    },
+     {
+      name: 'Couple Name Keychains',
+      image: 'https://raw.githubusercontent.com/erroneousgold/images/refs/heads/main/Couple%20Name%20Keychain.webp',
+      slug: 'couplenamekeychain',
+      apiCategory: 'couplenamekeychain',
+    },
+     {
       name: 'Car Charam',
       image: 'https://raw.githubusercontent.com/erroneousgold/images/refs/heads/main/carcharm.webp',
       slug: 'carcharam',
