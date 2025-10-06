@@ -70,69 +70,72 @@ export default function AddressStep({ onNext }) {
   }, []);
 
   useEffect(() => {
-    const checkPincode = async () => {
-      if (pincode.length === 6) {
-        setIsChecking(true);
-        try {
-          const res = await fetch(
-            `/api/shiprocket-pincode-check?pincode=${pincode}&quantity=${quantity}`,
-            {
-              headers: {
-                "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
-              },
-            }
-          );
-          const data = await res.json();
-          if (data.error) throw new Error(data.error);
-
-          setDeliveryInfo({
-            serviceable: data.serviceable,
-            shippingCharge: data.shippingCharge,
-            expectedDate: data.expectedDate,
-          });
-
-          if (data.serviceable) {
-            setErrors((prev) => ({ ...prev, pincode: "", serviceable: "" }));
+  const checkPincode = async () => {
+    if (pincode.length === 6) {
+      setIsChecking(true);
+      try {
+        const res = await fetch(
+          `/api/delhivery-pincode-check?pincode=${pincode}&quantity=${quantity}`,
+          {
+            headers: {
+              "x-api-key": process.env.NEXT_PUBLIC_API_KEY,
+            },
           }
+        );
 
-          // 📍 Fetch post office options for dropdown
-          const locationRes = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
-          const locationData = await locationRes.json();
-          const postOffices = locationData?.[0]?.PostOffice || [];
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
 
-          const options = postOffices.map(po => ({
-            label: `${po.Name}, ${po.District}`,
-            city: po.Name,
-            district: po.District,
-            state: po.State,
-          }));
+        setDeliveryInfo({
+          serviceable: data.serviceable,
+          shippingCharge: data.shippingCharge,
+          expectedDate: data.expectedDate,
+        });
 
-          setPostOfficeOptions(options);
-
-          // Autofill city and state from first option
-          if (options.length > 0) {
-            setAddress(prev => ({
-              ...prev,
-              city: options[0].label,
-              state: options[0].state,
-            }));
-          }
-        } catch (error) {
-          console.error("Pincode check failed:", error.message);
-          setDeliveryInfo({
-            serviceable: false,
-            shippingCharge: 0,
-            expectedDate: "",
-          });
-          setPostOfficeOptions([]);
-        } finally {
-          setIsChecking(false);
+        if (data.serviceable) {
+          setErrors((prev) => ({ ...prev, pincode: "", serviceable: "" }));
         }
-      }
-    };
 
-    checkPincode();
-  }, [pincode, quantity]);
+        // 📍 Fetch post office options
+        const locationRes = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
+        const locationData = await locationRes.json();
+        const postOffices = locationData?.[0]?.PostOffice || [];
+
+        const options = postOffices.map(po => ({
+          label: `${po.Name}, ${po.District}`,
+          city: po.Name,
+          district: po.District,
+          state: po.State,
+        }));
+
+        setPostOfficeOptions(options);
+
+        if (options.length > 0) {
+          setAddress(prev => ({
+            ...prev,
+            city: options[0].label,
+            state: options[0].state,
+          }));
+        }
+      } catch (error) {
+        console.log("Pincode check failed:", error.message);
+        setDeliveryInfo({
+          serviceable: false,
+          shippingCharge: 0,
+          expectedDate: "",
+        });
+        setPostOfficeOptions([]);
+      } finally {
+        setIsChecking(false);
+      }
+    }
+  };
+
+  checkPincode();
+}, [pincode, quantity]);
+
+
+
 
 
   const validateForm = () => {
