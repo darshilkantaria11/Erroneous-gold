@@ -10,6 +10,9 @@ import { XMarkIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { ShareIcon } from "@heroicons/react/24/outline";
 import Comparison from "../../nopage/components/comparison"
 import Trust from "../../nopage/components/trust"
+import Trust2 from "../../nopage/components/trust2"
+import { useRouter } from "next/navigation";
+
 
 const Skeleton = ({ className }) => (
   <div className={`animate-pulse bg-gray-200 rounded-lg relative overflow-hidden ${className}`}>
@@ -37,6 +40,7 @@ export default function ProductDetail() {
   const [previewImg, setPreviewImg] = useState(null);
 
 
+  const router = useRouter();
 
 
   // All hooks must be at the top without any conditional returns
@@ -200,7 +204,15 @@ export default function ProductDetail() {
 
   return (
     <>
-      <div className="bg-c1 rounded-xl py-10">
+      <div className="bg-c1 rounded-xl py-10 relative ">
+        {/* 🔙 Back Button */}
+        <button
+          onClick={() => router.back()}
+          className="absolute z-50 top-8 left-8 flex items-center gap-2 bg-white/90 hover:bg-white text-gray-800 font-medium px-3 py-2 rounded-full shadow-md transition-all"
+        >
+          ←
+        </button>
+
         <div className="container mx-auto px-4 lg:px-10 flex flex-col lg:flex-row justify-between">
           {/* Product Images */}
           <div className="space-y-4 lg:w-2/5">
@@ -381,7 +393,7 @@ export default function ProductDetail() {
                         Names will be combined with a space and engraved on the product.
                       </p>
                     </>
-                  ) : product.category === "carcharam" ? null : (
+                  ) : product.category === "carcharam" || product.category === "keychain" ? null : (
                     <>
                       <h3 className="text-lg font-semibold text-gray-800 ml-1">
                         Enter Your Name <span className="font-normal text-xs">(Max 10 characters)</span>
@@ -527,15 +539,15 @@ export default function ProductDetail() {
                   </div>
 
                 </div>
-                 <div className="mt-6">
+                <div className="mt-6">
                   <div className="border rounded-lg">
                     <div className="flex">
                       {Object.keys(dropdownContent).map((tab) => (
                         <button
                           key={tab}
                           onClick={() => setActiveTab(tab)}
-                          className={`flex-1 py-2 px-4 text-sm font-medium ${activeTab === tab ? "bg-c1 text-black" : "bg-white text-gray-700"
-                            } rounded-t-lg focus:outline-none`}
+                          className={`flex-1 py-3 px-4 text-sm font-medium ${activeTab === tab ? "bg-c1 text-black" : "bg-c4 text-white"
+                            }  focus:outline-none`}
                         >
                           {tab.charAt(0).toUpperCase() + tab.slice(1)}
                         </button>
@@ -544,13 +556,20 @@ export default function ProductDetail() {
                     <div className="p-4 bg-c1 text-black rounded-b-lg">{dropdownContent[activeTab]}</div>
                   </div>
                 </div>
-                <Trust/>
-              
+                <Trust />
+                {(product?.category === "singlenamenecklace" || product?.category === "couplenamenecklace") && (
+                  <>
+
+                    <Trust2 />
+                  </>
+                )}
+
+
               </motion.div>
             )}
           </div>
         </div>
-            <Comparison />
+        <Comparison />
 
         <div className="mt-12 container mx-auto px-4 lg:px-10">
           <ReviewForm productId={slug} />
@@ -570,7 +589,7 @@ export default function ProductDetail() {
           </div>
         </div>
       )}
-     
+
     </>
   );
 }

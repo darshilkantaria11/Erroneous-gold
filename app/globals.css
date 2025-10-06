@@ -4,6 +4,43 @@
 
 
 @font-face {
+  font-family: 'amelyan';
+  src: url('/fonts/Amelyan.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-size: larger;
+}
+
+.amelyan {
+  font-family: 'amelyan', sans-serif;
+}
+
+@font-face {
+  font-family: 'cookie';
+  src: url('/fonts/Cookie-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-size: larger;
+}
+
+.cookie {
+  font-family: 'cookie', sans-serif;
+}
+
+@font-face {
+  font-family: 'nexa';
+  src: url('/fonts/NexaRustScriptL-0.otf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-size: larger;
+}
+
+.nexa {
+  font-family: 'nexa', sans-serif;
+}
+
+
+@font-face {
   font-family: 'autumnchant';
   src: url('/fonts/AUTUMNCHANT.OTF') format('truetype');
   font-weight: normal;
