@@ -2,15 +2,15 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { useCart } from "../../nopage/context/CartContext";
-import ReviewForm from "../../nopage/components/review";
-import TrustSection from "../../nopage/components/trustsection";
+import { useCart } from "../context/CartContext";
+import ReviewForm from "../components/review";
+import TrustSection from "../components/trustsection";
 import Checkout from "../../nopage/checkout/checkout";
 import { XMarkIcon, PlusIcon, MinusIcon } from "@heroicons/react/24/outline";
 import { ShareIcon } from "@heroicons/react/24/outline";
-import Comparison from "../../nopage/components/comparison"
-import Trust from "../../nopage/components/trust"
-import Trust2 from "../../nopage/components/trust2"
+import Comparison from "../components/comparison"
+import Trust from "../components/trust"
+import Trust2 from "../components/trust2"
 import { useRouter } from "next/navigation";
 
 
